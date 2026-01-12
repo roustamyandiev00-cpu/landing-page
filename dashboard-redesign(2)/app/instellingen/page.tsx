@@ -1,0 +1,292 @@
+"use client"
+
+import { useState } from "react"
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
+import { PageHeader } from "@/components/dashboard/page-header"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Settings, User, Building, CreditCard, Bell, Shield, Upload, Save } from "lucide-react"
+
+export default function InstellingenPage() {
+  const [notifications, setNotifications] = useState({
+    email: true,
+    push: true,
+    invoiceReminders: true,
+    weeklyReport: false,
+    marketingEmails: false,
+  })
+
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <PageHeader title="Instellingen" description="Beheer je account en voorkeuren" icon={Settings} />
+
+        <Tabs defaultValue="profile" className="space-y-6">
+          <TabsList className="bg-muted/50">
+            <TabsTrigger value="profile" className="gap-2">
+              <User className="w-4 h-4" /> Profiel
+            </TabsTrigger>
+            <TabsTrigger value="company" className="gap-2">
+              <Building className="w-4 h-4" /> Bedrijf
+            </TabsTrigger>
+            <TabsTrigger value="billing" className="gap-2">
+              <CreditCard className="w-4 h-4" /> Facturatie
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="gap-2">
+              <Bell className="w-4 h-4" /> Meldingen
+            </TabsTrigger>
+            <TabsTrigger value="security" className="gap-2">
+              <Shield className="w-4 h-4" /> Beveiliging
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Profile Tab */}
+          <TabsContent value="profile">
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle>Profiel Informatie</CardTitle>
+                <CardDescription>Beheer je persoonlijke gegevens</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center gap-6">
+                  <Avatar className="w-20 h-20">
+                    <AvatarImage src="/professional-avatar.png" />
+                    <AvatarFallback>JD</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <Button variant="outline" size="sm" className="gap-2 bg-transparent">
+                      <Upload className="w-4 h-4" /> Upload Foto
+                    </Button>
+                    <p className="text-sm text-muted-foreground mt-2">JPG, PNG of GIF. Max 2MB.</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">Voornaam</Label>
+                    <Input id="firstName" defaultValue="Jan" className="bg-muted/50 border-0" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Achternaam</Label>
+                    <Input id="lastName" defaultValue="de Vries" className="bg-muted/50 border-0" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">E-mailadres</Label>
+                    <Input id="email" type="email" defaultValue="jan@voorbeeld.nl" className="bg-muted/50 border-0" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Telefoonnummer</Label>
+                    <Input id="phone" defaultValue="+31 6 12345678" className="bg-muted/50 border-0" />
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button className="bg-primary hover:bg-primary/90 gap-2">
+                    <Save className="w-4 h-4" /> Opslaan
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Company Tab */}
+          <TabsContent value="company">
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle>Bedrijfsgegevens</CardTitle>
+                <CardDescription>Informatie die op je facturen verschijnt</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="companyName">Bedrijfsnaam</Label>
+                    <Input id="companyName" defaultValue="Voorbeeld BV" className="bg-muted/50 border-0" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="kvk">KVK Nummer</Label>
+                    <Input id="kvk" defaultValue="12345678" className="bg-muted/50 border-0" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="btw">BTW Nummer</Label>
+                    <Input id="btw" defaultValue="NL123456789B01" className="bg-muted/50 border-0" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="iban">IBAN</Label>
+                    <Input id="iban" defaultValue="NL91 INGB 0123 4567 89" className="bg-muted/50 border-0" />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="address">Adres</Label>
+                    <Input
+                      id="address"
+                      defaultValue="Voorbeeldstraat 123, 1234 AB Amsterdam"
+                      className="bg-muted/50 border-0"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button className="bg-primary hover:bg-primary/90 gap-2">
+                    <Save className="w-4 h-4" /> Opslaan
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Billing Tab */}
+          <TabsContent value="billing">
+            <div className="space-y-6">
+              <Card className="glass-card">
+                <CardHeader>
+                  <CardTitle>Huidig Abonnement</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between p-4 rounded-xl bg-primary/10 border border-primary/20">
+                    <div>
+                      <h3 className="font-medium text-foreground">Pro Plan</h3>
+                      <p className="text-sm text-muted-foreground">Onbeperkte facturen en offertes</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-foreground">
+                        €29<span className="text-sm font-normal text-muted-foreground">/maand</span>
+                      </p>
+                      <Button variant="outline" size="sm" className="mt-2 bg-transparent">
+                        Upgrade
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="glass-card">
+                <CardHeader>
+                  <CardTitle>Betaalmethode</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/50">
+                    <div className="w-12 h-8 rounded bg-gradient-to-r from-blue-600 to-blue-400 flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">VISA</span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-foreground">•••• •••• •••• 4242</p>
+                      <p className="text-sm text-muted-foreground">Verloopt 12/2027</p>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      Wijzigen
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Notifications Tab */}
+          <TabsContent value="notifications">
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle>Meldingsvoorkeuren</CardTitle>
+                <CardDescription>Kies hoe je op de hoogte gehouden wilt worden</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-foreground">E-mail meldingen</p>
+                      <p className="text-sm text-muted-foreground">Ontvang meldingen via e-mail</p>
+                    </div>
+                    <Switch
+                      checked={notifications.email}
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, email: checked })}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-foreground">Push meldingen</p>
+                      <p className="text-sm text-muted-foreground">Ontvang meldingen in de browser</p>
+                    </div>
+                    <Switch
+                      checked={notifications.push}
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, push: checked })}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-foreground">Factuur herinneringen</p>
+                      <p className="text-sm text-muted-foreground">Herinnering bij openstaande facturen</p>
+                    </div>
+                    <Switch
+                      checked={notifications.invoiceReminders}
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, invoiceReminders: checked })}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-foreground">Wekelijks rapport</p>
+                      <p className="text-sm text-muted-foreground">Ontvang een wekelijkse samenvatting</p>
+                    </div>
+                    <Switch
+                      checked={notifications.weeklyReport}
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, weeklyReport: checked })}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Security Tab */}
+          <TabsContent value="security">
+            <div className="space-y-6">
+              <Card className="glass-card">
+                <CardHeader>
+                  <CardTitle>Wachtwoord Wijzigen</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="currentPassword">Huidig wachtwoord</Label>
+                    <Input id="currentPassword" type="password" className="bg-muted/50 border-0" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="newPassword">Nieuw wachtwoord</Label>
+                    <Input id="newPassword" type="password" className="bg-muted/50 border-0" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Bevestig wachtwoord</Label>
+                    <Input id="confirmPassword" type="password" className="bg-muted/50 border-0" />
+                  </div>
+                  <Button className="bg-primary hover:bg-primary/90">Wachtwoord Wijzigen</Button>
+                </CardContent>
+              </Card>
+
+              <Card className="glass-card">
+                <CardHeader>
+                  <CardTitle>Twee-factor Authenticatie</CardTitle>
+                  <CardDescription>Voeg een extra beveiligingslaag toe aan je account</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between p-4 rounded-xl bg-muted/50">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                        <Shield className="w-5 h-5 text-emerald-500" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground">2FA is uitgeschakeld</p>
+                        <p className="text-sm text-muted-foreground">Beveilig je account met een authenticator app</p>
+                      </div>
+                    </div>
+                    <Button variant="outline">Inschakelen</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </DashboardLayout>
+  )
+}

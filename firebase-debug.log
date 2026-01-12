@@ -1,0 +1,60 @@
+[debug] [2026-01-11T23:27:13.877Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-11T23:27:13.878Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-11T23:27:13.885Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-11T23:27:13.885Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-11T23:27:14.084Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-11T23:27:14.084Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-11T23:27:14.084Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-11T23:27:14.084Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-11T23:27:14.136Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-11T23:27:14.137Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-11T23:27:14.137Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-11T23:27:14.137Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-11T23:27:45.683Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-11T23:27:45.683Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-11T23:27:45.689Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-11T23:27:45.689Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-11T23:27:45.849Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-11T23:27:45.849Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-11T23:27:45.849Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-11T23:27:45.850Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-11T23:27:45.888Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-11T23:27:45.888Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-11T23:27:45.889Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-11T23:27:45.889Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:21:33.969Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:21:33.970Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:21:33.977Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:21:33.977Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:21:34.119Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:21:34.119Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:21:34.119Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:21:34.119Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:21:34.157Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:21:34.157Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:21:34.158Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:21:34.158Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:27:18.990Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:27:18.991Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:27:18.999Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:27:19.000Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:27:19.112Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:27:19.112Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:27:19.113Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:27:19.113Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:27:19.145Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:27:19.145Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:27:19.145Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:27:19.145Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:28:53.568Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:28:53.569Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:28:53.575Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:28:53.575Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:28:53.707Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:28:53.707Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:28:53.707Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:28:53.707Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:28:53.741Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:28:53.741Z] > authorizing via signed-in user (windowpro.be@gmail.com)
+[debug] [2026-01-12T00:28:53.741Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-12T00:28:53.741Z] > authorizing via signed-in user (windowpro.be@gmail.com)

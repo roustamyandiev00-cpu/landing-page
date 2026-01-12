@@ -25,3 +25,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Apple private keys
+*.p8
+
+# Firebase
+firebase-debug.log
+.firebaserc

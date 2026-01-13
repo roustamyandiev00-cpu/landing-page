@@ -95,7 +95,7 @@ export function NewOfferteDialog({ open, onOpenChange, onSubmit }: NewOfferteDia
 
         <div className="space-y-6 py-4">
           {/* Client Details */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="client">Klantnaam *</Label>
               <Input
@@ -117,7 +117,7 @@ export function NewOfferteDialog({ open, onOpenChange, onSubmit }: NewOfferteDia
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="description">Projectomschrijving</Label>
               <Input
@@ -149,49 +149,51 @@ export function NewOfferteDialog({ open, onOpenChange, onSubmit }: NewOfferteDia
           {/* Line Items */}
           <div className="space-y-3">
             <Label>Regelitems</Label>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {formData.items.map((item, index) => (
-                <div key={index} className="flex gap-2 items-start">
+                <div key={index} className="flex flex-col sm:flex-row gap-2 p-3 sm:p-0 bg-muted/30 sm:bg-transparent rounded-lg">
                   <Input
                     placeholder="Omschrijving"
                     className="flex-1"
                     value={item.description}
                     onChange={(e) => updateItem(index, "description", e.target.value)}
                   />
-                  <Input
-                    type="number"
-                    placeholder="Aantal"
-                    className="w-20"
-                    min={1}
-                    value={item.quantity}
-                    onChange={(e) => updateItem(index, "quantity", Number.parseInt(e.target.value) || 0)}
-                  />
-                  <div className="relative w-28">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
+                  <div className="flex gap-2">
                     <Input
                       type="number"
-                      placeholder="Prijs"
-                      className="pl-7"
-                      min={0}
-                      step={0.01}
-                      value={item.price}
-                      onChange={(e) => updateItem(index, "price", Number.parseFloat(e.target.value) || 0)}
+                      placeholder="Aantal"
+                      className="w-full sm:w-20"
+                      min={1}
+                      value={item.quantity}
+                      onChange={(e) => updateItem(index, "quantity", Number.parseInt(e.target.value) || 0)}
                     />
+                    <div className="relative w-full sm:w-28">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
+                      <Input
+                        type="number"
+                        placeholder="Prijs"
+                        className="pl-7"
+                        min={0}
+                        step={0.01}
+                        value={item.price}
+                        onChange={(e) => updateItem(index, "price", Number.parseFloat(e.target.value) || 0)}
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeItem(index)}
+                      disabled={formData.items.length === 1}
+                      className="shrink-0"
+                    >
+                      <Trash2 className="w-4 h-4 text-muted-foreground" />
+                    </Button>
                   </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeItem(index)}
-                    disabled={formData.items.length === 1}
-                    className="shrink-0"
-                  >
-                    <Trash2 className="w-4 h-4 text-muted-foreground" />
-                  </Button>
                 </div>
               ))}
             </div>
-            <Button type="button" variant="outline" size="sm" onClick={addItem}>
+            <Button type="button" variant="outline" size="sm" onClick={addItem} className="w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Regel toevoegen
             </Button>
@@ -220,11 +222,11 @@ export function NewOfferteDialog({ open, onOpenChange, onSubmit }: NewOfferteDia
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="flex-col sm:flex-row gap-2">
+          <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
             Annuleren
           </Button>
-          <Button onClick={handleSubmit} disabled={!formData.client || !formData.email}>
+          <Button onClick={handleSubmit} disabled={!formData.client || !formData.email} className="w-full sm:w-auto">
             Offerte Aanmaken
           </Button>
         </DialogFooter>

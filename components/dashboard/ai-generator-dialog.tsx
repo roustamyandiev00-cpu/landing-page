@@ -70,17 +70,17 @@ export function AIGeneratorDialog({ open, onOpenChange, type = "email" }: AIGene
           )}
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="flex-col sm:flex-row gap-2">
+          <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
             Annuleren
           </Button>
           {!generatedContent ? (
-            <Button onClick={handleGenerate} disabled={!prompt}>
+            <Button onClick={handleGenerate} disabled={!prompt} className="w-full sm:w-auto">
               <Sparkles className="w-4 h-4 mr-2" />
               Genereren
             </Button>
           ) : (
-            <Button onClick={handleUse}>
+            <Button onClick={handleUse} className="w-full sm:w-auto">
               Gebruiken
             </Button>
           )}

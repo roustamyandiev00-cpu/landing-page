@@ -29,66 +29,28 @@ import { NewFactuurDialog } from "@/components/dashboard/new-factuur-dialog"
 import { AIGeneratorDialog } from "@/components/dashboard/ai-generator-dialog"
 
 const stats = [
-  { label: "Totale Omzet", value: "€68.450", change: "+15%", trend: "up", icon: Euro, color: "text-emerald-500" },
-  { label: "Openstaand", value: "€12.800", change: "-8%", trend: "down", icon: Clock, color: "text-amber-500" },
-  { label: "Betaald (MTD)", value: "€24.650", change: "+22%", trend: "up", icon: CheckCircle, color: "text-blue-500" },
+  { label: "Totale Omzet", value: "€0", change: "-", trend: "up", icon: Euro, color: "text-emerald-500" },
+  { label: "Openstaand", value: "€0", change: "-", trend: "down", icon: Clock, color: "text-amber-500" },
+  { label: "Betaald (MTD)", value: "€0", change: "-", trend: "up", icon: CheckCircle, color: "text-blue-500" },
   {
     label: "Achterstallig",
-    value: "€3.200",
-    change: "-12%",
+    value: "€0",
+    change: "-",
     trend: "down",
     icon: AlertTriangle,
     color: "text-red-500",
   },
 ]
 
-const invoices = [
-  {
-    id: "FAC-2026-001",
-    client: "ABC Corporation",
-    description: "Website onderhoud januari",
-    amount: 1250,
-    status: "paid",
-    date: "05 Jan 2026",
-    dueDate: "20 Jan 2026",
-  },
-  {
-    id: "FAC-2026-002",
-    client: "XYZ Tech Solutions",
-    description: "Consultancy uren december",
-    amount: 4800,
-    status: "pending",
-    date: "02 Jan 2026",
-    dueDate: "17 Jan 2026",
-  },
-  {
-    id: "FAC-2025-089",
-    client: "Global Industries",
-    description: "Software licenties Q4",
-    amount: 3200,
-    status: "overdue",
-    date: "15 Dec 2025",
-    dueDate: "30 Dec 2025",
-  },
-  {
-    id: "FAC-2025-088",
-    client: "StartUp Hub",
-    description: "MVP Development fase 1",
-    amount: 8500,
-    status: "paid",
-    date: "10 Dec 2025",
-    dueDate: "25 Dec 2025",
-  },
-  {
-    id: "FAC-2025-087",
-    client: "Digital Agency Plus",
-    description: "API Development",
-    amount: 6200,
-    status: "pending",
-    date: "08 Dec 2025",
-    dueDate: "23 Dec 2025",
-  },
-]
+interface Invoice {
+  id: string
+  client: string
+  description: string
+  amount: number
+  status: "pending" | "paid" | "overdue"
+  date: string
+  dueDate: string
+}
 
 const statusConfig = {
   pending: { label: "In Afwachting", variant: "secondary" as const, icon: Clock },
@@ -101,6 +63,7 @@ export default function FacturenPage() {
   const [activeTab, setActiveTab] = useState("all")
   const [newFactuurOpen, setNewFactuurOpen] = useState(false)
   const [aiGeneratorOpen, setAiGeneratorOpen] = useState(false)
+  const [invoices, setInvoices] = useState<Invoice[]>([])
 
   const filteredInvoices = invoices.filter((invoice) => {
     if (activeTab === "all") return true
@@ -214,6 +177,17 @@ export default function FacturenPage() {
             </div>
           </CardHeader>
           <CardContent>
+            {filteredInvoices.length === 0 ? (
+              <div className="text-center py-12">
+                <Receipt className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">Nog geen facturen</h3>
+                <p className="text-muted-foreground mb-4">Maak je eerste factuur aan om te beginnen</p>
+                <Button onClick={() => setNewFactuurOpen(true)}>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Nieuwe Factuur
+                </Button>
+              </div>
+            ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -284,6 +258,7 @@ export default function FacturenPage() {
                 </tbody>
               </table>
             </div>
+            )}
           </CardContent>
         </Card>
       </div>

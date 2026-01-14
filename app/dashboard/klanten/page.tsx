@@ -24,68 +24,27 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { NewKlantDialog } from "@/components/dashboard/new-klant-dialog"
 
 const stats = [
-  { label: "Totaal Klanten", value: "48", change: "+5", icon: Users, color: "text-blue-500" },
-  { label: "Actieve Klanten", value: "32", change: "+3", icon: UserPlus, color: "text-emerald-500" },
-  { label: "Bedrijven", value: "28", change: "+2", icon: Building, color: "text-amber-500" },
-  { label: "Totale Omzet", value: "€125.400", change: "+18%", icon: Euro, color: "text-primary" },
+  { label: "Totaal Klanten", value: "0", change: "-", icon: Users, color: "text-blue-500" },
+  { label: "Actieve Klanten", value: "0", change: "-", icon: UserPlus, color: "text-emerald-500" },
+  { label: "Bedrijven", value: "0", change: "-", icon: Building, color: "text-amber-500" },
+  { label: "Totale Omzet", value: "€0", change: "-", icon: Euro, color: "text-primary" },
 ]
 
-const klanten = [
-  {
-    id: 1,
-    naam: "ABC Corporation",
-    contactpersoon: "Jan de Vries",
-    email: "jan@abccorp.nl",
-    telefoon: "+31 6 12345678",
-    stad: "Amsterdam",
-    status: "actief",
-    omzet: 45600,
-  },
-  {
-    id: 2,
-    naam: "XYZ Tech Solutions",
-    contactpersoon: "Maria Jansen",
-    email: "maria@xyztech.nl",
-    telefoon: "+31 6 23456789",
-    stad: "Rotterdam",
-    status: "actief",
-    omzet: 28000,
-  },
-  {
-    id: 3,
-    naam: "Global Industries",
-    contactpersoon: "Peter Bakker",
-    email: "peter@global.nl",
-    telefoon: "+31 6 34567890",
-    stad: "Utrecht",
-    status: "inactief",
-    omzet: 12500,
-  },
-  {
-    id: 4,
-    naam: "StartUp Hub",
-    contactpersoon: "Lisa van Dijk",
-    email: "lisa@startuphub.nl",
-    telefoon: "+31 6 45678901",
-    stad: "Den Haag",
-    status: "actief",
-    omzet: 18500,
-  },
-  {
-    id: 5,
-    naam: "Digital Agency Plus",
-    contactpersoon: "Tom Smit",
-    email: "tom@digitalplus.nl",
-    telefoon: "+31 6 56789012",
-    stad: "Eindhoven",
-    status: "actief",
-    omzet: 20800,
-  },
-]
+interface Klant {
+  id: number
+  naam: string
+  contactpersoon: string
+  email: string
+  telefoon: string
+  stad: string
+  status: "actief" | "inactief"
+  omzet: number
+}
 
 export default function KlantenPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [newKlantOpen, setNewKlantOpen] = useState(false)
+  const [klanten, setKlanten] = useState<Klant[]>([])
 
   return (
     <DashboardLayout>
@@ -139,6 +98,17 @@ export default function KlantenPage() {
             </div>
           </CardHeader>
           <CardContent>
+            {klanten.length === 0 ? (
+              <div className="text-center py-12">
+                <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">Nog geen klanten</h3>
+                <p className="text-muted-foreground mb-4">Voeg je eerste klant toe om te beginnen</p>
+                <Button onClick={() => setNewKlantOpen(true)}>
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Nieuwe Klant
+                </Button>
+              </div>
+            ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -219,6 +189,7 @@ export default function KlantenPage() {
                 </tbody>
               </table>
             </div>
+            )}
           </CardContent>
         </Card>
       </div>

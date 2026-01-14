@@ -27,59 +27,21 @@ import { NewOfferteDialog } from "@/components/dashboard/new-offerte-dialog"
 import { AIGeneratorDialog } from "@/components/dashboard/ai-generator-dialog"
 
 const stats = [
-  { label: "Totaal Offertes", value: "24", change: "+3", icon: FileText, color: "text-blue-500" },
-  { label: "In Afwachting", value: "8", change: "+2", icon: Clock, color: "text-amber-500" },
-  { label: "Geaccepteerd", value: "14", change: "+5", icon: CheckCircle, color: "text-emerald-500" },
-  { label: "Totale Waarde", value: "€45.600", change: "+12%", icon: Euro, color: "text-primary" },
+  { label: "Totaal Offertes", value: "0", change: "-", icon: FileText, color: "text-blue-500" },
+  { label: "In Afwachting", value: "0", change: "-", icon: Clock, color: "text-amber-500" },
+  { label: "Geaccepteerd", value: "0", change: "-", icon: CheckCircle, color: "text-emerald-500" },
+  { label: "Totale Waarde", value: "€0", change: "-", icon: Euro, color: "text-primary" },
 ]
 
-const quotes = [
-  {
-    id: "OFF-2026-001",
-    client: "ABC Corporation",
-    description: "Website redesign + CMS",
-    amount: 12500,
-    status: "pending",
-    date: "08 Jan 2026",
-    validUntil: "08 Feb 2026",
-  },
-  {
-    id: "OFF-2026-002",
-    client: "XYZ Tech Solutions",
-    description: "Mobile app development",
-    amount: 28000,
-    status: "accepted",
-    date: "05 Jan 2026",
-    validUntil: "05 Feb 2026",
-  },
-  {
-    id: "OFF-2025-048",
-    client: "Global Industries",
-    description: "IT Consultancy pakket",
-    amount: 5600,
-    status: "rejected",
-    date: "28 Dec 2025",
-    validUntil: "28 Jan 2026",
-  },
-  {
-    id: "OFF-2025-047",
-    client: "StartUp Hub",
-    description: "MVP Development",
-    amount: 18500,
-    status: "accepted",
-    date: "20 Dec 2025",
-    validUntil: "20 Jan 2026",
-  },
-  {
-    id: "OFF-2025-046",
-    client: "Digital Agency Plus",
-    description: "API Integratie",
-    amount: 7800,
-    status: "pending",
-    date: "15 Dec 2025",
-    validUntil: "15 Jan 2026",
-  },
-]
+interface Quote {
+  id: string
+  client: string
+  description: string
+  amount: number
+  status: "pending" | "accepted" | "rejected"
+  date: string
+  validUntil: string
+}
 
 const statusConfig = {
   pending: { label: "In Afwachting", variant: "secondary" as const, icon: Clock },
@@ -91,6 +53,7 @@ export default function OffertesPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [newOfferteOpen, setNewOfferteOpen] = useState(false)
   const [aiGeneratorOpen, setAiGeneratorOpen] = useState(false)
+  const [quotes, setQuotes] = useState<Quote[]>([])
 
   return (
     <DashboardLayout>
@@ -163,6 +126,17 @@ export default function OffertesPage() {
             </div>
           </CardHeader>
           <CardContent>
+            {quotes.length === 0 ? (
+              <div className="text-center py-12">
+                <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">Nog geen offertes</h3>
+                <p className="text-muted-foreground mb-4">Maak je eerste offerte aan om te beginnen</p>
+                <Button onClick={() => setNewOfferteOpen(true)}>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Nieuwe Offerte
+                </Button>
+              </div>
+            ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -233,6 +207,7 @@ export default function OffertesPage() {
                 </tbody>
               </table>
             </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -98,25 +98,24 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          prompt: projectBeschrijving,
+          projectDescription: projectBeschrijving,
           clientName: klantNaam,
-          useAI: true,
         }),
       })
       
       const data = await response.json()
       
-      if (data.success && data.items) {
+      if (data.items) {
         setItems(data.items.map((item: any, index: number) => ({
           id: `item-${index}-${Date.now()}`,
-          werkzaamheidId: item.werkzaamheidId,
           description: item.description,
           quantity: item.quantity,
           unit: item.unit || "stuk",
-          unitPrice: item.unitPrice,
+          unitPrice: item.price,
           btw: item.btw || 21,
         })))
-        setOpmerkingen("Offerte gegenereerd met AI. Prijzen zijn indicatief en gebaseerd op marktgemiddelden.")
+        setOpmerkingen(data.notes || "Offerte gegenereerd met AI. Prijzen zijn indicatief en gebaseerd op marktgemiddelden.")
+        setGeldigheid(data.validDays || "30")
       }
     } catch (error) {
       console.error("Error generating offerte:", error)
@@ -125,6 +124,7 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
         { id: "1", description: "Werkzaamheden volgens beschrijving", quantity: 8, unit: "uur", unitPrice: 55, btw: 21 },
         { id: "2", description: "Materiaalkosten", quantity: 1, unit: "forfait", unitPrice: 250, btw: 21 },
       ])
+      setOpmerkingen("Offerte gegenereerd met standaard template.")
     }
     
     setIsGenerating(false)

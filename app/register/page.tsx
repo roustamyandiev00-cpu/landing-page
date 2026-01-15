@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, Eye, EyeOff, Loader2, Check, Clock, Sparkles } from "lucide-react"
-import { signInWithGoogle, signInWithApple, signUpWithEmail } from "@/lib/firebase"
+import { signInWithGoogle, signInWithApple, signUpWithEmail, handleRedirectResult } from "@/lib/firebase"
 
 const aiMessages = [
   "Hoi! 👋 Ik ben Nova, je AI assistent.",
@@ -36,6 +36,19 @@ export default function RegisterPage() {
     password: "",
     acceptTerms: false,
   })
+
+  // Handle redirect result on mount
+  useEffect(() => {
+    const checkRedirectResult = async () => {
+      const { user, error } = await handleRedirectResult()
+      if (error) {
+        setAuthError(error)
+      } else if (user) {
+        router.push("/dashboard")
+      }
+    }
+    checkRedirectResult()
+  }, [router])
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true)

@@ -19,28 +19,28 @@ export function QuickActions() {
       <div className="flex flex-wrap gap-3">
         <Button
           onClick={() => setFactuurOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white gap-2 shadow-sm hover:shadow-md transition-all"
+          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white gap-2 shadow-sm hover:shadow-md transition-all"
         >
           <Sparkles className="w-4 h-4" />
           Nieuwe Factuur (AI)
         </Button>
         <Button
           onClick={() => setOfferteOpen(true)}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 shadow-sm hover:shadow-md transition-all"
+          className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white gap-2 shadow-sm hover:shadow-md transition-all"
         >
           <FileText className="w-4 h-4" />
           Nieuwe Offerte (AI)
         </Button>
         <Button
           onClick={() => setUitgaveOpen(true)}
-          className="bg-red-600 hover:bg-red-700 text-white gap-2 shadow-sm hover:shadow-md transition-all"
+          className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white gap-2 shadow-sm hover:shadow-md transition-all"
         >
           <CreditCard className="w-4 h-4" />
           Nieuwe Uitgave
         </Button>
         <Button
           onClick={() => setBonScannerOpen(true)}
-          className="bg-orange-600 hover:bg-orange-700 text-white gap-2 shadow-sm hover:shadow-md transition-all"
+          className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white gap-2 shadow-sm hover:shadow-md transition-all"
         >
           <Camera className="w-4 h-4" />
           Bon Scannen

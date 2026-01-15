@@ -52,7 +52,7 @@ export function WelcomeBanner() {
             <Sparkles className="w-5 h-5 text-accent" />
           </div>
           <div>
-            <p className="text-xs font-medium text-accent uppercase tracking-wider">ONYX.AI Intelligence</p>
+            <p className="text-xs font-medium text-accent uppercase tracking-wider">ARCHON AI Intelligence</p>
           </div>
         </div>
         <p className="text-sm text-foreground leading-relaxed">

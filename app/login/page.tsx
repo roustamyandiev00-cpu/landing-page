@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react"
-import { signInWithGoogle, signInWithApple, signInWithEmail } from "@/lib/firebase"
+import { signInWithGoogle, signInWithApple, signInWithEmail, handleRedirectResult } from "@/lib/firebase"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -24,6 +24,19 @@ export default function LoginPage() {
     password: "",
     rememberMe: false,
   })
+
+  // Handle redirect result on mount
+  useEffect(() => {
+    const checkRedirectResult = async () => {
+      const { user, error } = await handleRedirectResult()
+      if (error) {
+        setAuthError(error)
+      } else if (user) {
+        router.push("/dashboard")
+      }
+    }
+    checkRedirectResult()
+  }, [router])
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true)

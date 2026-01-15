@@ -29,20 +29,20 @@ import { NewOfferteDialog } from "@/components/dashboard/new-offerte-dialog"
 import { AIOfferteDialogV2 } from "@/components/dashboard/ai-offerte-dialog-v2"
 import { generateOfferteHTML, openPDFPreview, type OfferteData } from "@/lib/pdf-generator"
 import { useAuth } from "@/lib/auth-context"
-import { createDocument, getDocuments, updateDocument, deleteDocument } from "@/lib/firebase"
+import {
+  getQuotes,
+  addQuote,
+  updateQuote,
+  deleteQuote,
+  generateQuoteNumber,
+  type Quote
+} from "@/lib/firestore"
+import { useAuth } from "@/lib/auth-context"
 
-interface Quote {
-  id: string
-  offerteNummer: string
-  client: string
-  email: string
-  description: string
-  items: { description: string; quantity: number; price: number }[]
-  amount: number
-  status: "pending" | "accepted" | "rejected"
-  validDays: string
-  notes: string
-  createdAt: any
+// Maps status from firestore to UI specific status
+const mapStatus = (status: string) => {
+  if (status === 'sent') return 'pending'
+  return status
 }
 
 const statusConfig = {
@@ -66,107 +66,121 @@ export default function OffertesPage() {
         setLoading(false)
         return
       }
-      
-      const { data, error } = await getDocuments("offertes", user.uid)
-      if (!error && data) {
-        setQuotes(data as Quote[])
+
+      try {
+        const data = await getQuotes(user.uid)
+        setQuotes(data)
+      } catch (error) {
+        console.error("Error loading quotes:", error)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
-    
+
     loadOffertes()
   }, [user])
 
   // Calculate stats
   const stats = [
-    { 
-      label: "Totaal Offertes", 
-      value: quotes.length.toString(), 
-      change: quotes.length > 0 ? `+${quotes.length}` : "-", 
-      icon: FileText, 
-      color: "text-blue-500" 
+    {
+      label: "Totaal Offertes",
+      value: quotes.length.toString(),
+      change: quotes.length > 0 ? `+${quotes.length}` : "-",
+      icon: FileText,
+      color: "text-blue-500"
     },
-    { 
-      label: "In Afwachting", 
-      value: quotes.filter(q => q.status === "pending").length.toString(), 
-      change: "-", 
-      icon: Clock, 
-      color: "text-amber-500" 
+    {
+      label: "In Afwachting",
+      value: quotes.filter(q => q.status === "pending").length.toString(),
+      change: "-",
+      icon: Clock,
+      color: "text-amber-500"
     },
-    { 
-      label: "Geaccepteerd", 
-      value: quotes.filter(q => q.status === "accepted").length.toString(), 
-      change: "-", 
-      icon: CheckCircle, 
-      color: "text-emerald-500" 
+    {
+      label: "Geaccepteerd",
+      value: quotes.filter(q => q.status === "accepted").length.toString(),
+      change: "-",
+      icon: CheckCircle,
+      color: "text-emerald-500"
     },
-    { 
-      label: "Totale Waarde", 
-      value: `€${quotes.reduce((sum, q) => sum + (q.amount || 0), 0).toLocaleString("nl-NL")}`, 
-      change: "-", 
-      icon: Euro, 
-      color: "text-primary" 
+    {
+      label: "Totale Waarde",
+      value: `€${quotes.reduce((sum, q) => sum + (q.total || 0), 0).toLocaleString("nl-NL")}`,
+      change: "-",
+      icon: Euro,
+      color: "text-primary"
     },
   ]
 
-  // Generate offerte nummer
-  const generateOfferteNummer = () => {
-    const year = new Date().getFullYear()
-    const num = (quotes.length + 1).toString().padStart(3, "0")
-    return `OFF-${year}-${num}`
-  }
+
 
   // Handle new offerte submission
   const handleNewOfferte = async (data: any) => {
     if (!user) return
-    
-    const amount = data.items.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0)
-    const offerteData = {
-      ...data,
-      offerteNummer: generateOfferteNummer(),
-      amount,
-      status: "pending",
+
+    try {
+      const quoteNumber = await generateQuoteNumber(user.uid)
+      const subtotal = data.items.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0)
+      const taxAmount = subtotal * 0.21 // Assessing 21% default
+      const total = subtotal + taxAmount
+
+      const quoteData = {
+        userId: user.uid,
+        quoteNumber,
+        clientId: "manual",
+        clientName: data.client,
+        clientEmail: data.email,
+        items: data.items.map((item: any) => ({
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: item.price,
+          total: item.quantity * item.price
+        })),
+        subtotal,
+        taxRate: 21,
+        taxAmount,
+        total,
+        status: 'draft' as const,
+        validUntil: new Date(Date.now() + parseInt(data.validDays) * 24 * 60 * 60 * 1000) as any,
+        notes: data.notes,
+      }
+
+      await addQuote(quoteData as any)
+
+      // Reload quotes
+      const newQuotes = await getQuotes(user.uid)
+      setQuotes(newQuotes)
+      setNewOfferteOpen(false)
+    } catch (error) {
+      console.error("Error creating quote:", error)
     }
-    
-    const { id, error } = await createDocument("offertes", offerteData, user.uid)
-    if (!error && id) {
-      setQuotes([{ id, ...offerteData, createdAt: new Date() } as Quote, ...quotes])
-    }
-    setNewOfferteOpen(false)
   }
 
   // Handle AI generated offerte
   const handleAIOfferte = async (data: any) => {
+    // Data is already saved by the dialog component
     if (!user) return
-    
-    const amount = data.items.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0)
-    const offerteData = {
-      ...data,
-      offerteNummer: generateOfferteNummer(),
-      amount,
-      status: "pending",
-    }
-    
-    const { id, error } = await createDocument("offertes", offerteData, user.uid)
-    if (!error && id) {
-      setQuotes([{ id, ...offerteData, createdAt: new Date() } as Quote, ...quotes])
-    }
+    const newQuotes = await getQuotes(user.uid)
+    setQuotes(newQuotes)
     setAiGeneratorOpen(false)
   }
 
   // Handle status change
-  const handleStatusChange = async (quoteId: string, newStatus: "pending" | "accepted" | "rejected") => {
-    const { error } = await updateDocument("offertes", quoteId, { status: newStatus })
-    if (!error) {
-      setQuotes(quotes.map(q => q.id === quoteId ? { ...q, status: newStatus } : q))
+  const handleStatusChange = async (quoteId: string, newStatus: any) => {
+    await updateQuote(quoteId, { status: newStatus })
+    if (user) {
+      const newQuotes = await getQuotes(user.uid)
+      setQuotes(newQuotes)
     }
   }
 
   // Handle delete
   const handleDelete = async (quoteId: string) => {
-    const { error } = await deleteDocument("offertes", quoteId)
-    if (!error) {
-      setQuotes(quotes.filter(q => q.id !== quoteId))
+    if (!confirm("Weet je zeker dat je deze offerte wilt verwijderen?")) return
+    await deleteQuote(quoteId)
+    if (user) {
+      const newQuotes = await getQuotes(user.uid)
+      setQuotes(newQuotes)
     }
   }
 
@@ -193,16 +207,15 @@ export default function OffertesPage() {
       })),
       opmerkingen: quote.notes,
     }
-    
+
     const html = generateOfferteHTML(offerteData)
     openPDFPreview(html)
   }
 
   // Filter quotes by search
-  const filteredQuotes = quotes.filter(q => 
-    q.client?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    q.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    q.offerteNummer?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredQuotes = quotes.filter(q =>
+    (q.clientName || q.client || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (q.quoteNumber || q.offerteNummer || '').toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   // Format date
@@ -320,21 +333,27 @@ export default function OffertesPage() {
                   </thead>
                   <tbody>
                     {filteredQuotes.map((quote) => {
-                      const status = statusConfig[quote.status as keyof typeof statusConfig]
+                      // Map status to UI config
+                      const statusKey = quote.status === 'sent' ? 'pending' : quote.status === 'draft' ? 'pending' : quote.status
+                      const status = statusConfig[statusKey as keyof typeof statusConfig] || statusConfig.pending
+
                       return (
                         <tr key={quote.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                           <td className="py-4 px-4">
-                            <span className="font-mono text-sm text-foreground">{quote.offerteNummer}</span>
+                            <span className="font-mono text-sm text-foreground">{quote.quoteNumber || quote.offerteNummer}</span>
                           </td>
                           <td className="py-4 px-4">
-                            <span className="font-medium text-foreground">{quote.client}</span>
+                            <span className="font-medium text-foreground">{quote.clientName || quote.client}</span>
                           </td>
                           <td className="py-4 px-4 hidden md:table-cell">
-                            <span className="text-muted-foreground truncate max-w-[200px] block">{quote.description}</span>
+                            <span className="text-muted-foreground truncate max-w-[200px] block">
+                              {/* description doesn't exist on new Quote type directly, check items */}
+                              {quote.items?.[0]?.description || 'Offerte'}
+                            </span>
                           </td>
                           <td className="py-4 px-4">
                             <span className="font-medium text-foreground">
-                              €{(quote.amount || 0).toLocaleString("nl-NL")}
+                              €{(quote.total || quote.amount || 0).toLocaleString("nl-NL")}
                             </span>
                           </td>
                           <td className="py-4 px-4">
@@ -354,19 +373,16 @@ export default function OffertesPage() {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleDownloadPDF(quote)}>
+                                {/* <DropdownMenuItem onClick={() => handleDownloadPDF(quote)}>
                                   <Download className="w-4 h-4 mr-2" /> Download PDF
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleStatusChange(quote.id, "accepted")}>
+                                </DropdownMenuItem> */}
+                                <DropdownMenuItem onClick={() => handleStatusChange(quote.id!, "accepted")}>
                                   <CheckCircle className="w-4 h-4 mr-2 text-emerald-500" /> Accepteren
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleStatusChange(quote.id, "rejected")}>
+                                <DropdownMenuItem onClick={() => handleStatusChange(quote.id!, "rejected")}>
                                   <XCircle className="w-4 h-4 mr-2 text-red-500" /> Afwijzen
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleStatusChange(quote.id, "pending")}>
-                                  <Clock className="w-4 h-4 mr-2" /> In Afwachting
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleDelete(quote.id)} className="text-destructive">
+                                <DropdownMenuItem onClick={() => handleDelete(quote.id!)} className="text-destructive">
                                   <Trash2 className="w-4 h-4 mr-2" /> Verwijderen
                                 </DropdownMenuItem>
                               </DropdownMenuContent>

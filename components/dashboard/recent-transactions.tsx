@@ -15,7 +15,48 @@ interface Transaction {
 }
 
 export function RecentTransactions() {
-  const [transactions] = useState<Transaction[]>([])
+  const [transactions] = useState<Transaction[]>([
+    {
+      id: 1,
+      name: "Bouwmaat Amsterdam",
+      category: "Materialen",
+      amount: -450.50,
+      date: "Vandaag, 10:23",
+      icon: "🏗️",
+    },
+    {
+      id: 2,
+      name: "Fam. Jansen",
+      category: "Betaling Factuur #2024-001",
+      amount: 2500.00,
+      date: "Gisteren, 14:45",
+      icon: "💰",
+    },
+    {
+      id: 3,
+      name: "Shell Station",
+      category: "Brandstof",
+      amount: -85.20,
+      date: "13 jan, 09:15",
+      icon: "⛽",
+    },
+    {
+      id: 4,
+      name: "Gamma Bouwmarkt",
+      category: "Gereedschap",
+      amount: -129.95,
+      date: "12 jan, 16:30",
+      icon: "🔧",
+    },
+    {
+      id: 5,
+      name: "Fam. de Vries",
+      category: "Aanbetaling Project",
+      amount: 1500.00,
+      date: "10 jan, 11:00",
+      icon: "🏠",
+    },
+  ])
 
   return (
     <div className="glass-card rounded-2xl p-6 h-full flex flex-col">

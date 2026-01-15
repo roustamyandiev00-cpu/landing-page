@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import {
   Dialog,
   DialogContent,
@@ -15,10 +15,12 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Card, CardContent } from "@/components/ui/card"
 import {
   Sparkles, Loader2, CheckCircle, FileText, Trash2, Plus,
   ChevronRight, ChevronLeft, Search, Download, Eye,
-  Building2, User, Wand2, ListChecks, FileCheck
+  Building2, User, Wand2, ListChecks, FileCheck, Mic, MicOff,
+  Camera, Upload, X, Ruler, Lightbulb, Image as ImageIcon
 } from "lucide-react"
 
 import { categorieën, werkzaamheden, zoekWerkzaamheden, getEenheidLabel, type Werkzaamheid } from "@/lib/werkzaamheden-data"
@@ -43,11 +45,28 @@ interface LineItem {
   btw: number
 }
 
-type Step = "klant" | "beschrijving" | "genereren" | "items" | "preview"
+interface ProjectDimensions {
+  length: number
+  width: number
+  height?: number
+  area?: number
+}
+
+interface UploadedImage {
+  id: string
+  file: File
+  url: string
+  analysis?: string
+  suggestions?: string[]
+}
+
+type Step = "klant" | "project" | "afmetingen" | "fotos" | "genereren" | "items" | "preview"
 
 const steps: { id: Step; label: string; icon: any }[] = [
   { id: "klant", label: "Klant", icon: User },
-  { id: "beschrijving", label: "Project", icon: Building2 },
+  { id: "project", label: "Project", icon: Building2 },
+  { id: "afmetingen", label: "Afmetingen", icon: Ruler },
+  { id: "fotos", label: "Foto's", icon: Camera },
   { id: "genereren", label: "AI Genereren", icon: Wand2 },
   { id: "items", label: "Aanpassen", icon: ListChecks },
   { id: "preview", label: "Afronden", icon: FileCheck },
@@ -64,9 +83,19 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
   const [klantEmail, setKlantEmail] = useState("")
   const [klantAdres, setKlantAdres] = useState("")
   const [projectBeschrijving, setProjectBeschrijving] = useState("")
+  const [projectType, setProjectType] = useState("")
+  const [dimensions, setDimensions] = useState<ProjectDimensions>({ length: 0, width: 0 })
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([])
   const [items, setItems] = useState<LineItem[]>([])
   const [opmerkingen, setOpmerkingen] = useState("")
   const [geldigheid, setGeldigheid] = useState("30")
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>([])
+
+  // Speech recognition
+  const [isRecording, setIsRecording] = useState(false)
+  const [speechSupported, setSpeechSupported] = useState(false)
+  const recognitionRef = useRef<any>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Werkzaamheden browser
   const [searchQuery, setSearchQuery] = useState("")
@@ -82,15 +111,146 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
         setKlantEmail("")
         setKlantAdres("")
         setProjectBeschrijving("")
+        setProjectType("")
+        setDimensions({ length: 0, width: 0 })
+        setUploadedImages([])
         setItems([])
         setOpmerkingen("")
         setGeldigheid("30")
+        setAiSuggestions([])
         setSearchQuery("")
         setSelectedCategorie(null)
         setShowWerkzaamheden(false)
+        stopRecording()
       }, 200)
     }
   }, [open])
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+      if (SpeechRecognition) {
+        setSpeechSupported(true)
+        recognitionRef.current = new SpeechRecognition()
+        recognitionRef.current.continuous = true
+        recognitionRef.current.interimResults = true
+        recognitionRef.current.lang = 'nl-NL'
+        
+        recognitionRef.current.onresult = (event: any) => {
+          let finalTranscript = ''
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            if (event.results[i].isFinal) {
+              finalTranscript += event.results[i][0].transcript
+            }
+          }
+          if (finalTranscript) {
+            setProjectBeschrijving(prev => prev + ' ' + finalTranscript.trim())
+          }
+        }
+        
+        recognitionRef.current.onerror = () => {
+          setIsRecording(false)
+        }
+        
+        recognitionRef.current.onend = () => {
+          setIsRecording(false)
+        }
+      }
+    }
+  }, [])
+
+  // Speech functions
+  const startRecording = () => {
+    if (recognitionRef.current && speechSupported) {
+      setIsRecording(true)
+      recognitionRef.current.start()
+    }
+  }
+
+  const stopRecording = () => {
+    if (recognitionRef.current && isRecording) {
+      setIsRecording(false)
+      recognitionRef.current.stop()
+    }
+  }
+
+  // Image upload functions
+  const handleImageUpload = async (files: FileList | null) => {
+    if (!files) return
+    
+    const newImages: UploadedImage[] = []
+    
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      if (file.type.startsWith('image/')) {
+        const url = URL.createObjectURL(file)
+        const newImage: UploadedImage = {
+          id: `img-${Date.now()}-${i}`,
+          file,
+          url,
+        }
+        newImages.push(newImage)
+      }
+    }
+    
+    setUploadedImages(prev => [...prev, ...newImages])
+    
+    // Analyze images with AI
+    for (const image of newImages) {
+      analyzeImage(image)
+    }
+  }
+
+  const analyzeImage = async (image: UploadedImage) => {
+    try {
+      const formData = new FormData()
+      formData.append('image', image.file)
+      formData.append('projectType', projectType)
+      
+      const response = await fetch('/api/ai/analyze-image', {
+        method: 'POST',
+        body: formData,
+      })
+      
+      const data = await response.json()
+      
+      if (data.analysis) {
+        setUploadedImages(prev => prev.map(img => 
+          img.id === image.id 
+            ? { ...img, analysis: data.analysis, suggestions: data.suggestions || [] }
+            : img
+        ))
+        
+        // Add suggestions to global suggestions
+        if (data.suggestions) {
+          setAiSuggestions(prev => [...new Set([...prev, ...data.suggestions])])
+        }
+      }
+    } catch (error) {
+      console.error('Error analyzing image:', error)
+    }
+  }
+
+  const removeImage = (imageId: string) => {
+    setUploadedImages(prev => {
+      const image = prev.find(img => img.id === imageId)
+      if (image) {
+        URL.revokeObjectURL(image.url)
+      }
+      return prev.filter(img => img.id !== imageId)
+    })
+  }
+
+  // Calculate area from dimensions
+  useEffect(() => {
+    if (dimensions.length > 0 && dimensions.width > 0) {
+      setDimensions(prev => ({
+        ...prev,
+        area: prev.length * prev.width
+      }))
+    }
+  }, [dimensions.length, dimensions.width])
 
   // Generate offerte with AI
   const generateOfferte = async () => {
@@ -100,12 +260,24 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
     setIsGenerating(true)
 
     try {
+      // Prepare image data for AI analysis
+      const imageAnalyses = uploadedImages
+        .filter(img => img.analysis)
+        .map(img => ({
+          analysis: img.analysis,
+          suggestions: img.suggestions || []
+        }))
+
       const response = await fetch("/api/ai/generate-offerte", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           projectDescription: projectBeschrijving,
+          projectType,
           clientName: klantNaam,
+          dimensions,
+          imageAnalyses,
+          existingSuggestions: aiSuggestions,
         }),
       })
 
@@ -122,14 +294,47 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
         })))
         setOpmerkingen(data.notes || "Offerte gegenereerd met AI. Prijzen zijn indicatief en gebaseerd op marktgemiddelden.")
         setGeldigheid(data.validDays || "30")
+        
+        // Add any additional AI suggestions
+        if (data.additionalSuggestions) {
+          setAiSuggestions(prev => [...new Set([...prev, ...data.additionalSuggestions])])
+        }
       }
     } catch (error) {
       console.error("Error generating offerte:", error)
-      // Fallback: add generic items
-      setItems([
-        { id: "1", description: "Werkzaamheden volgens beschrijving", quantity: 8, unit: "uur", unitPrice: 55, btw: 21 },
-        { id: "2", description: "Materiaalkosten", quantity: 1, unit: "forfait", unitPrice: 250, btw: 21 },
-      ])
+      // Fallback: add generic items based on dimensions
+      const baseItems = []
+      
+      if (dimensions.area && dimensions.area > 0) {
+        baseItems.push({
+          id: "1", 
+          description: `${projectType || 'Werkzaamheden'} - ${dimensions.area}m²`, 
+          quantity: dimensions.area, 
+          unit: "m2", 
+          unitPrice: 45, 
+          btw: 21 
+        })
+      } else {
+        baseItems.push({
+          id: "1", 
+          description: "Werkzaamheden volgens beschrijving", 
+          quantity: 8, 
+          unit: "uur", 
+          unitPrice: 55, 
+          btw: 21 
+        })
+      }
+      
+      baseItems.push({
+        id: "2", 
+        description: "Materiaalkosten", 
+        quantity: 1, 
+        unit: "forfait", 
+        unitPrice: 250, 
+        btw: 21 
+      })
+      
+      setItems(baseItems)
       setOpmerkingen("Offerte gegenereerd met standaard template.")
     }
 
@@ -262,7 +467,9 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
   const canGoNext = () => {
     switch (step) {
       case "klant": return klantNaam.length > 0
-      case "beschrijving": return projectBeschrijving.length > 0
+      case "project": return projectBeschrijving.length > 0
+      case "afmetingen": return true // Optional step
+      case "fotos": return true // Optional step
       case "items": return items.length > 0
       default: return true
     }
@@ -270,7 +477,7 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
 
   const goNext = () => {
     const stepIndex = steps.findIndex(s => s.id === step)
-    if (step === "beschrijving") {
+    if (step === "fotos") {
       generateOfferte()
     } else if (stepIndex < steps.length - 1) {
       setStep(steps[stepIndex + 1].id)
@@ -358,10 +565,55 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
           )}
 
           {/* Step 2: Project beschrijving */}
-          {step === "beschrijving" && (
+          {step === "project" && (
             <div className="space-y-4 px-1">
               <div className="space-y-2">
-                <Label htmlFor="project">Beschrijf het project *</Label>
+                <Label htmlFor="project-type">Type project</Label>
+                <select
+                  id="project-type"
+                  className="w-full h-10 rounded-md border bg-background px-3 text-sm"
+                  value={projectType}
+                  onChange={(e) => setProjectType(e.target.value)}
+                >
+                  <option value="">Selecteer type project</option>
+                  <option value="badkamer">Badkamer renovatie</option>
+                  <option value="keuken">Keuken plaatsen</option>
+                  <option value="schilderen">Schilderwerk</option>
+                  <option value="vloer">Vloer leggen</option>
+                  <option value="tuin">Tuinwerk</option>
+                  <option value="dak">Dakwerk</option>
+                  <option value="elektra">Elektra</option>
+                  <option value="loodgieter">Loodgieterswerk</option>
+                  <option value="verbouwing">Verbouwing</option>
+                  <option value="onderhoud">Onderhoud</option>
+                  <option value="overig">Overig</option>
+                </select>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="project">Beschrijf het project *</Label>
+                  {speechSupported && (
+                    <Button
+                      type="button"
+                      variant={isRecording ? "destructive" : "outline"}
+                      size="sm"
+                      onClick={isRecording ? stopRecording : startRecording}
+                    >
+                      {isRecording ? (
+                        <>
+                          <MicOff className="w-4 h-4 mr-2" />
+                          Stop opname
+                        </>
+                      ) : (
+                        <>
+                          <Mic className="w-4 h-4 mr-2" />
+                          Spraak
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
                 <Textarea
                   id="project"
                   placeholder="Bijv: Badkamer renovatie van 8m², inclusief nieuwe tegels, inloopdouche, toilet en wastafel. Oude sanitair verwijderen en afvoeren. Wanden en vloer betegelen."
@@ -370,8 +622,14 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
                   rows={6}
                   autoFocus
                 />
+                {isRecording && (
+                  <div className="flex items-center gap-2 text-red-500 text-sm">
+                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    Aan het opnemen... Spreek duidelijk in het Nederlands
+                  </div>
+                )}
                 <p className="text-xs text-muted-foreground">
-                  💡 Tip: Vermeld afmetingen (m², meters), aantallen en specifieke werkzaamheden voor een nauwkeurigere offerte
+                  💡 Tip: Vermeld specifieke werkzaamheden voor een nauwkeurigere offerte. Je kunt ook spraak gebruiken!
                 </p>
               </div>
 
@@ -384,6 +642,8 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
                     "Keuken plaatsen 4m",
                     "Woonkamer schilderen 40m²",
                     "Laminaat leggen 25m²",
+                    "Tuin aanleggen 50m²",
+                    "Dak reparatie",
                   ].map((suggestion) => (
                     <Badge
                       key={suggestion}
@@ -493,25 +753,25 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
               {/* Items list */}
               <div className="space-y-2">
                 {items.map((item, index) => (
-                  <div key={item.id} className="flex flex-col sm:flex-row gap-2 p-3 bg-muted/30 rounded-lg">
+                  <div key={item.id} className="flex flex-col gap-3 p-3 bg-muted/30 rounded-lg">
                     <Input
                       placeholder="Omschrijving"
-                      className="flex-1"
+                      className="w-full"
                       value={item.description}
                       onChange={(e) => updateItem(item.id, "description", e.target.value)}
                     />
-                    <div className="flex gap-2">
+                    <div className="grid grid-cols-2 sm:flex sm:items-center gap-2">
                       <Input
                         type="number"
                         placeholder="Aantal"
-                        className="w-20"
+                        className="w-full sm:w-20"
                         min={0.1}
                         step={0.1}
                         value={item.quantity}
                         onChange={(e) => updateItem(item.id, "quantity", parseFloat(e.target.value) || 0)}
                       />
                       <select
-                        className="w-24 rounded-md border bg-background px-3 text-sm"
+                        className="w-full sm:w-24 h-9 rounded-md border bg-background px-3 text-sm"
                         value={item.unit}
                         onChange={(e) => updateItem(item.id, "unit", e.target.value)}
                       >
@@ -522,12 +782,12 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
                         <option value="dag">dag</option>
                         <option value="forfait">forfait</option>
                       </select>
-                      <div className="relative w-28">
+                      <div className="relative w-full sm:w-28">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
                         <Input
                           type="number"
                           placeholder="Prijs"
-                          className="pl-7"
+                          className="pl-7 w-full"
                           min={0}
                           step={0.01}
                           value={item.unitPrice}
@@ -535,7 +795,7 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
                         />
                       </div>
                       <select
-                        className="w-20 rounded-md border bg-background px-2 text-sm"
+                        className="w-full sm:w-20 h-9 rounded-md border bg-background px-2 text-sm"
                         value={item.btw}
                         onChange={(e) => updateItem(item.id, "btw", parseInt(e.target.value))}
                       >
@@ -548,8 +808,18 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
                         size="icon"
                         onClick={() => removeItem(item.id)}
                         disabled={items.length === 1}
+                        className="hidden sm:flex"
                       >
                         <Trash2 className="w-4 h-4 text-muted-foreground" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="sm:hidden col-span-2 text-destructive hover:text-destructive w-full flex items-center justify-center gap-2"
+                        onClick={() => removeItem(item.id)}
+                        disabled={items.length === 1}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Verwijderen
                       </Button>
                     </div>
                   </div>

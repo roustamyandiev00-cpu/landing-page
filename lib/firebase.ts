@@ -4,6 +4,8 @@ import {
   GoogleAuthProvider,
   OAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut as firebaseSignOut,
   onAuthStateChanged,
   createUserWithEmailAndPassword,
@@ -38,29 +40,81 @@ const appleProvider = new OAuthProvider("apple.com")
 appleProvider.addScope("email")
 appleProvider.addScope("name")
 
+// Helper to detect mobile
+const isMobile = () => {
+  if (typeof window === 'undefined') return false
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+}
+
 // Sign in with Google
 export const signInWithGoogle = async () => {
   if (!auth) {
-    return { user: null, error: "Firebase not configured" }
+    return { user: null, error: "Firebase niet geconfigureerd. Controleer je .env.local bestand." }
   }
   try {
-    const result = await signInWithPopup(auth, googleProvider)
-    return { user: result.user, error: null }
+    // Use redirect on mobile, popup on desktop
+    if (isMobile()) {
+      await signInWithRedirect(auth, googleProvider)
+      return { user: null, error: null } // Redirect will handle the rest
+    } else {
+      const result = await signInWithPopup(auth, googleProvider)
+      return { user: result.user, error: null }
+    }
   } catch (error: any) {
-    return { user: null, error: error.message }
+    let errorMessage = error.message
+    if (error.code === 'auth/popup-blocked') {
+      errorMessage = 'Pop-up geblokkeerd. Sta pop-ups toe voor deze site.'
+    } else if (error.code === 'auth/popup-closed-by-user') {
+      errorMessage = 'Inloggen geannuleerd'
+    } else if (error.code === 'auth/unauthorized-domain') {
+      errorMessage = 'Dit domein is niet geautoriseerd. Voeg het toe in Firebase Console.'
+    }
+    return { user: null, error: errorMessage }
   }
 }
 
 // Sign in with Apple
 export const signInWithApple = async () => {
   if (!auth) {
-    return { user: null, error: "Firebase not configured" }
+    return { user: null, error: "Firebase niet geconfigureerd. Controleer je .env.local bestand." }
   }
   try {
-    const result = await signInWithPopup(auth, appleProvider)
-    return { user: result.user, error: null }
+    // Use redirect on mobile, popup on desktop
+    if (isMobile()) {
+      await signInWithRedirect(auth, appleProvider)
+      return { user: null, error: null } // Redirect will handle the rest
+    } else {
+      const result = await signInWithPopup(auth, appleProvider)
+      return { user: result.user, error: null }
+    }
   } catch (error: any) {
-    return { user: null, error: error.message }
+    let errorMessage = error.message
+    if (error.code === 'auth/popup-blocked') {
+      errorMessage = 'Pop-up geblokkeerd. Sta pop-ups toe voor deze site.'
+    } else if (error.code === 'auth/popup-closed-by-user') {
+      errorMessage = 'Inloggen geannuleerd'
+    } else if (error.code === 'auth/unauthorized-domain') {
+      errorMessage = 'Dit domein is niet geautoriseerd. Voeg het toe in Firebase Console.'
+    }
+    return { user: null, error: errorMessage }
+  }
+}
+
+// Handle redirect result (call this on page load)
+export const handleRedirectResult = async () => {
+  if (!auth) return { user: null, error: null }
+  try {
+    const result = await getRedirectResult(auth)
+    if (result) {
+      return { user: result.user, error: null }
+    }
+    return { user: null, error: null }
+  } catch (error: any) {
+    let errorMessage = error.message
+    if (error.code === 'auth/account-exists-with-different-credential') {
+      errorMessage = 'Er bestaat al een account met dit e-mailadres via een andere inlogmethode.'
+    }
+    return { user: null, error: errorMessage }
   }
 }
 

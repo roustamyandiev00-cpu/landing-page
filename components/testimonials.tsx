@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Star, Quote } from "lucide-react"
+import Image from "next/image"
 
 const testimonials = [
   {
@@ -10,7 +11,7 @@ const testimonials = [
     company: "De Vries Bouw",
     image: "/professional-male-contractor-portrait.jpg",
     quote:
-      "Sinds ik Buildr gebruik, verstuur ik 3x zoveel offertes. De AI begrijpt precies wat ik bedoel en de prijzen kloppen altijd.",
+      "Sinds ik Archon AI gebruik, verstuur ik 3x zoveel offertes. De AI begrijpt precies wat ik bedoel en de prijzen kloppen altijd.",
   },
   {
     name: "Sandra Jansen",
@@ -28,8 +29,6 @@ const testimonials = [
   },
 ]
 
-import Image from "next/image"
-
 export function Testimonials() {
   return (
     <section id="testimonials" className="py-20 md:py-32 bg-secondary/30">
@@ -45,7 +44,7 @@ export function Testimonials() {
             Wat onze gebruikers zeggen
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Meer dan 5.000 bouwprofessionals gebruiken Buildr dagelijks.
+            Meer dan 5.000 bouwprofessionals gebruiken Archon AI dagelijks.
           </p>
         </motion.div>
 

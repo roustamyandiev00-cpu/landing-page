@@ -5,12 +5,12 @@ import { Area, AreaChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tool
 import { cn } from "@/lib/utils"
 
 const data = [
-  { month: "Jan", inkomsten: 0, uitgaven: 0 },
-  { month: "Feb", inkomsten: 0, uitgaven: 0 },
-  { month: "Mar", inkomsten: 0, uitgaven: 0 },
-  { month: "Apr", inkomsten: 0, uitgaven: 0 },
-  { month: "May", inkomsten: 0, uitgaven: 0 },
-  { month: "Jun", inkomsten: 0, uitgaven: 0 },
+  { month: "Jan", inkomsten: 12500, uitgaven: 8400 },
+  { month: "Feb", inkomsten: 15800, uitgaven: 9200 },
+  { month: "Mar", inkomsten: 14200, uitgaven: 9800 },
+  { month: "Apr", inkomsten: 19500, uitgaven: 11400 },
+  { month: "May", inkomsten: 22400, uitgaven: 12600 },
+  { month: "Jun", inkomsten: 24800, uitgaven: 13200 },
 ]
 
 export function PerformanceChart() {

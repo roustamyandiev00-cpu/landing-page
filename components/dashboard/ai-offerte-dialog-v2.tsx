@@ -15,13 +15,17 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { 
-  Sparkles, Loader2, CheckCircle, FileText, Trash2, Plus, 
+import {
+  Sparkles, Loader2, CheckCircle, FileText, Trash2, Plus,
   ChevronRight, ChevronLeft, Search, Download, Eye,
   Building2, User, Wand2, ListChecks, FileCheck
 } from "lucide-react"
+
 import { categorieën, werkzaamheden, zoekWerkzaamheden, getEenheidLabel, type Werkzaamheid } from "@/lib/werkzaamheden-data"
 import { generateOfferteHTML, openPDFPreview, type OfferteData } from "@/lib/pdf-generator"
+import { useAuth } from "@/lib/auth-context"
+import { addQuote, generateQuoteNumber } from "@/lib/firestore"
+import { toast } from "sonner"
 
 interface AIOfferteDialogV2Props {
   open: boolean
@@ -50,9 +54,11 @@ const steps: { id: Step; label: string; icon: any }[] = [
 ]
 
 export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDialogV2Props) {
+  const { user } = useAuth()
   const [step, setStep] = useState<Step>("klant")
   const [isGenerating, setIsGenerating] = useState(false)
-  
+  const [isSaving, setIsSaving] = useState(false)
+
   // Form data
   const [klantNaam, setKlantNaam] = useState("")
   const [klantEmail, setKlantEmail] = useState("")
@@ -61,7 +67,7 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
   const [items, setItems] = useState<LineItem[]>([])
   const [opmerkingen, setOpmerkingen] = useState("")
   const [geldigheid, setGeldigheid] = useState("30")
-  
+
   // Werkzaamheden browser
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategorie, setSelectedCategorie] = useState<string | null>(null)
@@ -89,10 +95,10 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
   // Generate offerte with AI
   const generateOfferte = async () => {
     if (!projectBeschrijving || !klantNaam) return
-    
+
     setStep("genereren")
     setIsGenerating(true)
-    
+
     try {
       const response = await fetch("/api/ai/generate-offerte", {
         method: "POST",
@@ -102,9 +108,9 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
           clientName: klantNaam,
         }),
       })
-      
+
       const data = await response.json()
-      
+
       if (data.items) {
         setItems(data.items.map((item: any, index: number) => ({
           id: `item-${index}-${Date.now()}`,
@@ -126,7 +132,7 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
       ])
       setOpmerkingen("Offerte gegenereerd met standaard template.")
     }
-    
+
     setIsGenerating(false)
     setStep("items")
   }
@@ -172,9 +178,9 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
   const total = subtotal + totalBtw
 
   // Filtered werkzaamheden
-  const filteredWerkzaamheden = searchQuery 
+  const filteredWerkzaamheden = searchQuery
     ? zoekWerkzaamheden(searchQuery)
-    : selectedCategorie 
+    : selectedCategorie
       ? werkzaamheden.filter(w => w.categorie === selectedCategorie)
       : werkzaamheden.slice(0, 20)
 
@@ -202,31 +208,54 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
       })),
       opmerkingen,
     }
-    
+
     const html = generateOfferteHTML(offerteData)
     openPDFPreview(html)
   }
 
   // Submit offerte
-  const handleSubmit = () => {
-    const offerteData = {
-      client: klantNaam,
-      email: klantEmail,
-      adres: klantAdres,
-      description: projectBeschrijving,
-      items: items.map(item => ({
-        description: item.description,
-        quantity: item.quantity,
-        price: item.unitPrice,
-        unit: item.unit,
-        btw: item.btw,
-      })),
-      notes: opmerkingen,
-      validDays: geldigheid,
+  const handleSubmit = async () => {
+    if (!user) {
+      toast.error("Je moet ingelogd zijn om een offerte op te slaan")
+      return
     }
-    
-    onSubmit?.(offerteData)
-    onOpenChange(false)
+
+    try {
+      setIsSaving(true)
+      const quoteNumber = await generateQuoteNumber(user.uid)
+
+      const quoteData = {
+        userId: user.uid,
+        quoteNumber,
+        clientId: "temp-client-id", // In a real app, you'd select or create a client first
+        clientName: klantNaam,
+        clientEmail: klantEmail,
+        items: items.map(item => ({
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          total: item.quantity * item.unitPrice
+        })),
+        subtotal,
+        taxRate: 21, // Simplified for now, could be mixed
+        taxAmount: totalBtw,
+        total,
+        status: 'draft' as const,
+        validUntil: new Date(Date.now() + parseInt(geldigheid) * 24 * 60 * 60 * 1000) as any, // Cast to Timestamp in firestore
+        notes: opmerkingen,
+      }
+
+      await addQuote(quoteData as any) // Type casting due to timestamp differences in local/firestore types
+
+      toast.success("Offerte succesvol opgeslagen!")
+      onSubmit?.(quoteData)
+      onOpenChange(false)
+    } catch (error) {
+      console.error("Error saving quote:", error)
+      toast.error("Er ging iets mis bij het opslaan van de offerte")
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   // Navigation
@@ -276,9 +305,9 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
             <div key={s.id} className="flex items-center">
               <div className={`flex items-center gap-2 ${index <= currentStepIndex ? "text-primary" : "text-muted-foreground"}`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
-                  ${index < currentStepIndex ? "bg-primary text-primary-foreground" : 
-                    index === currentStepIndex ? "bg-primary/20 text-primary border-2 border-primary" : 
-                    "bg-muted text-muted-foreground"}`}>
+                  ${index < currentStepIndex ? "bg-primary text-primary-foreground" :
+                    index === currentStepIndex ? "bg-primary/20 text-primary border-2 border-primary" :
+                      "bg-muted text-muted-foreground"}`}>
                   {index < currentStepIndex ? <CheckCircle className="w-4 h-4" /> : <s.icon className="w-4 h-4" />}
                 </div>
                 <span className="hidden sm:inline text-sm font-medium">{s.label}</span>
@@ -345,7 +374,7 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
                   💡 Tip: Vermeld afmetingen (m², meters), aantallen en specifieke werkzaamheden voor een nauwkeurigere offerte
                 </p>
               </div>
-              
+
               {/* Quick suggestions */}
               <div className="space-y-2">
                 <Label className="text-muted-foreground">Snelle voorbeelden</Label>
@@ -417,7 +446,7 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
                       className="pl-10"
                     />
                   </div>
-                  
+
                   {/* Categories */}
                   <div className="flex flex-wrap gap-2">
                     {categorieën.slice(0, 8).map((cat) => (
@@ -431,7 +460,7 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
                       </Badge>
                     ))}
                   </div>
-                  
+
                   {/* Results */}
                   <ScrollArea className="h-40">
                     <div className="space-y-1">
@@ -453,7 +482,7 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
                       ))}
                     </div>
                   </ScrollArea>
-                  
+
                   <Button variant="ghost" size="sm" onClick={() => addItem()} className="w-full">
                     <Plus className="w-4 h-4 mr-2" />
                     Lege regel toevoegen
@@ -634,9 +663,13 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
               Annuleren
             </Button>
             {step === "preview" ? (
-              <Button onClick={handleSubmit}>
-                <FileText className="w-4 h-4 mr-2" />
-                Offerte Opslaan
+              <Button onClick={handleSubmit} disabled={isSaving}>
+                {isSaving ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <FileText className="w-4 h-4 mr-2" />
+                )}
+                {isSaving ? "Even geduld..." : "Offerte Opslaan"}
               </Button>
             ) : step !== "genereren" && (
               <Button onClick={goNext} disabled={!canGoNext()}>

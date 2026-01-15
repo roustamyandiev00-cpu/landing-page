@@ -53,7 +53,7 @@ export function Features() {
             Alles wat je nodig hebt voor <span className="text-primary">perfecte offertes</span>
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Buildr combineert krachtige AI met een intuïtieve interface. Geen technische kennis vereist.
+            Archon AI combineert krachtige AI met een intuïtieve interface. Geen technische kennis vereist.
           </p>
         </motion.div>
 

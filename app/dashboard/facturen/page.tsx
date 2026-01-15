@@ -324,7 +324,7 @@ export default function FacturenPage() {
       <AIGeneratorDialog
         open={aiGeneratorOpen}
         onOpenChange={setAiGeneratorOpen}
-        type="factuur"
+        type="invoice"
         onGenerate={() => setAiGeneratorOpen(false)}
       />
     </DashboardLayout>

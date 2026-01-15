@@ -28,6 +28,8 @@ const testimonials = [
   },
 ]
 
+import Image from "next/image"
+
 export function Testimonials() {
   return (
     <section id="testimonials" className="py-20 md:py-32 bg-secondary/30">
@@ -68,9 +70,11 @@ export function Testimonials() {
               <p className="text-foreground leading-relaxed mb-6">"{testimonial.quote}"</p>
 
               <div className="flex items-center gap-4">
-                <img
+                <Image
                   src={testimonial.image || "/placeholder.svg"}
                   alt={testimonial.name}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 rounded-full object-cover"
                 />
                 <div>

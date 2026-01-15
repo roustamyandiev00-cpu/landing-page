@@ -26,7 +26,13 @@ import {
 import { Button } from "@/components/ui/button"
 import { useSidebar } from "./sidebar-context"
 
-const menuItems = [
+const menuItems: Array<{
+  icon: any
+  label: string
+  href: string
+  highlight?: boolean
+  badge?: string | number
+}> = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
   { icon: Users, label: "Klanten", href: "/dashboard/klanten" },
   { icon: FolderKanban, label: "Projecten", href: "/dashboard/projecten" },
@@ -41,7 +47,11 @@ const menuItems = [
   { icon: Sparkles, label: "AI Assistent", href: "/dashboard/ai-assistent", highlight: true },
 ]
 
-const otherItems = [
+const otherItems: Array<{
+  icon: any
+  label: string
+  href: string
+}> = [
   { icon: Settings, label: "Instellingen", href: "/dashboard/instellingen" },
   { icon: HelpCircle, label: "Help & Support", href: "/dashboard/help" },
 ]

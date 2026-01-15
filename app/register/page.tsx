@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, Eye, EyeOff, Loader2, Check, Clock, Sparkles } from "lucide-react"
-import { signInWithGoogle, signInWithApple } from "@/lib/firebase"
+import { signInWithGoogle, signInWithApple, signUpWithEmail } from "@/lib/firebase"
 
 const aiMessages = [
   "Hoi! 👋 Ik ben Nova, je AI assistent.",
@@ -105,9 +105,19 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    setAuthError(null)
+    
+    const { user, error } = await signUpWithEmail(formData.email, formData.password, formData.name)
     setIsLoading(false)
-    router.push("/dashboard")
+    
+    if (error) {
+      setAuthError(error)
+      return
+    }
+    
+    if (user) {
+      router.push("/dashboard")
+    }
   }
 
   return (
@@ -289,6 +299,19 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
+              <Label htmlFor="name">Naam</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Je volledige naam"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="h-12 bg-muted/50 border-0"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="email">E-mail</Label>
               <Input
                 id="email"
@@ -301,10 +324,32 @@ export default function RegisterPage() {
               />
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="password">Wachtwoord</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Minimaal 6 karakters"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="h-12 bg-muted/50 border-0 pr-12"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
             <Button
               type="submit"
               className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground text-base"
-              disabled={isLoading || !formData.email}
+              disabled={isLoading || !formData.email || !formData.password || !formData.name}
             >
               {isLoading ? (
                 <>

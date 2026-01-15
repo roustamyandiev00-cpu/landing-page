@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Search, Bell, Sun, Moon, ChevronDown, LogOut, Settings, User, FileText, Receipt, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -21,6 +22,8 @@ import {
 } from "@/components/ui/popover"
 import { MobileSidebar } from "./mobile-sidebar"
 import { SearchDialog } from "./search-dialog"
+import { useAuth } from "@/lib/auth-context"
+import { signOut } from "@/lib/firebase"
 
 const notifications = [
   { 
@@ -57,6 +60,17 @@ export function Header() {
   const [mounted, setMounted] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const { user } = useAuth()
+  const router = useRouter()
+
+  const displayName = user?.displayName || user?.email?.split('@')[0] || "Gebruiker"
+  const userEmail = user?.email || ""
+  const userInitials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+
+  const handleSignOut = async () => {
+    await signOut()
+    router.push("/login")
+  }
 
   useEffect(() => {
     setMounted(true)
@@ -167,19 +181,19 @@ export function Header() {
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-3 pl-4 border-l border-border cursor-pointer hover:opacity-80 transition-opacity outline-none">
               <Avatar className="w-8 h-8">
-                <AvatarImage src="/professional-avatar.png" />
-                <AvatarFallback className="bg-primary text-primary-foreground text-xs">JD</AvatarFallback>
+                <AvatarImage src={user?.photoURL || "/professional-avatar.png"} />
+                <AvatarFallback className="bg-primary text-primary-foreground text-xs">{userInitials}</AvatarFallback>
               </Avatar>
               <div className="hidden lg:block">
-                <p className="text-sm font-medium text-foreground">Jan de Vries</p>
+                <p className="text-sm font-medium text-foreground">{displayName}</p>
               </div>
               <ChevronDown className="w-4 h-4 text-muted-foreground" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <div className="px-2 py-1.5">
-              <p className="text-sm font-medium text-foreground">Jan de Vries</p>
-              <p className="text-xs text-muted-foreground">jan@bedrijf.nl</p>
+              <p className="text-sm font-medium text-foreground">{displayName}</p>
+              <p className="text-xs text-muted-foreground">{userEmail}</p>
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
@@ -195,11 +209,9 @@ export function Header() {
               </a>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <a href="/login" className="cursor-pointer text-red-500">
-                <LogOut className="w-4 h-4 mr-2" />
-                Uitloggen
-              </a>
+            <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-500">
+              <LogOut className="w-4 h-4 mr-2" />
+              Uitloggen
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

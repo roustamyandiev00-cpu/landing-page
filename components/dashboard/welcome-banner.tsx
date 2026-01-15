@@ -2,15 +2,19 @@
 
 import { ArrowRight, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/lib/auth-context"
 
 export function WelcomeBanner() {
+  const { user } = useAuth()
+  const displayName = user?.displayName || user?.email?.split('@')[0] || "Gebruiker"
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       {/* Welcome Card */}
       <div className="lg:col-span-2 relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent border border-primary/20 p-6">
         <div className="relative z-10">
           <p className="text-sm text-muted-foreground mb-1">Welkom terug,</p>
-          <h2 className="text-2xl font-bold text-foreground mb-2">Jan de Vries 👋</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-2">{displayName} 👋</h2>
           <p className="text-sm text-muted-foreground max-w-md mb-4">
             Je financiële overzicht van vandaag. Je administratie is helemaal bijgewerkt.
           </p>

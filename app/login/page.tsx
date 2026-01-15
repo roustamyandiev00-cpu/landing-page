@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react"
-import { signInWithGoogle, signInWithApple } from "@/lib/firebase"
+import { signInWithGoogle, signInWithApple, signInWithEmail } from "@/lib/firebase"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -60,10 +60,19 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    setAuthError(null)
+    
+    const { user, error } = await signInWithEmail(formData.email, formData.password)
     setIsLoading(false)
-    router.push("/dashboard")
+    
+    if (error) {
+      setAuthError(error)
+      return
+    }
+    
+    if (user) {
+      router.push("/dashboard")
+    }
   }
 
   return (

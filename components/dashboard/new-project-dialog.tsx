@@ -42,21 +42,21 @@ export function NewProjectDialog({ open, onOpenChange, onSubmit }: NewProjectDia
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[720px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FolderKanban className="w-5 h-5 text-primary" />
             Nieuw Project
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="naam">Projectnaam *</Label>
             <Input
               id="naam"
               value={formData.naam}
               onChange={(e) => setFormData({ ...formData, naam: e.target.value })}
-              className="bg-muted/50 border-0"
+              className="bg-muted/50 border-0 h-12 text-base"
               required
             />
           </div>
@@ -66,7 +66,7 @@ export function NewProjectDialog({ open, onOpenChange, onSubmit }: NewProjectDia
               id="klant"
               value={formData.klant}
               onChange={(e) => setFormData({ ...formData, klant: e.target.value })}
-              className="bg-muted/50 border-0"
+              className="bg-muted/50 border-0 h-12 text-base"
               required
             />
           </div>
@@ -76,8 +76,8 @@ export function NewProjectDialog({ open, onOpenChange, onSubmit }: NewProjectDia
               id="beschrijving"
               value={formData.beschrijving}
               onChange={(e) => setFormData({ ...formData, beschrijving: e.target.value })}
-              className="bg-muted/50 border-0"
-              rows={3}
+              className="bg-muted/50 border-0 text-base min-h-[120px]"
+              rows={5}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -88,7 +88,7 @@ export function NewProjectDialog({ open, onOpenChange, onSubmit }: NewProjectDia
                 type="number"
                 value={formData.budget}
                 onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                className="bg-muted/50 border-0"
+                className="bg-muted/50 border-0 h-12 text-base"
               />
             </div>
             <div className="space-y-2">
@@ -98,14 +98,14 @@ export function NewProjectDialog({ open, onOpenChange, onSubmit }: NewProjectDia
                 type="date"
                 value={formData.deadline}
                 onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                className="bg-muted/50 border-0"
+                className="bg-muted/50 border-0 h-12 text-base"
               />
             </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="status">Status</Label>
             <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
-              <SelectTrigger className="bg-muted/50 border-0">
+              <SelectTrigger className="bg-muted/50 border-0 h-12 text-base">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

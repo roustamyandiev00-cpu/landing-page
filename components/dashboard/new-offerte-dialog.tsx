@@ -84,7 +84,7 @@ export function NewOfferteDialog({ open, onOpenChange, onSubmit }: NewOfferteDia
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-primary" />
@@ -103,6 +103,7 @@ export function NewOfferteDialog({ open, onOpenChange, onSubmit }: NewOfferteDia
                 placeholder="Bedrijfsnaam"
                 value={formData.client}
                 onChange={(e) => setFormData({ ...formData, client: e.target.value })}
+                className="bg-muted/50 border-0 h-12 text-base"
               />
             </div>
             <div className="space-y-2">
@@ -113,6 +114,7 @@ export function NewOfferteDialog({ open, onOpenChange, onSubmit }: NewOfferteDia
                 placeholder="klant@bedrijf.nl"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="bg-muted/50 border-0 h-12 text-base"
               />
             </div>
           </div>
@@ -125,6 +127,7 @@ export function NewOfferteDialog({ open, onOpenChange, onSubmit }: NewOfferteDia
                 placeholder="Korte omschrijving"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="bg-muted/50 border-0 h-12 text-base"
               />
             </div>
             <div className="space-y-2">
@@ -133,7 +136,7 @@ export function NewOfferteDialog({ open, onOpenChange, onSubmit }: NewOfferteDia
                 value={formData.validDays}
                 onValueChange={(value) => setFormData({ ...formData, validDays: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-muted/50 border-0 h-12 text-base">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -154,7 +157,7 @@ export function NewOfferteDialog({ open, onOpenChange, onSubmit }: NewOfferteDia
                 <div key={index} className="flex flex-col sm:flex-row gap-2 p-3 sm:p-0 bg-muted/30 sm:bg-transparent rounded-lg">
                   <Input
                     placeholder="Omschrijving"
-                    className="flex-1"
+                    className="flex-1 bg-muted/50 border-0 h-12 text-base"
                     value={item.description}
                     onChange={(e) => updateItem(index, "description", e.target.value)}
                   />
@@ -162,17 +165,17 @@ export function NewOfferteDialog({ open, onOpenChange, onSubmit }: NewOfferteDia
                     <Input
                       type="number"
                       placeholder="Aantal"
-                      className="w-full sm:w-20"
+                      className="w-full sm:w-24 bg-muted/50 border-0 h-12 text-base"
                       min={1}
                       value={item.quantity}
                       onChange={(e) => updateItem(index, "quantity", Number.parseInt(e.target.value) || 0)}
                     />
-                    <div className="relative w-full sm:w-28">
+                    <div className="relative w-full sm:w-36">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
                       <Input
                         type="number"
                         placeholder="Prijs"
-                        className="pl-7"
+                        className="pl-7 bg-muted/50 border-0 h-12 text-base"
                         min={0}
                         step={0.01}
                         value={item.price}
@@ -217,7 +220,8 @@ export function NewOfferteDialog({ open, onOpenChange, onSubmit }: NewOfferteDia
               placeholder="Eventuele opmerkingen of voorwaarden..."
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              rows={3}
+              className="bg-muted/50 border-0 text-base min-h-[120px]"
+              rows={5}
             />
           </div>
         </div>

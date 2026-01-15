@@ -67,11 +67,11 @@ export function NewKlantDialog({ open, onOpenChange, onSubmit }: NewKlantDialogP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[720px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Nieuwe Klant</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Naam *</Label>
@@ -79,7 +79,7 @@ export function NewKlantDialog({ open, onOpenChange, onSubmit }: NewKlantDialogP
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="bg-muted/50 border-0"
+                className="bg-muted/50 border-0 h-12 text-base"
                 required
               />
             </div>
@@ -89,7 +89,7 @@ export function NewKlantDialog({ open, onOpenChange, onSubmit }: NewKlantDialogP
                 id="company"
                 value={formData.company}
                 onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                className="bg-muted/50 border-0"
+                className="bg-muted/50 border-0 h-12 text-base"
               />
             </div>
             <div className="space-y-2">
@@ -99,7 +99,7 @@ export function NewKlantDialog({ open, onOpenChange, onSubmit }: NewKlantDialogP
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="bg-muted/50 border-0"
+                className="bg-muted/50 border-0 h-12 text-base"
                 required
               />
             </div>
@@ -109,7 +109,7 @@ export function NewKlantDialog({ open, onOpenChange, onSubmit }: NewKlantDialogP
                 id="phone"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="bg-muted/50 border-0"
+                className="bg-muted/50 border-0 h-12 text-base"
               />
             </div>
             <div className="col-span-2 space-y-2">
@@ -118,7 +118,7 @@ export function NewKlantDialog({ open, onOpenChange, onSubmit }: NewKlantDialogP
                 id="address"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                className="bg-muted/50 border-0"
+                className="bg-muted/50 border-0 h-12 text-base"
               />
             </div>
             <div className="space-y-2">
@@ -127,7 +127,7 @@ export function NewKlantDialog({ open, onOpenChange, onSubmit }: NewKlantDialogP
                 id="postalCode"
                 value={formData.postalCode}
                 onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
-                className="bg-muted/50 border-0"
+                className="bg-muted/50 border-0 h-12 text-base"
               />
             </div>
             <div className="space-y-2">
@@ -136,7 +136,7 @@ export function NewKlantDialog({ open, onOpenChange, onSubmit }: NewKlantDialogP
                 id="city"
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                className="bg-muted/50 border-0"
+                className="bg-muted/50 border-0 h-12 text-base"
               />
             </div>
           </div>

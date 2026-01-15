@@ -33,7 +33,7 @@ const menuItems = [
   { icon: FileText, label: "Offertes", href: "/dashboard/offertes" },
   { icon: Receipt, label: "Facturen", href: "/dashboard/facturen" },
   { icon: Package, label: "Materialen", href: "/dashboard/materialen" },
-  { icon: Mail, label: "E-mail", href: "/dashboard/email", badge: 3 },
+  { icon: Mail, label: "E-mail", href: "/dashboard/email" },
   { icon: Calendar, label: "Agenda", href: "/dashboard/agenda" },
   { icon: CreditCard, label: "Uitgaven", href: "/dashboard/uitgaven" },
   { icon: Building2, label: "Bankieren", href: "/dashboard/bankieren" },

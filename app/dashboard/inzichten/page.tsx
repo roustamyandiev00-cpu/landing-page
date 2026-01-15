@@ -22,59 +22,48 @@ import {
 } from "recharts"
 
 const revenueData = [
-  { month: "Jul", omzet: 18500, kosten: 12000 },
-  { month: "Aug", omzet: 22000, kosten: 13500 },
-  { month: "Sep", omzet: 19800, kosten: 11800 },
-  { month: "Okt", omzet: 25600, kosten: 14200 },
-  { month: "Nov", omzet: 28400, kosten: 15800 },
-  { month: "Dec", omzet: 32100, kosten: 16500 },
+  { month: "Jul", omzet: 0, kosten: 0 },
+  { month: "Aug", omzet: 0, kosten: 0 },
+  { month: "Sep", omzet: 0, kosten: 0 },
+  { month: "Okt", omzet: 0, kosten: 0 },
+  { month: "Nov", omzet: 0, kosten: 0 },
+  { month: "Dec", omzet: 0, kosten: 0 },
 ]
 
-const categoryData = [
-  { name: "Consultancy", value: 45, color: "#0ea5e9" },
-  { name: "Development", value: 30, color: "#22c55e" },
-  { name: "Design", value: 15, color: "#f59e0b" },
-  { name: "Support", value: 10, color: "#8b5cf6" },
-]
+const categoryData: { name: string; value: number; color: string }[] = []
 
-const clientData = [
-  { name: "ABC Corp", revenue: 28500 },
-  { name: "XYZ Tech", revenue: 22000 },
-  { name: "Global Ind.", revenue: 18500 },
-  { name: "StartUp Hub", revenue: 15200 },
-  { name: "Digital Plus", revenue: 12800 },
-]
+const clientData: { name: string; revenue: number }[] = []
 
 const kpiCards = [
   {
     title: "Maandelijkse Omzet",
-    value: "€32.100",
-    change: "+18.5%",
+    value: "€0",
+    change: "-",
     trend: "up",
     icon: Euro,
     description: "vs vorige maand",
   },
   {
     title: "Winstmarge",
-    value: "48.6%",
-    change: "+2.3%",
+    value: "0%",
+    change: "-",
     trend: "up",
     icon: TrendingUp,
     description: "vs vorige maand",
   },
   {
     title: "Actieve Klanten",
-    value: "24",
-    change: "+3",
+    value: "0",
+    change: "-",
     trend: "up",
     icon: Users,
     description: "nieuwe deze maand",
   },
   {
     title: "Gem. Factuurwaarde",
-    value: "€2.450",
-    change: "-5%",
-    trend: "down",
+    value: "€0",
+    change: "-",
+    trend: "up",
     icon: FileText,
     description: "vs vorige maand",
   },
@@ -82,20 +71,10 @@ const kpiCards = [
 
 const aiInsights = [
   {
-    type: "opportunity",
-    title: "Groeipotentieel gedetecteerd",
-    description:
-      "Je consultancy diensten groeien 25% sneller dan andere categorieën. Overweeg om hier meer op in te zetten.",
-  },
-  {
-    type: "warning",
-    title: "Cashflow aandachtspunt",
-    description: "Op basis van openstaande facturen en geplande uitgaven, kan je cashflow in februari krap worden.",
-  },
-  {
     type: "tip",
-    title: "Klantretentie tip",
-    description: "3 klanten hebben al 6 maanden geen nieuwe opdracht geplaatst. Een follow-up kan helpen.",
+    title: "Welkom bij Inzichten",
+    description:
+      "Begin met het toevoegen van klanten en facturen om hier waardevolle inzichten te zien over je bedrijfsprestaties.",
   },
 ]
 
@@ -242,6 +221,13 @@ export default function InzichtenPage() {
               <CardTitle>Omzet per Categorie</CardTitle>
             </CardHeader>
             <CardContent>
+              {categoryData.length === 0 ? (
+                <div className="text-center py-12">
+                  <TrendingUp className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">Nog geen data beschikbaar</p>
+                </div>
+              ) : (
+              <>
               <div className="h-[200px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <RechartsPieChart>
@@ -277,6 +263,8 @@ export default function InzichtenPage() {
                   </div>
                 ))}
               </div>
+              </>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -292,6 +280,12 @@ export default function InzichtenPage() {
             </div>
           </CardHeader>
           <CardContent>
+            {clientData.length === 0 ? (
+              <div className="text-center py-12">
+                <Users className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">Nog geen klanten toegevoegd</p>
+              </div>
+            ) : (
             <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={clientData} layout="vertical">
@@ -309,6 +303,7 @@ export default function InzichtenPage() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -21,26 +21,27 @@ import {
   Euro,
   TrendingUp,
   Sparkles,
+  Trash2,
+  Loader2,
 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { NewOfferteDialog } from "@/components/dashboard/new-offerte-dialog"
-import { AIGeneratorDialog } from "@/components/dashboard/ai-generator-dialog"
-
-const stats = [
-  { label: "Totaal Offertes", value: "0", change: "-", icon: FileText, color: "text-blue-500" },
-  { label: "In Afwachting", value: "0", change: "-", icon: Clock, color: "text-amber-500" },
-  { label: "Geaccepteerd", value: "0", change: "-", icon: CheckCircle, color: "text-emerald-500" },
-  { label: "Totale Waarde", value: "€0", change: "-", icon: Euro, color: "text-primary" },
-]
+import { AIOfferteDialog } from "@/components/dashboard/ai-offerte-dialog"
+import { useAuth } from "@/lib/auth-context"
+import { createDocument, getDocuments, updateDocument, deleteDocument } from "@/lib/firebase"
 
 interface Quote {
   id: string
+  offerteNummer: string
   client: string
+  email: string
   description: string
+  items: { description: string; quantity: number; price: number }[]
   amount: number
   status: "pending" | "accepted" | "rejected"
-  date: string
-  validUntil: string
+  validDays: string
+  notes: string
+  createdAt: any
 }
 
 const statusConfig = {
@@ -50,10 +51,137 @@ const statusConfig = {
 }
 
 export default function OffertesPage() {
+  const { user } = useAuth()
   const [searchQuery, setSearchQuery] = useState("")
   const [newOfferteOpen, setNewOfferteOpen] = useState(false)
   const [aiGeneratorOpen, setAiGeneratorOpen] = useState(false)
   const [quotes, setQuotes] = useState<Quote[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Load offertes from Firestore
+  useEffect(() => {
+    const loadOffertes = async () => {
+      if (!user) {
+        setLoading(false)
+        return
+      }
+      
+      const { data, error } = await getDocuments("offertes", user.uid)
+      if (!error && data) {
+        setQuotes(data as Quote[])
+      }
+      setLoading(false)
+    }
+    
+    loadOffertes()
+  }, [user])
+
+  // Calculate stats
+  const stats = [
+    { 
+      label: "Totaal Offertes", 
+      value: quotes.length.toString(), 
+      change: quotes.length > 0 ? `+${quotes.length}` : "-", 
+      icon: FileText, 
+      color: "text-blue-500" 
+    },
+    { 
+      label: "In Afwachting", 
+      value: quotes.filter(q => q.status === "pending").length.toString(), 
+      change: "-", 
+      icon: Clock, 
+      color: "text-amber-500" 
+    },
+    { 
+      label: "Geaccepteerd", 
+      value: quotes.filter(q => q.status === "accepted").length.toString(), 
+      change: "-", 
+      icon: CheckCircle, 
+      color: "text-emerald-500" 
+    },
+    { 
+      label: "Totale Waarde", 
+      value: `€${quotes.reduce((sum, q) => sum + (q.amount || 0), 0).toLocaleString("nl-NL")}`, 
+      change: "-", 
+      icon: Euro, 
+      color: "text-primary" 
+    },
+  ]
+
+  // Generate offerte nummer
+  const generateOfferteNummer = () => {
+    const year = new Date().getFullYear()
+    const num = (quotes.length + 1).toString().padStart(3, "0")
+    return `OFF-${year}-${num}`
+  }
+
+  // Handle new offerte submission
+  const handleNewOfferte = async (data: any) => {
+    if (!user) return
+    
+    const amount = data.items.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0)
+    const offerteData = {
+      ...data,
+      offerteNummer: generateOfferteNummer(),
+      amount,
+      status: "pending",
+    }
+    
+    const { id, error } = await createDocument("offertes", offerteData, user.uid)
+    if (!error && id) {
+      setQuotes([{ id, ...offerteData, createdAt: new Date() } as Quote, ...quotes])
+    }
+    setNewOfferteOpen(false)
+  }
+
+  // Handle AI generated offerte
+  const handleAIOfferte = async (data: any) => {
+    if (!user) return
+    
+    const amount = data.items.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0)
+    const offerteData = {
+      ...data,
+      offerteNummer: generateOfferteNummer(),
+      amount,
+      status: "pending",
+    }
+    
+    const { id, error } = await createDocument("offertes", offerteData, user.uid)
+    if (!error && id) {
+      setQuotes([{ id, ...offerteData, createdAt: new Date() } as Quote, ...quotes])
+    }
+    setAiGeneratorOpen(false)
+  }
+
+  // Handle status change
+  const handleStatusChange = async (quoteId: string, newStatus: "pending" | "accepted" | "rejected") => {
+    const { error } = await updateDocument("offertes", quoteId, { status: newStatus })
+    if (!error) {
+      setQuotes(quotes.map(q => q.id === quoteId ? { ...q, status: newStatus } : q))
+    }
+  }
+
+  // Handle delete
+  const handleDelete = async (quoteId: string) => {
+    const { error } = await deleteDocument("offertes", quoteId)
+    if (!error) {
+      setQuotes(quotes.filter(q => q.id !== quoteId))
+    }
+  }
+
+  // Filter quotes by search
+  const filteredQuotes = quotes.filter(q => 
+    q.client?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    q.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    q.offerteNummer?.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  // Format date
+  const formatDate = (date: any) => {
+    if (!date) return "-"
+    const d = date.toDate ? date.toDate() : new Date(date)
+    return d.toLocaleDateString("nl-NL", { day: "2-digit", month: "short", year: "numeric" })
+  }
 
   return (
     <DashboardLayout>
@@ -92,19 +220,19 @@ export default function OffertesPage() {
 
         {/* AI Quick Action */}
         <Card className="glass-card border-primary/20 bg-primary/5">
-          <CardContent className="p-4 flex items-center justify-between">
+          <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
                 <Sparkles className="w-6 h-6 text-primary" />
               </div>
               <div>
                 <h3 className="font-medium text-foreground">AI Offerte Generator</h3>
-                <p className="text-sm text-muted-foreground">Laat AI een professionele offerte opstellen</p>
+                <p className="text-sm text-muted-foreground">Beschrijf je project en laat AI een offerte maken</p>
               </div>
             </div>
-            <Button className="bg-primary hover:bg-primary/90" onClick={() => setAiGeneratorOpen(true)}>
+            <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto" onClick={() => setAiGeneratorOpen(true)}>
               <Sparkles className="w-4 h-4 mr-2" />
-              Genereer Offerte
+              Genereer met AI
             </Button>
           </CardContent>
         </Card>
@@ -112,9 +240,9 @@ export default function OffertesPage() {
         {/* Quotes List */}
         <Card className="glass-card">
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <CardTitle>Alle Offertes</CardTitle>
-              <div className="relative w-64">
+              <div className="relative w-full sm:w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   placeholder="Zoeken..."
@@ -126,87 +254,98 @@ export default function OffertesPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {quotes.length === 0 ? (
+            {loading ? (
+              <div className="text-center py-12">
+                <Loader2 className="w-8 h-8 text-primary mx-auto mb-4 animate-spin" />
+                <p className="text-muted-foreground">Offertes laden...</p>
+              </div>
+            ) : filteredQuotes.length === 0 ? (
               <div className="text-center py-12">
                 <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-foreground mb-2">Nog geen offertes</h3>
                 <p className="text-muted-foreground mb-4">Maak je eerste offerte aan om te beginnen</p>
-                <Button onClick={() => setNewOfferteOpen(true)}>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Nieuwe Offerte
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button onClick={() => setNewOfferteOpen(true)} variant="outline">
+                    <FileText className="w-4 h-4 mr-2" />
+                    Handmatig maken
+                  </Button>
+                  <Button onClick={() => setAiGeneratorOpen(true)}>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Met AI maken
+                  </Button>
+                </div>
               </div>
             ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Offerte Nr.</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Klant</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Omschrijving</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Bedrag</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Status</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Datum</th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">Acties</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {quotes.map((quote) => {
-                    const status = statusConfig[quote.status as keyof typeof statusConfig]
-                    return (
-                      <tr key={quote.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                        <td className="py-4 px-4">
-                          <span className="font-mono text-sm text-foreground">{quote.id}</span>
-                        </td>
-                        <td className="py-4 px-4">
-                          <span className="font-medium text-foreground">{quote.client}</span>
-                        </td>
-                        <td className="py-4 px-4">
-                          <span className="text-muted-foreground">{quote.description}</span>
-                        </td>
-                        <td className="py-4 px-4">
-                          <span className="font-medium text-foreground">
-                            {quote.amount.toLocaleString("nl-NL", { style: "currency", currency: "EUR" })}
-                          </span>
-                        </td>
-                        <td className="py-4 px-4">
-                          <Badge variant={status.variant} className="gap-1">
-                            <status.icon className="w-3 h-3" />
-                            {status.label}
-                          </Badge>
-                        </td>
-                        <td className="py-4 px-4">
-                          <span className="text-sm text-muted-foreground">{quote.date}</span>
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <MoreHorizontal className="w-4 h-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>
-                                <Eye className="w-4 h-4 mr-2" /> Bekijken
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Download className="w-4 h-4 mr-2" /> Download PDF
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Send className="w-4 h-4 mr-2" /> Versturen
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Copy className="w-4 h-4 mr-2" /> Dupliceren
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Offerte Nr.</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Klant</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground hidden md:table-cell">Omschrijving</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Bedrag</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Status</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground hidden sm:table-cell">Datum</th>
+                      <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">Acties</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredQuotes.map((quote) => {
+                      const status = statusConfig[quote.status as keyof typeof statusConfig]
+                      return (
+                        <tr key={quote.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                          <td className="py-4 px-4">
+                            <span className="font-mono text-sm text-foreground">{quote.offerteNummer}</span>
+                          </td>
+                          <td className="py-4 px-4">
+                            <span className="font-medium text-foreground">{quote.client}</span>
+                          </td>
+                          <td className="py-4 px-4 hidden md:table-cell">
+                            <span className="text-muted-foreground truncate max-w-[200px] block">{quote.description}</span>
+                          </td>
+                          <td className="py-4 px-4">
+                            <span className="font-medium text-foreground">
+                              €{(quote.amount || 0).toLocaleString("nl-NL")}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4">
+                            <Badge variant={status.variant} className="gap-1">
+                              <status.icon className="w-3 h-3" />
+                              <span className="hidden sm:inline">{status.label}</span>
+                            </Badge>
+                          </td>
+                          <td className="py-4 px-4 hidden sm:table-cell">
+                            <span className="text-sm text-muted-foreground">{formatDate(quote.createdAt)}</span>
+                          </td>
+                          <td className="py-4 px-4 text-right">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                  <MoreHorizontal className="w-4 h-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleStatusChange(quote.id, "accepted")}>
+                                  <CheckCircle className="w-4 h-4 mr-2 text-emerald-500" /> Accepteren
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleStatusChange(quote.id, "rejected")}>
+                                  <XCircle className="w-4 h-4 mr-2 text-red-500" /> Afwijzen
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleStatusChange(quote.id, "pending")}>
+                                  <Clock className="w-4 h-4 mr-2" /> In Afwachting
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleDelete(quote.id)} className="text-destructive">
+                                  <Trash2 className="w-4 h-4 mr-2" /> Verwijderen
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -215,17 +354,12 @@ export default function OffertesPage() {
       <NewOfferteDialog
         open={newOfferteOpen}
         onOpenChange={setNewOfferteOpen}
-        onSubmit={(data) => {
-          console.log("Nieuwe offerte:", data)
-        }}
+        onSubmit={handleNewOfferte}
       />
-      <AIGeneratorDialog
+      <AIOfferteDialog
         open={aiGeneratorOpen}
         onOpenChange={setAiGeneratorOpen}
-        type="offerte"
-        onGenerate={(data) => {
-          console.log("AI gegenereerde offerte:", data)
-        }}
+        onSubmit={handleAIOfferte}
       />
     </DashboardLayout>
   )

@@ -25,64 +25,22 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { NewProjectDialog } from "@/components/dashboard/new-project-dialog"
 
 const stats = [
-  { label: "Totaal Projecten", value: "18", change: "+2", icon: FolderKanban, color: "text-blue-500" },
-  { label: "Actief", value: "8", change: "+1", icon: PlayCircle, color: "text-emerald-500" },
-  { label: "In Afwachting", value: "4", change: "0", icon: PauseCircle, color: "text-amber-500" },
-  { label: "Totale Waarde", value: "€186.500", change: "+15%", icon: Euro, color: "text-primary" },
+  { label: "Totaal Projecten", value: "0", change: "-", icon: FolderKanban, color: "text-blue-500" },
+  { label: "Actief", value: "0", change: "-", icon: PlayCircle, color: "text-emerald-500" },
+  { label: "In Afwachting", value: "0", change: "-", icon: PauseCircle, color: "text-amber-500" },
+  { label: "Totale Waarde", value: "€0", change: "-", icon: Euro, color: "text-primary" },
 ]
 
-const projecten = [
-  {
-    id: 1,
-    naam: "Website Redesign ABC Corp",
-    klant: "ABC Corporation",
-    status: "actief",
-    voortgang: 65,
-    deadline: "15 Feb 2026",
-    budget: 12500,
-    team: 3,
-  },
-  {
-    id: 2,
-    naam: "Mobile App XYZ Tech",
-    klant: "XYZ Tech Solutions",
-    status: "actief",
-    voortgang: 40,
-    deadline: "01 Mrt 2026",
-    budget: 28000,
-    team: 4,
-  },
-  {
-    id: 3,
-    naam: "IT Consultancy Global",
-    klant: "Global Industries",
-    status: "afgerond",
-    voortgang: 100,
-    deadline: "10 Jan 2026",
-    budget: 5600,
-    team: 2,
-  },
-  {
-    id: 4,
-    naam: "MVP StartUp Hub",
-    klant: "StartUp Hub",
-    status: "actief",
-    voortgang: 25,
-    deadline: "20 Apr 2026",
-    budget: 18500,
-    team: 3,
-  },
-  {
-    id: 5,
-    naam: "API Integratie Digital Plus",
-    klant: "Digital Agency Plus",
-    status: "wachtend",
-    voortgang: 0,
-    deadline: "01 Mei 2026",
-    budget: 7800,
-    team: 2,
-  },
-]
+interface Project {
+  id: number
+  naam: string
+  klant: string
+  status: "actief" | "wachtend" | "afgerond"
+  voortgang: number
+  deadline: string
+  budget: number
+  team: number
+}
 
 const statusConfig = {
   actief: { label: "Actief", variant: "default" as const, icon: PlayCircle },
@@ -93,6 +51,7 @@ const statusConfig = {
 export default function ProjectenPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [newProjectOpen, setNewProjectOpen] = useState(false)
+  const [projecten, setProjecten] = useState<Project[]>([])
 
   return (
     <DashboardLayout>
@@ -146,6 +105,17 @@ export default function ProjectenPage() {
             </div>
           </CardHeader>
           <CardContent>
+            {projecten.length === 0 ? (
+              <div className="text-center py-12">
+                <FolderKanban className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">Nog geen projecten</h3>
+                <p className="text-muted-foreground mb-4">Voeg je eerste project toe om te beginnen</p>
+                <Button onClick={() => setNewProjectOpen(true)}>
+                  <FolderKanban className="w-4 h-4 mr-2" />
+                  Nieuw Project
+                </Button>
+              </div>
+            ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -236,6 +206,7 @@ export default function ProjectenPage() {
                 </tbody>
               </table>
             </div>
+            )}
           </CardContent>
         </Card>
       </div>

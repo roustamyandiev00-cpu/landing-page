@@ -26,84 +26,28 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { NewMateriaalDialog } from "@/components/dashboard/new-materiaal-dialog"
 
 const stats = [
-  { label: "Totaal Producten", value: "156", change: "+12", icon: Package, color: "text-blue-500" },
-  { label: "Voorraadwaarde", value: "€24.850", change: "+8%", icon: Euro, color: "text-emerald-500" },
-  { label: "Lage Voorraad", value: "8", change: "-2", icon: AlertTriangle, color: "text-amber-500", negative: true },
-  { label: "Categorieën", value: "12", change: "+1", icon: Warehouse, color: "text-primary" },
+  { label: "Totaal Producten", value: "0", change: "-", icon: Package, color: "text-blue-500" },
+  { label: "Voorraadwaarde", value: "€0", change: "-", icon: Euro, color: "text-emerald-500" },
+  { label: "Lage Voorraad", value: "0", change: "-", icon: AlertTriangle, color: "text-amber-500", negative: true },
+  { label: "Categorieën", value: "0", change: "-", icon: Warehouse, color: "text-primary" },
 ]
 
-const materialen = [
-  {
-    id: 1,
-    naam: "Cement Portland 25kg",
-    categorie: "Bouwmaterialen",
-    sku: "CEM-001",
-    voorraad: 45,
-    minVoorraad: 20,
-    eenheid: "zakken",
-    prijs: 8.50,
-    leverancier: "Bouwdepot NL",
-  },
-  {
-    id: 2,
-    naam: "Gipsplaten 260x60cm",
-    categorie: "Afwerking",
-    sku: "GIP-002",
-    voorraad: 12,
-    minVoorraad: 15,
-    eenheid: "stuks",
-    prijs: 12.95,
-    leverancier: "Gyproc Direct",
-  },
-  {
-    id: 3,
-    naam: "Isolatiemateriaal 100mm",
-    categorie: "Isolatie",
-    sku: "ISO-003",
-    voorraad: 80,
-    minVoorraad: 30,
-    eenheid: "m²",
-    prijs: 15.00,
-    leverancier: "Isover BV",
-  },
-  {
-    id: 4,
-    naam: "PVC Buis 110mm (3m)",
-    categorie: "Sanitair",
-    sku: "PVC-004",
-    voorraad: 5,
-    minVoorraad: 10,
-    eenheid: "stuks",
-    prijs: 18.50,
-    leverancier: "Wavin Nederland",
-  },
-  {
-    id: 5,
-    naam: "Elektriciteitskabel 2.5mm²",
-    categorie: "Elektra",
-    sku: "ELK-005",
-    voorraad: 250,
-    minVoorraad: 100,
-    eenheid: "meter",
-    prijs: 1.25,
-    leverancier: "Kabel Express",
-  },
-  {
-    id: 6,
-    naam: "Schroeven 5x50mm (200st)",
-    categorie: "Bevestiging",
-    sku: "SCH-006",
-    voorraad: 8,
-    minVoorraad: 10,
-    eenheid: "dozen",
-    prijs: 14.95,
-    leverancier: "Fischer BV",
-  },
-]
+interface Materiaal {
+  id: number
+  naam: string
+  categorie: string
+  sku: string
+  voorraad: number
+  minVoorraad: number
+  eenheid: string
+  prijs: number
+  leverancier: string
+}
 
 export default function MaterialenPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [newMateriaalOpen, setNewMateriaalOpen] = useState(false)
+  const [materialen, setMaterialen] = useState<Materiaal[]>([])
 
   const getVoorraadStatus = (voorraad: number, minVoorraad: number) => {
     if (voorraad <= minVoorraad * 0.5) return { label: "Kritiek", variant: "destructive" as const }
@@ -176,6 +120,17 @@ export default function MaterialenPage() {
             </div>
           </CardHeader>
           <CardContent>
+            {filteredMaterialen.length === 0 ? (
+              <div className="text-center py-12">
+                <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">Nog geen materialen</h3>
+                <p className="text-muted-foreground mb-4">Voeg je eerste materiaal toe om te beginnen</p>
+                <Button onClick={() => setNewMateriaalOpen(true)}>
+                  <PackagePlus className="w-4 h-4 mr-2" />
+                  Nieuw Materiaal
+                </Button>
+              </div>
+            ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -271,6 +226,7 @@ export default function MaterialenPage() {
                 </tbody>
               </table>
             </div>
+            )}
           </CardContent>
         </Card>
       </div>

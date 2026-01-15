@@ -13,75 +13,33 @@ import { Mail, Search, Star, Trash2, Archive, Inbox, Send, FileText, AlertCircle
 import { NewEmailDialog } from "@/components/dashboard/new-email-dialog"
 import { AIGeneratorDialog } from "@/components/dashboard/ai-generator-dialog"
 
-const folders = [
-  { icon: Inbox, label: "Inbox", count: 24, active: true },
-  { icon: Star, label: "Belangrijk", count: 5 },
-  { icon: Send, label: "Verzonden", count: 0 },
-  { icon: FileText, label: "Concepten", count: 2 },
-  { icon: Archive, label: "Archief", count: 0 },
-  { icon: Trash2, label: "Prullenbak", count: 0 },
-]
-
-const initialEmails = [
-  {
-    id: 1,
-    from: "Jan de Vries",
-    email: "jan@abccorp.nl",
-    subject: "Re: Offerte aanvraag Q1 2026",
-    preview: "Bedankt voor de offerte. We hebben intern overlegd en willen graag een aantal aanpassingen bespreken...",
-    time: "10:30",
-    unread: true,
-    starred: true,
-    hasAttachment: true,
-  },
-  {
-    id: 2,
-    from: "Belastingdienst",
-    email: "noreply@belastingdienst.nl",
-    subject: "Herinnering: BTW aangifte Q4 2025",
-    preview: "Uw BTW aangifte voor het vierde kwartaal van 2025 dient uiterlijk 31 januari 2026 te worden ingediend...",
-    time: "09:15",
-    unread: true,
-    starred: false,
-    important: true,
-  },
-  {
-    id: 3,
-    from: "Maria Santos",
-    email: "maria@xyztech.com",
-    subject: "Partnership voorstel",
-    preview: "Geachte heer/mevrouw, Ik schrijf u namens XYZ Tech met een interessant partnership voorstel...",
-    time: "Gisteren",
-    unread: false,
-    starred: false,
-  },
-  {
-    id: 4,
-    from: "ING Zakelijk",
-    email: "zakelijk@ing.nl",
-    subject: "Uw maandelijkse rekeningoverzicht",
-    preview: "Uw rekeningoverzicht voor december 2025 staat klaar in Mijn ING Zakelijk...",
-    time: "Gisteren",
-    unread: false,
-    starred: false,
-  },
-  {
-    id: 5,
-    from: "Kamer van Koophandel",
-    email: "info@kvk.nl",
-    subject: "Jaarlijkse update bedrijfsgegevens",
-    preview: "Het is tijd om uw bedrijfsgegevens te controleren en indien nodig bij te werken...",
-    time: "2 dagen",
-    unread: false,
-    starred: true,
-  },
-]
+interface Email {
+  id: number
+  from: string
+  email: string
+  subject: string
+  preview: string
+  time: string
+  unread: boolean
+  starred: boolean
+  hasAttachment?: boolean
+  important?: boolean
+}
 
 export default function EmailPage() {
   const [selectedEmail, setSelectedEmail] = useState<number | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
-  const [emails, setEmails] = useState(initialEmails)
+  const [emails, setEmails] = useState<Email[]>([])
   const [activeFolder, setActiveFolder] = useState("Inbox")
+
+  const folders = [
+    { icon: Inbox, label: "Inbox", count: emails.filter(e => e.unread).length, active: true },
+    { icon: Star, label: "Belangrijk", count: emails.filter(e => e.starred).length },
+    { icon: Send, label: "Verzonden", count: 0 },
+    { icon: FileText, label: "Concepten", count: 0 },
+    { icon: Archive, label: "Archief", count: 0 },
+    { icon: Trash2, label: "Prullenbak", count: 0 },
+  ]
 
   const toggleStar = (id: number, e: React.MouseEvent) => {
     e.stopPropagation()
@@ -157,7 +115,20 @@ export default function EmailPage() {
 
               {/* Email List */}
               <div className="space-y-2">
-                {filteredEmails.map((email) => (
+                {filteredEmails.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Mail className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-foreground mb-2">Geen e-mails</h3>
+                    <p className="text-muted-foreground mb-4">Je inbox is leeg</p>
+                    <NewEmailDialog>
+                      <Button>
+                        <Mail className="w-4 h-4 mr-2" />
+                        Nieuwe E-mail
+                      </Button>
+                    </NewEmailDialog>
+                  </div>
+                ) : (
+                filteredEmails.map((email) => (
                   <div
                     key={email.id}
                     onClick={() => setSelectedEmail(email.id)}
@@ -190,7 +161,8 @@ export default function EmailPage() {
                       {email.unread && <div className="w-2 h-2 rounded-full bg-primary" />}
                     </div>
                   </div>
-                ))}
+                ))
+                )}
               </div>
             </CardContent>
           </Card>

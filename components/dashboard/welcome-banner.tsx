@@ -56,13 +56,11 @@ export function WelcomeBanner() {
           </div>
         </div>
         <p className="text-sm text-foreground leading-relaxed">
-          {'"Opgelet: Je BTW aangifte moet '}
-          <span className="text-primary font-medium">binnen 4 dagen</span>
-          {' binnen zijn!"'}
+          {'"Welkom! Begin met het toevoegen van je eerste klant of factuur om je administratie op te starten."'}
         </p>
         <div className="mt-4 flex-1 flex items-end">
           <div className="w-full bg-secondary/50 rounded-full h-1.5 overflow-hidden">
-            <div className="bg-accent h-full w-3/4 rounded-full transition-all duration-1000" />
+            <div className="bg-accent h-full w-0 rounded-full transition-all duration-1000" />
           </div>
         </div>
       </div>

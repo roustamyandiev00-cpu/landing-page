@@ -13,53 +13,27 @@ import { EventDetailsDialog } from "@/components/dashboard/event-details-dialog"
 const daysOfWeek = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"]
 const currentMonth = "Januari 2026"
 
-const events = [
-  {
-    id: 1,
-    title: "Kwartaal Review Meeting",
-    time: "09:00 - 10:30",
-    type: "meeting",
-    color: "bg-blue-500",
-    location: "Vergaderzaal A",
-    attendees: 5,
-  },
-  {
-    id: 2,
-    title: "Klant Presentatie - ABC Corp",
-    time: "11:00 - 12:00",
-    type: "presentation",
-    color: "bg-emerald-500",
-    location: "Online (Zoom)",
-    attendees: 3,
-  },
-  {
-    id: 3,
-    title: "Lunch met Investeerder",
-    time: "12:30 - 14:00",
-    type: "personal",
-    color: "bg-amber-500",
-    location: "Restaurant De Kas",
-    attendees: 2,
-  },
-  {
-    id: 4,
-    title: "Product Demo",
-    time: "15:00 - 16:00",
-    type: "demo",
-    color: "bg-purple-500",
-    location: "Online (Teams)",
-    attendees: 8,
-  },
-]
+interface Event {
+  id: number
+  title: string
+  time: string
+  type: string
+  color: string
+  location: string
+  attendees: number
+}
 
-const upcomingEvents = [
-  { id: 1, title: "Belastingaangifte deadline", date: "15 Jan", type: "deadline" },
-  { id: 2, title: "Team Building Event", date: "20 Jan", type: "event" },
-  { id: 3, title: "Jaarlijkse Review", date: "25 Jan", type: "meeting" },
-]
+interface UpcomingEvent {
+  id: number
+  title: string
+  date: string
+  type: string
+}
 
 export default function AgendaPage() {
   const [selectedDate, setSelectedDate] = useState(10)
+  const [events, setEvents] = useState<Event[]>([])
+  const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEvent[]>([])
 
   const calendarDays = Array.from({ length: 31 }, (_, i) => i + 1)
 
@@ -132,7 +106,20 @@ export default function AgendaPage() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {events.map((event) => (
+              {events.length === 0 ? (
+                <div className="text-center py-12">
+                  <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">Geen afspraken vandaag</h3>
+                  <p className="text-muted-foreground mb-4">Plan je eerste afspraak</p>
+                  <NewAfspraakDialog>
+                    <Button>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Nieuwe Afspraak
+                    </Button>
+                  </NewAfspraakDialog>
+                </div>
+              ) : (
+              events.map((event) => (
                 <div
                   key={event.id}
                   className="flex gap-4 p-4 rounded-xl bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
@@ -165,7 +152,8 @@ export default function AgendaPage() {
                     </Button>
                   </EventDetailsDialog>
                 </div>
-              ))}
+              ))
+              )}
             </CardContent>
           </Card>
         </div>
@@ -176,6 +164,12 @@ export default function AgendaPage() {
             <CardTitle>Aankomende Gebeurtenissen</CardTitle>
           </CardHeader>
           <CardContent>
+            {upcomingEvents.length === 0 ? (
+              <div className="text-center py-8">
+                <Calendar className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">Geen aankomende gebeurtenissen</p>
+              </div>
+            ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {upcomingEvents.map((event) => (
                 <div key={event.id} className="flex items-center gap-4 p-4 rounded-xl bg-muted/50">
@@ -189,6 +183,7 @@ export default function AgendaPage() {
                 </div>
               ))}
             </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -33,66 +33,23 @@ import { BonScannerDialog } from "@/components/dashboard/bon-scanner-dialog"
 import { BankConnectDialog } from "@/components/dashboard/bank-connect-dialog"
 
 const stats = [
-  { label: "Totaal Deze Maand", value: "€4.280", change: "+8%", trend: "up", icon: Euro, color: "text-red-500" },
-  { label: "Zakelijk", value: "€3.150", change: "+12%", trend: "up", icon: Laptop, color: "text-blue-500" },
-  { label: "Reiskosten", value: "€680", change: "-5%", trend: "down", icon: Car, color: "text-amber-500" },
-  { label: "Overig", value: "€450", change: "+3%", trend: "up", icon: ShoppingBag, color: "text-purple-500" },
+  { label: "Totaal Deze Maand", value: "€0", change: "-", trend: "up", icon: Euro, color: "text-red-500" },
+  { label: "Zakelijk", value: "€0", change: "-", trend: "up", icon: Laptop, color: "text-blue-500" },
+  { label: "Reiskosten", value: "€0", change: "-", trend: "down", icon: Car, color: "text-amber-500" },
+  { label: "Overig", value: "€0", change: "-", trend: "up", icon: ShoppingBag, color: "text-purple-500" },
 ]
 
-const budgets = [
-  { category: "Software & Tools", spent: 1200, budget: 1500, icon: Laptop, color: "bg-blue-500" },
-  { category: "Marketing", spent: 800, budget: 1000, icon: Zap, color: "bg-purple-500" },
-  { category: "Reiskosten", spent: 680, budget: 800, icon: Car, color: "bg-amber-500" },
-  { category: "Kantoorbenodigdheden", spent: 320, budget: 500, icon: FileText, color: "bg-emerald-500" },
-]
+const budgets: { category: string; spent: number; budget: number; icon: any; color: string }[] = []
 
-const expenses = [
-  {
-    id: 1,
-    description: "Adobe Creative Cloud",
-    category: "Software",
-    amount: 59.99,
-    date: "08 Jan 2026",
-    status: "approved",
-    icon: Laptop,
-  },
-  {
-    id: 2,
-    description: "NS Business Card - Reiskosten",
-    category: "Reizen",
-    amount: 234.5,
-    date: "07 Jan 2026",
-    status: "pending",
-    icon: Car,
-  },
-  {
-    id: 3,
-    description: "Zakenlunch - Restaurant De Kas",
-    category: "Representatie",
-    amount: 125.0,
-    date: "06 Jan 2026",
-    status: "approved",
-    icon: Coffee,
-  },
-  {
-    id: 4,
-    description: "Google Workspace",
-    category: "Software",
-    amount: 12.0,
-    date: "05 Jan 2026",
-    status: "approved",
-    icon: Laptop,
-  },
-  {
-    id: 5,
-    description: "Kantoorartikelen - Staples",
-    category: "Kantoor",
-    amount: 67.8,
-    date: "04 Jan 2026",
-    status: "pending",
-    icon: FileText,
-  },
-]
+interface Expense {
+  id: number
+  description: string
+  category: string
+  amount: number
+  date: string
+  status: "pending" | "approved" | "rejected"
+  icon: any
+}
 
 const statusConfig = {
   pending: { label: "In Review", variant: "secondary" as const },
@@ -102,6 +59,7 @@ const statusConfig = {
 
 export default function UitgavenPage() {
   const [searchQuery, setSearchQuery] = useState("")
+  const [expenses, setExpenses] = useState<Expense[]>([])
 
   const filteredExpenses = expenses.filter(
     (expense) =>
@@ -158,7 +116,13 @@ export default function UitgavenPage() {
               <CardTitle>Budget Overzicht</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {budgets.map((budget) => {
+              {budgets.length === 0 ? (
+                <div className="text-center py-8">
+                  <Euro className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">Nog geen budgetten ingesteld</p>
+                </div>
+              ) : (
+              budgets.map((budget) => {
                 const percentage = (budget.spent / budget.budget) * 100
                 return (
                   <div key={budget.category} className="space-y-2">
@@ -176,7 +140,8 @@ export default function UitgavenPage() {
                     <Progress value={percentage} className="h-2" />
                   </div>
                 )
-              })}
+              })
+              )}
             </CardContent>
           </Card>
 
@@ -251,6 +216,19 @@ export default function UitgavenPage() {
             </div>
           </CardHeader>
           <CardContent>
+            {filteredExpenses.length === 0 ? (
+              <div className="text-center py-12">
+                <CreditCard className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">Nog geen uitgaven</h3>
+                <p className="text-muted-foreground mb-4">Voeg je eerste uitgave toe om te beginnen</p>
+                <NewUitgaveDialog>
+                  <Button>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Nieuwe Uitgave
+                  </Button>
+                </NewUitgaveDialog>
+              </div>
+            ) : (
             <div className="space-y-3">
               {filteredExpenses.map((expense) => {
                 const status = statusConfig[expense.status]
@@ -295,6 +273,7 @@ export default function UitgavenPage() {
                 )
               })}
             </div>
+            )}
           </CardContent>
         </Card>
       </div>

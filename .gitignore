@@ -49,3 +49,4 @@ logs
 
 # Test coverage
 coverage/
+.env*.local

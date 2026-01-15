@@ -31,11 +31,11 @@ export function Hero() {
             </div>
 
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-foreground leading-tight text-balance">
-              Maak offertes in <span className="text-primary">2 minuten</span>
+              Maak bouwoffertes in <span className="text-primary">2 minuten</span>
             </h1>
 
             <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Bespaar uren per week met AI-gestuurde offertes. Professioneel, nauwkeurig en klaar om te verzenden.
+              Bespaar uren per week met AI-gestuurde offertes. Ideaal voor aannemers en ZZP'ers. Professioneel, nauwkeurig en direct klaar.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -73,9 +73,9 @@ export function Hero() {
             className="relative"
           >
             <div className="relative rounded-2xl shadow-2xl border border-border overflow-hidden">
-              <Image 
-                src="/dashboard-preview.png" 
-                alt="Dashboard Preview" 
+              <Image
+                src="/dashboard-preview.png"
+                alt="Dashboard Preview"
                 width={800}
                 height={600}
                 className="w-full h-auto rounded-2xl"

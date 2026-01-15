@@ -708,6 +708,258 @@ export const werkzaamheden: Werkzaamheid[] = [
     btwTarief: 21,
     tags: ["afvoer", "container", "afval"]
   },
+
+  // EXTRA BADKAMER
+  {
+    id: "bad-inloopdouche",
+    categorie: "badkamer",
+    naam: "Inloopdouche plaatsen",
+    omschrijving: "Inloopdouche met glazen wand installeren",
+    eenheid: "stuk",
+    prijsMin: 500,
+    prijsMax: 900,
+    standaardPrijs: 650,
+    btwTarief: 9,
+    tags: ["douche", "inloopdouche", "glas"]
+  },
+  {
+    id: "bad-douchewand",
+    categorie: "badkamer",
+    naam: "Douchewand plaatsen",
+    omschrijving: "Glazen douchewand monteren",
+    eenheid: "stuk",
+    prijsMin: 200,
+    prijsMax: 450,
+    standaardPrijs: 300,
+    btwTarief: 9,
+    tags: ["douche", "glas", "wand"]
+  },
+  {
+    id: "bad-vloerverwarming",
+    categorie: "badkamer",
+    naam: "Vloerverwarming elektrisch",
+    omschrijving: "Elektrische vloerverwarming installeren",
+    eenheid: "m2",
+    prijsMin: 55,
+    prijsMax: 85,
+    standaardPrijs: 65,
+    btwTarief: 9,
+    tags: ["vloerverwarming", "verwarming", "elektrisch"]
+  },
+  {
+    id: "bad-handdoekradiator",
+    categorie: "badkamer",
+    naam: "Handdoekradiator plaatsen",
+    omschrijving: "Handdoekradiator monteren en aansluiten",
+    eenheid: "stuk",
+    prijsMin: 150,
+    prijsMax: 300,
+    standaardPrijs: 200,
+    btwTarief: 9,
+    tags: ["radiator", "handdoek", "verwarming"]
+  },
+  {
+    id: "bad-spiegelkast",
+    categorie: "badkamer",
+    naam: "Spiegelkast ophangen",
+    omschrijving: "Spiegelkast met verlichting monteren",
+    eenheid: "stuk",
+    prijsMin: 100,
+    prijsMax: 250,
+    standaardPrijs: 150,
+    btwTarief: 9,
+    tags: ["spiegel", "kast", "verlichting"]
+  },
+
+  // EXTRA KEUKEN
+  {
+    id: "keuken-eiland",
+    categorie: "keuken",
+    naam: "Keukeneiland plaatsen",
+    omschrijving: "Keukeneiland monteren inclusief werkblad",
+    eenheid: "stuk",
+    prijsMin: 400,
+    prijsMax: 800,
+    standaardPrijs: 550,
+    btwTarief: 9,
+    tags: ["eiland", "keuken", "werkblad"]
+  },
+  {
+    id: "keuken-dampkap",
+    categorie: "keuken",
+    naam: "Dampkap installeren",
+    omschrijving: "Dampkap monteren en aansluiten",
+    eenheid: "stuk",
+    prijsMin: 100,
+    prijsMax: 250,
+    standaardPrijs: 150,
+    btwTarief: 9,
+    tags: ["dampkap", "afzuiging", "keuken"]
+  },
+  {
+    id: "keuken-quooker",
+    categorie: "keuken",
+    naam: "Quooker installeren",
+    omschrijving: "Quooker kokendwaterkraan installeren",
+    eenheid: "stuk",
+    prijsMin: 200,
+    prijsMax: 400,
+    standaardPrijs: 275,
+    btwTarief: 9,
+    tags: ["quooker", "kraan", "kokend water"]
+  },
+
+  // EXTRA ELEKTRA
+  {
+    id: "elektra-dimmer",
+    categorie: "elektra",
+    naam: "Dimmer plaatsen",
+    omschrijving: "Dimschakelaar installeren",
+    eenheid: "stuk",
+    prijsMin: 75,
+    prijsMax: 150,
+    standaardPrijs: 95,
+    btwTarief: 9,
+    tags: ["dimmer", "schakelaar", "verlichting"]
+  },
+  {
+    id: "elektra-spotjes",
+    categorie: "elektra",
+    naam: "LED spots plaatsen",
+    omschrijving: "LED inbouwspots monteren per stuk",
+    eenheid: "stuk",
+    prijsMin: 25,
+    prijsMax: 55,
+    standaardPrijs: 35,
+    btwTarief: 9,
+    tags: ["led", "spots", "verlichting"]
+  },
+  {
+    id: "elektra-wandcontactdoos",
+    categorie: "elektra",
+    naam: "Wandcontactdoos verplaatsen",
+    omschrijving: "Bestaande wandcontactdoos verplaatsen",
+    eenheid: "stuk",
+    prijsMin: 85,
+    prijsMax: 175,
+    standaardPrijs: 120,
+    btwTarief: 9,
+    tags: ["stopcontact", "verplaatsen", "elektra"]
+  },
+
+  // EXTRA TIMMERWERK
+  {
+    id: "timmer-schuifdeur",
+    categorie: "timmerwerk",
+    naam: "Schuifdeur plaatsen",
+    omschrijving: "Schuifdeur systeem monteren",
+    eenheid: "stuk",
+    prijsMin: 200,
+    prijsMax: 450,
+    standaardPrijs: 300,
+    btwTarief: 9,
+    tags: ["schuifdeur", "deur", "systeem"]
+  },
+  {
+    id: "timmer-kastenwand",
+    categorie: "timmerwerk",
+    naam: "Kastenwand op maat",
+    omschrijving: "Maatwerk kastenwand maken en plaatsen",
+    eenheid: "m",
+    prijsMin: 300,
+    prijsMax: 600,
+    standaardPrijs: 425,
+    btwTarief: 9,
+    tags: ["kast", "maatwerk", "opberging"]
+  },
+  {
+    id: "timmer-vensterbank",
+    categorie: "timmerwerk",
+    naam: "Vensterbank plaatsen",
+    omschrijving: "Binnen vensterbank monteren",
+    eenheid: "stuk",
+    prijsMin: 45,
+    prijsMax: 120,
+    standaardPrijs: 75,
+    btwTarief: 9,
+    tags: ["vensterbank", "raam", "binnen"]
+  },
+
+  // EXTRA VLOEREN
+  {
+    id: "vloer-ondervloer",
+    categorie: "vloeren",
+    naam: "Ondervloer aanbrengen",
+    omschrijving: "Ondervloer voor laminaat/parket",
+    eenheid: "m2",
+    prijsMin: 5,
+    prijsMax: 12,
+    standaardPrijs: 8,
+    btwTarief: 9,
+    tags: ["ondervloer", "isolatie", "vloer"]
+  },
+  {
+    id: "vloer-plinten-mdf",
+    categorie: "vloeren",
+    naam: "MDF plinten plaatsen",
+    omschrijving: "MDF plinten monteren en afwerken",
+    eenheid: "m",
+    prijsMin: 10,
+    prijsMax: 20,
+    standaardPrijs: 14,
+    btwTarief: 9,
+    tags: ["plinten", "mdf", "afwerking"]
+  },
+  {
+    id: "vloer-dorpel",
+    categorie: "vloeren",
+    naam: "Dorpel plaatsen",
+    omschrijving: "Overgangsprofielen/dorpels monteren",
+    eenheid: "stuk",
+    prijsMin: 35,
+    prijsMax: 75,
+    standaardPrijs: 50,
+    btwTarief: 9,
+    tags: ["dorpel", "overgang", "profiel"]
+  },
+
+  // EXTRA TUIN
+  {
+    id: "tuin-gazon",
+    categorie: "tuin",
+    naam: "Gazon aanleggen",
+    omschrijving: "Gazon inzaaien of leggen met graszoden",
+    eenheid: "m2",
+    prijsMin: 15,
+    prijsMax: 35,
+    standaardPrijs: 22,
+    btwTarief: 21,
+    tags: ["gazon", "gras", "tuin"]
+  },
+  {
+    id: "tuin-border",
+    categorie: "tuin",
+    naam: "Borders aanleggen",
+    omschrijving: "Borders met beplanting aanleggen",
+    eenheid: "m",
+    prijsMin: 25,
+    prijsMax: 55,
+    standaardPrijs: 38,
+    btwTarief: 21,
+    tags: ["border", "beplanting", "tuin"]
+  },
+  {
+    id: "tuin-tuinhuis",
+    categorie: "tuin",
+    naam: "Tuinhuis plaatsen",
+    omschrijving: "Tuinhuis monteren op fundering",
+    eenheid: "stuk",
+    prijsMin: 400,
+    prijsMax: 1200,
+    standaardPrijs: 750,
+    btwTarief: 21,
+    tags: ["tuinhuis", "schuur", "montage"]
+  },
 ]
 
 // Helper functies

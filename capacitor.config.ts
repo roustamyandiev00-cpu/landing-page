@@ -6,9 +6,8 @@ const config: CapacitorConfig = {
   webDir: 'out',
   server: {
     // Gebruik de live URL als je Next.js SSR gebruikt (Login/Dashboard/API)
-    // url: 'https://archonpro.com',
-    // androidScheme: 'https',
-    // cleartext: true
+    url: 'https://archonpro.com',
+    androidScheme: 'https',
   }
 };
 

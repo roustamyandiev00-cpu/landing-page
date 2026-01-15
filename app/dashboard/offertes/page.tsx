@@ -25,10 +25,12 @@ import {
   Loader2,
   ChevronDown,
   Plus,
+  Zap,
 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { NewOfferteDialog } from "@/components/dashboard/new-offerte-dialog"
 import { AIOfferteDialog } from "@/components/dashboard/ai-offerte-dialog"
+import { QuickOfferteDialog } from "@/components/dashboard/quick-offerte-dialog"
 import { generateOfferteHTML, openPDFPreview, type OfferteData } from "@/lib/pdf-generator"
 import { useAuth } from "@/lib/auth-context"
 import {
@@ -57,6 +59,7 @@ export default function OffertesPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [newOfferteOpen, setNewOfferteOpen] = useState(false)
   const [aiGeneratorOpen, setAiGeneratorOpen] = useState(false)
+  const [quickOfferteOpen, setQuickOfferteOpen] = useState(false)
   const [quotes, setQuotes] = useState<Quote[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -243,13 +246,17 @@ export default function OffertesPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => setNewOfferteOpen(true)}>
-                <FileText className="w-4 h-4 mr-2" />
-                Handmatig maken
+              <DropdownMenuItem onClick={() => setQuickOfferteOpen(true)}>
+                <Zap className="w-4 h-4 mr-2" />
+                Snel met template
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setAiGeneratorOpen(true)}>
                 <Sparkles className="w-4 h-4 mr-2" />
                 Met AI maken
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setNewOfferteOpen(true)}>
+                <FileText className="w-4 h-4 mr-2" />
+                Handmatig maken
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -426,6 +433,11 @@ export default function OffertesPage() {
       <AIOfferteDialog
         open={aiGeneratorOpen}
         onOpenChange={setAiGeneratorOpen}
+        onSubmit={handleAIOfferte}
+      />
+      <QuickOfferteDialog
+        open={quickOfferteOpen}
+        onOpenChange={setQuickOfferteOpen}
         onSubmit={handleAIOfferte}
       />
     </DashboardLayout>

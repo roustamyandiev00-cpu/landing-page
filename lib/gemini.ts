@@ -49,35 +49,109 @@ export async function generateOfferteWithAI(
     suggestionsText = `\n\nAI Suggesties om te overwegen: ${context.existingSuggestions.join(', ')}`
   }
 
-  const prompt = `Je bent een Nederlandse zakelijke assistent. Genereer een professionele offerte op basis van deze projectbeschrijving.
+  const prompt = `Je bent een ervaren Nederlandse bouwprofessional met 15+ jaar ervaring in het maken van offertes.
+Je maakt realistische, professionele offertes die klanten vertrouwen en accepteren.
 
-Projectbeschrijving: ${projectDescription}
-Project type: ${context?.projectType || 'Algemeen'}
-Klant: ${clientName}${dimensionsText}${imageAnalysisText}${suggestionsText}
+=== PROJECT INFORMATIE ===
+Type: ${context?.projectType || 'Algemeen bouwproject'}
+Klant: ${clientName}
+Beschrijving: ${projectDescription}${dimensionsText}${imageAnalysisText}${suggestionsText}
 
-Gebruik de afmetingen en foto-analyses om nauwkeurigere hoeveelheden en prijzen te berekenen.
-Neem de AI suggesties mee in je overwegingen voor extra werkzaamheden.
+=== JOUW EXPERTISE ===
+- Je kent de Nederlandse marktprijzen 2024/2025
+- Je denkt aan voorbereidend werk (sloop, afvoer, voorbereiden)
+- Je denkt aan afwerking (stucwerk, schilderwerk, opruimen)
+- Je splitst materiaal en arbeid waar relevant
+- Je geeft realistische tijdsinschattingen
+- Je denkt aan vergunningen en compliance waar nodig
 
-Geef een JSON response met deze structuur (alleen JSON, geen andere tekst):
+=== INSTRUCTIES ===
+1. ANALYSEER het project grondig:
+   - Wat is de scope? (klein/middel/groot)
+   - Welke vakmannen zijn nodig? (timmerman, loodgieter, elektricien, etc.)
+   - Wat is de volgorde van werkzaamheden?
+   - Zijn er risico's of complicaties?
+
+2. BEREKEN nauwkeurig:
+   - Gebruik de afmetingen voor exacte hoeveelheden
+   - Denk aan materiaalverspilling (10-15% extra)
+   - Reken met realistische uurlonen (€45-75/uur)
+   - Gebruik correcte BTW tarieven (9% renovatie, 21% nieuwbouw/materiaal)
+
+3. STRUCTUREER logisch:
+   - Start met voorbereidend werk
+   - Daarna hoofdwerkzaamheden
+   - Eindig met afwerking
+   - Voeg voorrijkosten toe indien relevant
+
+4. WEES COMPLEET:
+   - Vergeet geen kleine items (plinten, afwerking, opruimen)
+   - Denk aan elektra/loodgieter werk indien nodig
+   - Voeg afvoer bouwafval toe bij sloop
+   - Denk aan vergunningen bij grote projecten
+
+=== VOORBEELDEN GOEDE ITEMS ===
+Badkamer renovatie:
+- "Oude badkamer slopen en afvoeren" (forfait)
+- "Wandtegels plaatsen inclusief voegen" (per m²)
+- "Loodgieterswerk: leidingen aanleggen" (forfait)
+- "Elektrische vloerverwarming installeren" (per m²)
+
+Keuken plaatsen:
+- "Oude keuken demonteren" (forfait)
+- "Keuken montage" (per meter)
+- "Werkblad op maat maken en plaatsen" (per meter)
+- "Elektra aanpassingen" (forfait)
+
+=== OUTPUT FORMAT ===
+Geef ALLEEN een JSON response (geen andere tekst):
 {
-  "description": "korte projectomschrijving",
+  "description": "Korte samenvatting van het project (1 zin)",
   "items": [
     {
-      "description": "omschrijving van werkzaamheid",
-      "quantity": aantal (gebruik afmetingen waar mogelijk),
-      "unit": "uur" of "stuk" of "dag" of "m2" of "m",
-      "price": prijs in euros per eenheid (nummer),
-      "btw": 21
+      "description": "Duidelijke omschrijving van werkzaamheid",
+      "quantity": aantal (gebruik afmetingen!),
+      "unit": "uur" | "stuk" | "dag" | "m2" | "m" | "forfait",
+      "price": prijs per eenheid (realistisch!),
+      "btw": 9 | 21
     }
   ],
-  "notes": "eventuele opmerkingen of voorwaarden",
+  "notes": "Professionele opmerkingen: wat is inbegrepen, wat niet, voorwaarden, geschatte doorlooptijd",
   "validDays": "30",
-  "additionalSuggestions": ["extra suggestie 1", "extra suggestie 2"]
+  "additionalSuggestions": ["Optionele extra's die klant zou kunnen overwegen"]
 }
 
-Maak realistische prijzen voor Nederlandse markt. Splits het project op in logische onderdelen.
-Als er afmetingen zijn, gebruik deze voor nauwkeurige berekeningen (bijv. m² voor vloeren, schilderwerk).
-Voeg extra suggesties toe voor werkzaamheden die mogelijk over het hoofd gezien worden.`
+=== PRIJSRICHTLIJNEN 2024/2025 ===
+Arbeid:
+- Vakman uurloon: €45-75/uur
+- Voorrijkosten: €35-50
+- Sloopwerk: €10-20/m²
+
+Badkamer:
+- Tegels plaatsen wand: €50-75/m²
+- Tegels plaatsen vloer: €55-85/m²
+- Douche installeren: €350-650
+- Toilet plaatsen: €200-400
+- Wastafel plaatsen: €150-350
+
+Keuken:
+- Keuken montage: €150-300/m
+- Werkblad plaatsen: €80-200/m
+- Spoelbak installeren: €150-300
+- Apparatuur plaatsen: €75-175/stuk
+
+Schilderwerk:
+- Muren schilderen: €12-25/m²
+- Plafond schilderen: €14-28/m²
+- Kozijnen schilderen: €45-120/stuk
+
+Vloeren:
+- Laminaat leggen: €18-35/m²
+- PVC leggen: €20-40/m²
+- Tegels leggen: €45-85/m²
+- Vloer egaliseren: €12-25/m²
+
+Maak nu een professionele, realistische offerte!`
 
   try {
     const result = await geminiModel.generateContent(prompt)

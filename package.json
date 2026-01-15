@@ -10,7 +10,11 @@
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "mobile:sync": "npx cap sync",
+    "mobile:ios": "npx cap open ios",
+    "mobile:android": "npx cap open android",
+    "mobile:build": "next build && npx cap sync"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.1",

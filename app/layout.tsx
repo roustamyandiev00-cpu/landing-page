@@ -12,16 +12,46 @@ const _inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://archonpro.com'),
-  title: "ARCHON.AI - Slimme Bouwsoftware",
-  description: "AI-aangedreven software voor bouwprofessionals. Maak professionele offertes in 2 minuten met onze slimme AI.",
+  title: {
+    default: "ARCHON.AI - Slimme Bouwsoftware & Offerte Tool voor Aannemers",
+    template: "%s | ARCHON.AI"
+  },
+  description: "De #1 AI-bouwsoftware voor aannemers en ZZP'ers in België en Nederland. Maak professionele offertes en calculaties in 2 minuten. Bespaar tijd, voorkom fouten en win meer opdrachten.",
   generator: 'v0.app',
   manifest: "/manifest.json",
+  keywords: [
+    "bouwsoftware",
+    "offerte tool bouw",
+    "calculatiesoftware aannemer",
+    "AI in de bouw",
+    "zzp bouw administratie",
+    "bestek software",
+    "facturatie bouw",
+    "bouw app",
+    "calculatieprogramma bouw",
+    "offerte maken zzp",
+    "bouwbedrijf software",
+    "Vlaanderen",
+    "Nederland",
+    "bouwmanagement",
+    "archon ai"
+  ],
+  authors: [{ name: "ARCHON.AI Team" }],
+  creator: "ARCHON.AI",
+  publisher: "ARCHON.AI",
   alternates: {
     canonical: "/",
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   verification: {
     google: "zH4_RdoOEc1w3ilvs7OJJWgYq5ZlajSfwKJj1_oGCg8",
@@ -31,8 +61,8 @@ export const metadata: Metadata = {
     apple: "/logo.png",
   },
   openGraph: {
-    title: "ARCHON.AI - Slimme Bouwsoftware",
-    description: "AI-aangedreven software voor bouwprofessionals. Maak professionele offertes in 2 minuten.",
+    title: "ARCHON.AI - Slimme Bouwsoftware & Offerte Tool",
+    description: "Maak professionele bouwoffertes in een handomdraai met AI. De ideale software voor aannemers, klusbedrijven en ZZP'ers.",
     url: "https://archonpro.com",
     siteName: "ARCHON.AI",
     images: [
@@ -40,7 +70,7 @@ export const metadata: Metadata = {
         url: "/dashboard-preview.png",
         width: 1200,
         height: 630,
-        alt: "ARCHON.AI Dashboard",
+        alt: "ARCHON.AI Dashboard - Slimme Bouwsoftware",
       },
     ],
     locale: "nl_NL",
@@ -49,8 +79,9 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "ARCHON.AI - Slimme Bouwsoftware",
-    description: "AI-aangedreven software voor bouwprofessionals. Maak professionele offertes in 2 minuten.",
+    description: "De #1 AI-bouwsoftware voor aannemers. Maak offertes in minuten.",
     images: ["/dashboard-preview.png"],
+    creator: "@archon_ai",
   },
   appleWebApp: {
     capable: true,

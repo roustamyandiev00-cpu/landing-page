@@ -5,48 +5,64 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Save } from "lucide-react"
+import { Save, Loader2 } from "lucide-react"
+import { useAuth } from "@/lib/auth-context"
+import { addClient } from "@/lib/firestore"
 
 interface NewKlantDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSubmit?: (data: KlantData) => void
-}
-
-interface KlantData {
-  bedrijfsnaam: string
-  contactpersoon: string
-  email: string
-  telefoon: string
-  adres: string
-  stad: string
-  postcode: string
+  onSubmit?: () => void
 }
 
 export function NewKlantDialog({ open, onOpenChange, onSubmit }: NewKlantDialogProps) {
-  const [formData, setFormData] = useState<KlantData>({
-    bedrijfsnaam: "",
-    contactpersoon: "",
+  const { user } = useAuth()
+  const [loading, setLoading] = useState(false)
+  const [formData, setFormData] = useState({
+    name: "",
+    company: "",
     email: "",
-    telefoon: "",
-    adres: "",
-    stad: "",
-    postcode: "",
+    phone: "",
+    address: "",
+    city: "",
+    postalCode: "",
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit?.(formData)
-    onOpenChange(false)
-    setFormData({
-      bedrijfsnaam: "",
-      contactpersoon: "",
-      email: "",
-      telefoon: "",
-      adres: "",
-      stad: "",
-      postcode: "",
-    })
+    if (!user) return
+
+    setLoading(true)
+    try {
+      await addClient({
+        userId: user.uid,
+        name: formData.name,
+        company: formData.company,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        postalCode: formData.postalCode,
+        country: "Nederland",
+      })
+      
+      onSubmit?.()
+      onOpenChange(false)
+      setFormData({
+        name: "",
+        company: "",
+        email: "",
+        phone: "",
+        address: "",
+        city: "",
+        postalCode: "",
+      })
+    } catch (error) {
+      console.error('Error adding client:', error)
+      alert('Er ging iets mis bij het opslaan')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -57,28 +73,27 @@ export function NewKlantDialog({ open, onOpenChange, onSubmit }: NewKlantDialogP
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2 space-y-2">
-              <Label htmlFor="bedrijfsnaam">Bedrijfsnaam</Label>
+            <div className="space-y-2">
+              <Label htmlFor="name">Naam *</Label>
               <Input
-                id="bedrijfsnaam"
-                value={formData.bedrijfsnaam}
-                onChange={(e) => setFormData({ ...formData, bedrijfsnaam: e.target.value })}
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="bg-muted/50 border-0"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="contactpersoon">Contactpersoon</Label>
+              <Label htmlFor="company">Bedrijfsnaam</Label>
               <Input
-                id="contactpersoon"
-                value={formData.contactpersoon}
-                onChange={(e) => setFormData({ ...formData, contactpersoon: e.target.value })}
+                id="company"
+                value={formData.company}
+                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                 className="bg-muted/50 border-0"
-                required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">E-mail</Label>
+              <Label htmlFor="email">E-mail *</Label>
               <Input
                 id="email"
                 type="email"
@@ -89,38 +104,38 @@ export function NewKlantDialog({ open, onOpenChange, onSubmit }: NewKlantDialogP
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="telefoon">Telefoon</Label>
+              <Label htmlFor="phone">Telefoon</Label>
               <Input
-                id="telefoon"
-                value={formData.telefoon}
-                onChange={(e) => setFormData({ ...formData, telefoon: e.target.value })}
+                id="phone"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className="bg-muted/50 border-0"
+              />
+            </div>
+            <div className="col-span-2 space-y-2">
+              <Label htmlFor="address">Adres</Label>
+              <Input
+                id="address"
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 className="bg-muted/50 border-0"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="adres">Adres</Label>
+              <Label htmlFor="postalCode">Postcode</Label>
               <Input
-                id="adres"
-                value={formData.adres}
-                onChange={(e) => setFormData({ ...formData, adres: e.target.value })}
+                id="postalCode"
+                value={formData.postalCode}
+                onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
                 className="bg-muted/50 border-0"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="postcode">Postcode</Label>
+              <Label htmlFor="city">Stad</Label>
               <Input
-                id="postcode"
-                value={formData.postcode}
-                onChange={(e) => setFormData({ ...formData, postcode: e.target.value })}
-                className="bg-muted/50 border-0"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="stad">Stad</Label>
-              <Input
-                id="stad"
-                value={formData.stad}
-                onChange={(e) => setFormData({ ...formData, stad: e.target.value })}
+                id="city"
+                value={formData.city}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                 className="bg-muted/50 border-0"
               />
             </div>
@@ -129,8 +144,12 @@ export function NewKlantDialog({ open, onOpenChange, onSubmit }: NewKlantDialogP
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Annuleren
             </Button>
-            <Button type="submit" className="bg-primary hover:bg-primary/90">
-              <Save className="w-4 h-4 mr-2" />
+            <Button type="submit" className="bg-primary hover:bg-primary/90" disabled={loading}>
+              {loading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4 mr-2" />
+              )}
               Opslaan
             </Button>
           </div>

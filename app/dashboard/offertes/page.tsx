@@ -26,7 +26,8 @@ import {
 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { NewOfferteDialog } from "@/components/dashboard/new-offerte-dialog"
-import { AIOfferteDialog } from "@/components/dashboard/ai-offerte-dialog"
+import { AIOfferteDialogV2 } from "@/components/dashboard/ai-offerte-dialog-v2"
+import { generateOfferteHTML, openPDFPreview, type OfferteData } from "@/lib/pdf-generator"
 import { useAuth } from "@/lib/auth-context"
 import { createDocument, getDocuments, updateDocument, deleteDocument } from "@/lib/firebase"
 
@@ -167,6 +168,34 @@ export default function OffertesPage() {
     if (!error) {
       setQuotes(quotes.filter(q => q.id !== quoteId))
     }
+  }
+
+  // Handle PDF download
+  const handleDownloadPDF = (quote: Quote) => {
+    const offerteData: OfferteData = {
+      offerteNummer: quote.offerteNummer,
+      datum: quote.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+      geldigTot: new Date(Date.now() + parseInt(quote.validDays || "30") * 24 * 60 * 60 * 1000).toISOString(),
+      klant: {
+        naam: quote.client,
+        email: quote.email,
+      },
+      bedrijf: {
+        naam: "Uw Bedrijfsnaam",
+        email: "info@uwbedrijf.nl",
+      },
+      items: quote.items.map(item => ({
+        description: item.description,
+        quantity: item.quantity,
+        unit: (item as any).unit || "stuk",
+        unitPrice: item.price,
+        btw: (item as any).btw || 21,
+      })),
+      opmerkingen: quote.notes,
+    }
+    
+    const html = generateOfferteHTML(offerteData)
+    openPDFPreview(html)
   }
 
   // Filter quotes by search
@@ -325,6 +354,9 @@ export default function OffertesPage() {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleDownloadPDF(quote)}>
+                                  <Download className="w-4 h-4 mr-2" /> Download PDF
+                                </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => handleStatusChange(quote.id, "accepted")}>
                                   <CheckCircle className="w-4 h-4 mr-2 text-emerald-500" /> Accepteren
                                 </DropdownMenuItem>
@@ -356,7 +388,7 @@ export default function OffertesPage() {
         onOpenChange={setNewOfferteOpen}
         onSubmit={handleNewOfferte}
       />
-      <AIOfferteDialog
+      <AIOfferteDialogV2
         open={aiGeneratorOpen}
         onOpenChange={setAiGeneratorOpen}
         onSubmit={handleAIOfferte}

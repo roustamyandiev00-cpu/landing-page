@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -23,26 +23,16 @@ import {
   TrendingDown,
   Sparkles,
   CreditCard,
+  Loader2,
+  Trash2,
 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { NewFactuurDialog } from "@/components/dashboard/new-factuur-dialog"
 import { AIGeneratorDialog } from "@/components/dashboard/ai-generator-dialog"
+import { useAuth } from "@/lib/auth-context"
+import { getInvoices, updateInvoice, deleteInvoice, type Invoice } from "@/lib/firestore"
 
-const stats = [
-  { label: "Totale Omzet", value: "€0", change: "-", trend: "up", icon: Euro, color: "text-emerald-500" },
-  { label: "Openstaand", value: "€0", change: "-", trend: "down", icon: Clock, color: "text-amber-500" },
-  { label: "Betaald (MTD)", value: "€0", change: "-", trend: "up", icon: CheckCircle, color: "text-blue-500" },
-  {
-    label: "Achterstallig",
-    value: "€0",
-    change: "-",
-    trend: "down",
-    icon: AlertTriangle,
-    color: "text-red-500",
-  },
-]
-
-interface Invoice {
+interface DisplayInvoice {
   id: string
   client: string
   description: string
@@ -59,11 +49,71 @@ const statusConfig = {
 }
 
 export default function FacturenPage() {
+  const { user } = useAuth()
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState("all")
   const [newFactuurOpen, setNewFactuurOpen] = useState(false)
   const [aiGeneratorOpen, setAiGeneratorOpen] = useState(false)
-  const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [invoices, setInvoices] = useState<DisplayInvoice[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Calculate stats from real data
+  const totalRevenue = invoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.amount, 0)
+  const openAmount = invoices.filter(i => i.status === 'pending').reduce((sum, i) => sum + i.amount, 0)
+  const paidThisMonth = invoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.amount, 0)
+  const overdueAmount = invoices.filter(i => i.status === 'overdue').reduce((sum, i) => sum + i.amount, 0)
+
+  const stats = [
+    { label: "Totale Omzet", value: `€${totalRevenue.toLocaleString('nl-NL')}`, change: "-", trend: "up" as const, icon: Euro, color: "text-emerald-500" },
+    { label: "Openstaand", value: `€${openAmount.toLocaleString('nl-NL')}`, change: "-", trend: "down" as const, icon: Clock, color: "text-amber-500" },
+    { label: "Betaald (MTD)", value: `€${paidThisMonth.toLocaleString('nl-NL')}`, change: "-", trend: "up" as const, icon: CheckCircle, color: "text-blue-500" },
+    { label: "Achterstallig", value: `€${overdueAmount.toLocaleString('nl-NL')}`, change: "-", trend: "down" as const, icon: AlertTriangle, color: "text-red-500" },
+  ]
+
+  const loadInvoices = async () => {
+    if (!user) return
+    setLoading(true)
+    try {
+      const data = await getInvoices(user.uid)
+      const mapped: DisplayInvoice[] = data.map(inv => ({
+        id: inv.invoiceNumber || inv.id || '',
+        client: inv.clientName,
+        description: inv.items?.[0]?.description || 'Factuur',
+        amount: inv.total,
+        status: inv.status === 'sent' ? 'pending' : inv.status as any,
+        date: inv.createdAt?.toDate?.()?.toLocaleDateString('nl-NL') || '',
+        dueDate: inv.dueDate?.toDate?.()?.toLocaleDateString('nl-NL') || '',
+      }))
+      setInvoices(mapped)
+    } catch (error) {
+      console.error('Error loading invoices:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadInvoices()
+  }, [user])
+
+  const handleMarkPaid = async (invoiceId: string) => {
+    try {
+      await updateInvoice(invoiceId, { status: 'paid' })
+      loadInvoices()
+    } catch (error) {
+      console.error('Error updating invoice:', error)
+    }
+  }
+
+  const handleDelete = async (invoiceId: string) => {
+    if (!confirm('Weet je zeker dat je deze factuur wilt verwijderen?')) return
+    try {
+      await deleteInvoice(invoiceId)
+      loadInvoices()
+    } catch (error) {
+      console.error('Error deleting invoice:', error)
+    }
+  }
 
   const filteredInvoices = invoices.filter((invoice) => {
     if (activeTab === "all") return true
@@ -266,7 +316,10 @@ export default function FacturenPage() {
       <NewFactuurDialog
         open={newFactuurOpen}
         onOpenChange={setNewFactuurOpen}
-        onSubmit={() => setNewFactuurOpen(false)}
+        onSubmit={() => {
+          setNewFactuurOpen(false)
+          loadInvoices()
+        }}
       />
       <AIGeneratorDialog
         open={aiGeneratorOpen}

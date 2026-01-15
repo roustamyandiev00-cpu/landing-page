@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Dialog,
   DialogContent,
@@ -14,12 +14,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Receipt, Plus, Trash2 } from "lucide-react"
+import { Receipt, Plus, Trash2, Loader2 } from "lucide-react"
+import { useAuth } from "@/lib/auth-context"
+import { addInvoice, generateInvoiceNumber, getClients, type Client } from "@/lib/firestore"
+import { Timestamp } from "firebase/firestore"
 
 interface NewFactuurDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSubmit?: (data: FactuurData) => void
+  onSubmit?: () => void
 }
 
 interface LineItem {
@@ -31,6 +34,7 @@ interface LineItem {
 
 interface FactuurData {
   client: string
+  clientId: string
   email: string
   description: string
   paymentDays: string
@@ -39,14 +43,36 @@ interface FactuurData {
 }
 
 export function NewFactuurDialog({ open, onOpenChange, onSubmit }: NewFactuurDialogProps) {
+  const { user } = useAuth()
+  const [loading, setLoading] = useState(false)
+  const [clients, setClients] = useState<Client[]>([])
   const [formData, setFormData] = useState<FactuurData>({
     client: "",
+    clientId: "",
     email: "",
     description: "",
     paymentDays: "14",
     items: [{ description: "", quantity: 1, price: 0, btw: 21 }],
     notes: "",
   })
+
+  useEffect(() => {
+    if (user && open) {
+      getClients(user.uid).then(setClients)
+    }
+  }, [user, open])
+
+  const handleClientSelect = (clientId: string) => {
+    const client = clients.find(c => c.id === clientId)
+    if (client) {
+      setFormData({
+        ...formData,
+        clientId: client.id!,
+        client: client.company || client.name,
+        email: client.email,
+      })
+    }
+  }
 
   const addItem = () => {
     setFormData({
@@ -72,17 +98,55 @@ export function NewFactuurDialog({ open, onOpenChange, onSubmit }: NewFactuurDia
   const btwTotal = formData.items.reduce((sum, item) => sum + (item.quantity * item.price * item.btw) / 100, 0)
   const total = subtotal + btwTotal
 
-  const handleSubmit = () => {
-    onSubmit?.(formData)
-    onOpenChange(false)
-    setFormData({
-      client: "",
-      email: "",
-      description: "",
-      paymentDays: "14",
-      items: [{ description: "", quantity: 1, price: 0, btw: 21 }],
-      notes: "",
-    })
+  const handleSubmit = async () => {
+    if (!user) return
+    
+    setLoading(true)
+    try {
+      const invoiceNumber = await generateInvoiceNumber(user.uid)
+      const dueDate = new Date()
+      dueDate.setDate(dueDate.getDate() + parseInt(formData.paymentDays))
+      
+      const invoiceItems = formData.items.map(item => ({
+        description: item.description,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        total: item.quantity * item.price,
+      }))
+      
+      await addInvoice({
+        userId: user.uid,
+        invoiceNumber,
+        clientId: formData.clientId,
+        clientName: formData.client,
+        clientEmail: formData.email,
+        items: invoiceItems,
+        subtotal,
+        taxRate: 21,
+        taxAmount: btwTotal,
+        total,
+        status: 'draft',
+        dueDate: Timestamp.fromDate(dueDate),
+        notes: formData.notes,
+      })
+      
+      onSubmit?.()
+      onOpenChange(false)
+      setFormData({
+        client: "",
+        clientId: "",
+        email: "",
+        description: "",
+        paymentDays: "14",
+        items: [{ description: "", quantity: 1, price: 0, btw: 21 }],
+        notes: "",
+      })
+    } catch (error) {
+      console.error('Error creating invoice:', error)
+      alert('Er ging iets mis bij het aanmaken van de factuur')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -100,13 +164,19 @@ export function NewFactuurDialog({ open, onOpenChange, onSubmit }: NewFactuurDia
           {/* Client Details */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="client">Klantnaam *</Label>
-              <Input
-                id="client"
-                placeholder="Bedrijfsnaam"
-                value={formData.client}
-                onChange={(e) => setFormData({ ...formData, client: e.target.value })}
-              />
+              <Label htmlFor="client">Selecteer Klant *</Label>
+              <Select onValueChange={handleClientSelect}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Kies een klant" />
+                </SelectTrigger>
+                <SelectContent>
+                  {clients.map((client) => (
+                    <SelectItem key={client.id} value={client.id!}>
+                      {client.company || client.name} - {client.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">E-mailadres *</Label>
@@ -248,7 +318,10 @@ export function NewFactuurDialog({ open, onOpenChange, onSubmit }: NewFactuurDia
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Annuleren
           </Button>
-          <Button onClick={handleSubmit} disabled={!formData.client || !formData.email}>
+          <Button onClick={handleSubmit} disabled={!formData.client || !formData.email || loading}>
+            {loading ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : null}
             Factuur Aanmaken
           </Button>
         </DialogFooter>

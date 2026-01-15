@@ -32,7 +32,7 @@ const menuItems = [
   { icon: FolderKanban, label: "Projecten", href: "/dashboard/projecten" },
   { icon: FileText, label: "Offertes", href: "/dashboard/offertes" },
   { icon: Receipt, label: "Facturen", href: "/dashboard/facturen" },
-  { icon: Package, label: "Materialen", href: "/dashboard/materialen" },
+  { icon: Package, label: "Werkzaamheden", href: "/dashboard/werkzaamheden" },
   { icon: Mail, label: "E-mail", href: "/dashboard/email" },
   { icon: Calendar, label: "Agenda", href: "/dashboard/agenda" },
   { icon: CreditCard, label: "Uitgaven", href: "/dashboard/uitgaven" },

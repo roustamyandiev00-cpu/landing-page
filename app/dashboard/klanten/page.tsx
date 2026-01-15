@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -19,32 +19,60 @@ import {
   UserPlus,
   Building,
   Euro,
+  Trash2,
+  Loader2,
 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { NewKlantDialog } from "@/components/dashboard/new-klant-dialog"
-
-const stats = [
-  { label: "Totaal Klanten", value: "0", change: "-", icon: Users, color: "text-blue-500" },
-  { label: "Actieve Klanten", value: "0", change: "-", icon: UserPlus, color: "text-emerald-500" },
-  { label: "Bedrijven", value: "0", change: "-", icon: Building, color: "text-amber-500" },
-  { label: "Totale Omzet", value: "€0", change: "-", icon: Euro, color: "text-primary" },
-]
-
-interface Klant {
-  id: number
-  naam: string
-  contactpersoon: string
-  email: string
-  telefoon: string
-  stad: string
-  status: "actief" | "inactief"
-  omzet: number
-}
+import { useAuth } from "@/lib/auth-context"
+import { getClients, deleteClient, type Client } from "@/lib/firestore"
 
 export default function KlantenPage() {
+  const { user } = useAuth()
   const [searchQuery, setSearchQuery] = useState("")
   const [newKlantOpen, setNewKlantOpen] = useState(false)
-  const [klanten, setKlanten] = useState<Klant[]>([])
+  const [klanten, setKlanten] = useState<Client[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const loadClients = async () => {
+    if (!user) return
+    setLoading(true)
+    try {
+      const data = await getClients(user.uid)
+      setKlanten(data)
+    } catch (error) {
+      console.error('Error loading clients:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadClients()
+  }, [user])
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Weet je zeker dat je deze klant wilt verwijderen?')) return
+    try {
+      await deleteClient(id)
+      loadClients()
+    } catch (error) {
+      console.error('Error deleting client:', error)
+    }
+  }
+
+  const filteredKlanten = klanten.filter(k => 
+    k.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    k.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    k.company?.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  const stats = [
+    { label: "Totaal Klanten", value: klanten.length.toString(), change: "-", icon: Users, color: "text-blue-500" },
+    { label: "Actieve Klanten", value: klanten.length.toString(), change: "-", icon: UserPlus, color: "text-emerald-500" },
+    { label: "Bedrijven", value: klanten.filter(k => k.company).length.toString(), change: "-", icon: Building, color: "text-amber-500" },
+    { label: "Totale Omzet", value: "€0", change: "-", icon: Euro, color: "text-primary" },
+  ]
 
   return (
     <DashboardLayout>
@@ -113,28 +141,26 @@ export default function KlantenPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Naam</th>
                     <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Bedrijf</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Contactpersoon</th>
                     <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Contact</th>
                     <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Locatie</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Omzet</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Status</th>
                     <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">Acties</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {klanten.map((klant) => (
+                  {filteredKlanten.map((klant) => (
                     <tr key={klant.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                            <span className="text-primary font-semibold">{klant.naam.charAt(0)}</span>
+                            <span className="text-primary font-semibold">{klant.name?.charAt(0) || '?'}</span>
                           </div>
-                          <span className="font-medium text-foreground">{klant.naam}</span>
+                          <span className="font-medium text-foreground">{klant.name}</span>
                         </div>
                       </td>
                       <td className="py-4 px-4">
-                        <span className="text-foreground">{klant.contactpersoon}</span>
+                        <span className="text-foreground">{klant.company || '-'}</span>
                       </td>
                       <td className="py-4 px-4">
                         <div className="space-y-1">
@@ -142,27 +168,19 @@ export default function KlantenPage() {
                             <Mail className="w-3 h-3" />
                             {klant.email}
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Phone className="w-3 h-3" />
-                            {klant.telefoon}
-                          </div>
+                          {klant.phone && (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Phone className="w-3 h-3" />
+                              {klant.phone}
+                            </div>
+                          )}
                         </div>
                       </td>
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-2 text-muted-foreground">
                           <MapPin className="w-4 h-4" />
-                          {klant.stad}
+                          {klant.city || '-'}
                         </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <span className="font-medium text-foreground">
-                          {klant.omzet.toLocaleString("nl-NL", { style: "currency", currency: "EUR" })}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4">
-                        <Badge variant={klant.status === "actief" ? "default" : "secondary"}>
-                          {klant.status === "actief" ? "Actief" : "Inactief"}
-                        </Badge>
                       </td>
                       <td className="py-4 px-4 text-right">
                         <DropdownMenu>
@@ -178,8 +196,8 @@ export default function KlantenPage() {
                             <DropdownMenuItem>
                               <Mail className="w-4 h-4 mr-2" /> E-mail sturen
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Phone className="w-4 h-4 mr-2" /> Bellen
+                            <DropdownMenuItem onClick={() => handleDelete(klant.id!)}>
+                              <Trash2 className="w-4 h-4 mr-2" /> Verwijderen
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -197,7 +215,10 @@ export default function KlantenPage() {
       <NewKlantDialog
         open={newKlantOpen}
         onOpenChange={setNewKlantOpen}
-        onSubmit={() => setNewKlantOpen(false)}
+        onSubmit={() => {
+          setNewKlantOpen(false)
+          loadClients()
+        }}
       />
     </DashboardLayout>
   )

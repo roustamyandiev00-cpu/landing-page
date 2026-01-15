@@ -5,6 +5,8 @@ import { ArrowRight, Play, Sparkles, Clock, FileCheck } from "lucide-react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 
+import Image from "next/image"
+
 export function Hero() {
   return (
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
@@ -71,10 +73,13 @@ export function Hero() {
             className="relative"
           >
             <div className="relative rounded-2xl shadow-2xl border border-border overflow-hidden">
-              <img 
+              <Image 
                 src="/dashboard-preview.png" 
                 alt="Dashboard Preview" 
+                width={800}
+                height={600}
                 className="w-full h-auto rounded-2xl"
+                priority
               />
             </div>
 

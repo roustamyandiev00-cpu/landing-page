@@ -26,6 +26,8 @@ const steps = [
   },
 ]
 
+import Image from "next/image"
+
 export function HowItWorks() {
   return (
     <section id="how-it-works" className="py-20 md:py-32">
@@ -65,9 +67,11 @@ export function HowItWorks() {
               <div className="flex-1">
                 <div className="relative">
                   <div className="absolute inset-0 bg-primary/10 rounded-3xl blur-2xl transform rotate-3" />
-                  <img
+                  <Image
                     src={step.image || "/placeholder.svg"}
                     alt={step.title}
+                    width={500}
+                    height={400}
                     className="relative rounded-2xl shadow-xl border border-border w-full max-w-sm mx-auto"
                   />
                 </div>

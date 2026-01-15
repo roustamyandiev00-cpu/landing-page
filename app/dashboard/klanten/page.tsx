@@ -23,9 +23,22 @@ import {
   Loader2,
 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { NewKlantDialog } from "@/components/dashboard/new-klant-dialog"
 import { useAuth } from "@/lib/auth-context"
 import { getClients, deleteClient, type Client } from "@/lib/firestore"
+import { handleFirestoreError } from "@/lib/error-handler"
+import { toast } from "sonner"
 
 export default function KlantenPage() {
   const { user } = useAuth()
@@ -33,15 +46,17 @@ export default function KlantenPage() {
   const [newKlantOpen, setNewKlantOpen] = useState(false)
   const [klanten, setKlanten] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
 
   const loadClients = async () => {
-    if (!user) return
+    if (!user?.uid) return
+    
     setLoading(true)
     try {
       const data = await getClients(user.uid)
       setKlanten(data)
     } catch (error) {
-      console.error('Error loading clients:', error)
+      handleFirestoreError(error, 'laden van klanten')
     } finally {
       setLoading(false)
     }
@@ -52,12 +67,15 @@ export default function KlantenPage() {
   }, [user])
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Weet je zeker dat je deze klant wilt verwijderen?')) return
+    setDeleteLoading(id)
     try {
       await deleteClient(id)
+      toast.success('Klant succesvol verwijderd')
       loadClients()
     } catch (error) {
-      console.error('Error deleting client:', error)
+      handleFirestoreError(error, 'verwijderen van klant')
+    } finally {
+      setDeleteLoading(null)
     }
   }
 
@@ -126,7 +144,12 @@ export default function KlantenPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {klanten.length === 0 ? (
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                <span className="ml-2 text-muted-foreground">Klanten laden...</span>
+              </div>
+            ) : klanten.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-foreground mb-2">Nog geen klanten</h3>
@@ -134,6 +157,15 @@ export default function KlantenPage() {
                 <Button onClick={() => setNewKlantOpen(true)}>
                   <UserPlus className="w-4 h-4 mr-2" />
                   Nieuwe Klant
+                </Button>
+              </div>
+            ) : filteredKlanten.length === 0 ? (
+              <div className="text-center py-12">
+                <Search className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">Geen resultaten</h3>
+                <p className="text-muted-foreground mb-4">Geen klanten gevonden voor "{searchQuery}"</p>
+                <Button variant="outline" onClick={() => setSearchQuery("")}>
+                  Wis zoekopdracht
                 </Button>
               </div>
             ) : (
@@ -196,9 +228,39 @@ export default function KlantenPage() {
                             <DropdownMenuItem>
                               <Mail className="w-4 h-4 mr-2" /> E-mail sturen
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDelete(klant.id!)}>
-                              <Trash2 className="w-4 h-4 mr-2" /> Verwijderen
-                            </DropdownMenuItem>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                  <Trash2 className="w-4 h-4 mr-2" /> Verwijderen
+                                </DropdownMenuItem>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Klant verwijderen?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Weet je zeker dat je {klant.name} wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.
+                                    Alle gerelateerde facturen en offertes blijven behouden.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Annuleren</AlertDialogCancel>
+                                  <AlertDialogAction 
+                                    onClick={() => handleDelete(klant.id!)}
+                                    disabled={deleteLoading === klant.id}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  >
+                                    {deleteLoading === klant.id ? (
+                                      <>
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        Verwijderen...
+                                      </>
+                                    ) : (
+                                      'Verwijderen'
+                                    )}
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </td>

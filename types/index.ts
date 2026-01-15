@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore"
+
 // User & Auth types
 export interface UserProfile {
   uid: string
@@ -15,8 +17,8 @@ export interface UserProfile {
   companyKvK?: string
   companyBTW?: string
   companyIBAN?: string
-  createdAt: any
-  updatedAt: any
+  createdAt: Timestamp
+  updatedAt: Timestamp
 }
 
 // Client types
@@ -32,8 +34,8 @@ export interface Client {
   postalCode?: string
   country?: string
   notes?: string
-  createdAt: any
-  updatedAt: any
+  createdAt: Timestamp
+  updatedAt: Timestamp
 }
 
 // Invoice types
@@ -50,11 +52,11 @@ export interface Invoice {
   taxAmount: number
   total: number
   status: 'draft' | 'sent' | 'paid' | 'overdue'
-  dueDate: any
-  paidDate?: any
+  dueDate: Timestamp
+  paidDate?: Timestamp
   notes?: string
-  createdAt: any
-  updatedAt: any
+  createdAt: Timestamp
+  updatedAt: Timestamp
 }
 
 export interface InvoiceItem {
@@ -78,10 +80,10 @@ export interface Quote {
   taxAmount: number
   total: number
   status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired'
-  validUntil: any
+  validUntil: Timestamp
   notes?: string
-  createdAt: any
-  updatedAt: any
+  createdAt: Timestamp
+  updatedAt: Timestamp
 }
 
 // Bank Account types
@@ -95,8 +97,22 @@ export interface BankAccount {
   balance: number
   currency: string
   color: string
-  createdAt: any
-  updatedAt: any
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+// Transaction types
+export interface Transaction {
+  id?: string
+  userId: string
+  bankAccountId: string
+  description: string
+  amount: number
+  type: 'income' | 'expense'
+  category: string
+  date: Timestamp
+  createdAt: Timestamp
+  updatedAt: Timestamp
 }
 
 // Transaction types
@@ -122,4 +138,22 @@ export interface DashboardStats {
   totalQuotes: number
   paidInvoices: number
   pendingQuotes: number
+}
+// Werkzaamheden types
+export interface UserWerkzaamheid {
+  id?: string
+  userId: string
+  originalId?: string // Reference to original werkzaamheid if customized
+  categorie: string
+  naam: string
+  omschrijving: string
+  eenheid: "stuk" | "m2" | "m" | "uur" | "dag" | "forfait"
+  prijsMin: number
+  prijsMax: number
+  standaardPrijs: number
+  btwTarief: 9 | 21
+  tags: string[]
+  isCustom: boolean
+  createdAt: any
+  updatedAt: any
 }

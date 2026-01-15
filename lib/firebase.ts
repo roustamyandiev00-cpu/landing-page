@@ -15,22 +15,21 @@ import {
   type User,
 } from "firebase/auth"
 import { getFirestore, doc, setDoc, getDoc, collection, addDoc, updateDoc, deleteDoc, query, where, getDocs, orderBy, serverTimestamp } from "firebase/firestore"
+import { env } from "./env"
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "",
+  apiKey: env.FIREBASE_API_KEY,
+  authDomain: env.FIREBASE_AUTH_DOMAIN,
+  projectId: env.FIREBASE_PROJECT_ID,
+  storageBucket: env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: env.FIREBASE_APP_ID,
 }
 
-// Initialize Firebase only if config is available
-const app = getApps().length === 0 && firebaseConfig.apiKey 
-  ? initializeApp(firebaseConfig) 
-  : getApps()[0]
-const auth = app ? getAuth(app) : null
-const db = app ? getFirestore(app) : null
+// Initialize Firebase
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
+const auth = getAuth(app)
+const db = getFirestore(app)
 
 // Providers
 const googleProvider = new GoogleAuthProvider()
@@ -48,9 +47,6 @@ const isMobile = () => {
 
 // Sign in with Google
 export const signInWithGoogle = async () => {
-  if (!auth) {
-    return { user: null, error: "Firebase niet geconfigureerd. Controleer je .env.local bestand." }
-  }
   try {
     // Use redirect on mobile, popup on desktop
     if (isMobile()) {
@@ -60,24 +56,25 @@ export const signInWithGoogle = async () => {
       const result = await signInWithPopup(auth, googleProvider)
       return { user: result.user, error: null }
     }
-  } catch (error: any) {
-    let errorMessage = error.message
-    if (error.code === 'auth/popup-blocked') {
-      errorMessage = 'Pop-up geblokkeerd. Sta pop-ups toe voor deze site.'
-    } else if (error.code === 'auth/popup-closed-by-user') {
-      errorMessage = 'Inloggen geannuleerd'
-    } else if (error.code === 'auth/unauthorized-domain') {
-      errorMessage = 'Dit domein is niet geautoriseerd. Voeg het toe in Firebase Console.'
+  } catch (error: unknown) {
+    let errorMessage = 'Er ging iets mis bij het inloggen'
+    
+    if (error instanceof Error) {
+      if (error.message.includes('popup-blocked')) {
+        errorMessage = 'Pop-up geblokkeerd. Sta pop-ups toe voor deze site.'
+      } else if (error.message.includes('popup-closed-by-user')) {
+        errorMessage = 'Inloggen geannuleerd'
+      } else if (error.message.includes('unauthorized-domain')) {
+        errorMessage = 'Dit domein is niet geautoriseerd. Voeg het toe in Firebase Console.'
+      }
     }
+    
     return { user: null, error: errorMessage }
   }
 }
 
 // Sign in with Apple
 export const signInWithApple = async () => {
-  if (!auth) {
-    return { user: null, error: "Firebase niet geconfigureerd. Controleer je .env.local bestand." }
-  }
   try {
     // Use redirect on mobile, popup on desktop
     if (isMobile()) {

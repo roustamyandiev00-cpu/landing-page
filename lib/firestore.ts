@@ -15,118 +15,42 @@ import {
   serverTimestamp
 } from "firebase/firestore"
 import { getApps } from "firebase/app"
+import type {
+  UserProfile,
+  Client,
+  Invoice,
+  InvoiceItem,
+  Quote,
+  BankAccount,
+  Transaction
+} from "@/types"
 
 // Initialize Firestore
 const app = getApps()[0]
-export const db = app ? getFirestore(app) : null
-
-// Types
-export interface UserProfile {
-  uid: string
-  email: string
-  displayName: string
-  photoURL?: string
-  companyName?: string
-  companyAddress?: string
-  companyCity?: string
-  companyPostalCode?: string
-  companyCountry?: string
-  companyPhone?: string
-  companyEmail?: string
-  companyWebsite?: string
-  companyKvK?: string
-  companyBTW?: string
-  companyIBAN?: string
-  createdAt: Timestamp
-  updatedAt: Timestamp
+if (!app) {
+  throw new Error('Firebase app not initialized. Make sure to import firebase.ts first.')
 }
 
-export interface Client {
+export const db = getFirestore(app)
+
+// Additional types specific to Firestore operations
+export interface UserWerkzaamheid {
   id?: string
   userId: string
-  name: string
-  email: string
-  phone?: string
-  company?: string
-  address?: string
-  city?: string
-  postalCode?: string
-  country?: string
+  originalId?: string // Reference to original werkzaamheid if customized
+  categorie: string
+  naam: string
+  omschrijving: string
+  eenheid: "stuk" | "m2" | "m" | "uur" | "dag" | "forfait"
+  prijsMin: number
+  prijsMax: number
+  standaardPrijs: number
+  btwTarief: 9 | 21
+  tags: string[]
+  isCustom: boolean
   notes?: string
   createdAt: Timestamp
   updatedAt: Timestamp
-}
-
-export interface Invoice {
-  id?: string
-  userId: string
-  invoiceNumber: string
-  clientId: string
-  clientName: string
-  clientEmail: string
-  items: InvoiceItem[]
-  subtotal: number
-  taxRate: number
-  taxAmount: number
-  total: number
-  status: 'draft' | 'sent' | 'paid' | 'overdue'
-  dueDate: Timestamp
-  paidDate?: Timestamp
-  notes?: string
-  createdAt: Timestamp
-  updatedAt: Timestamp
-}
-
-export interface InvoiceItem {
-  description: string
-  quantity: number
-  unitPrice: number
-  total: number
-}
-
-export interface Quote {
-  id?: string
-  userId: string
-  quoteNumber: string
-  clientId: string
-  clientName: string
-  clientEmail: string
-  items: InvoiceItem[]
-  subtotal: number
-  taxRate: number
-  taxAmount: number
-  total: number
-  status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired'
-  validUntil: Timestamp
-  notes?: string
-  createdAt: Timestamp
-  updatedAt: Timestamp
-}
-
-export interface BankAccount {
-  id?: string
-  userId: string
-  bankName: string
-  accountName: string
-  iban: string
-  accountType: 'checking' | 'savings' | 'business'
-  balance: number
-  currency: string
-  color: string
-  createdAt: Timestamp
-  updatedAt: Timestamp
-}
-
-export interface Transaction {
-  id?: string
-  userId: string
-  bankAccountId: string
-  description: string
-  amount: number
-  type: 'income' | 'expense'
-  category: string
-  date: Timestamp
-  createdAt: Timestamp
 }
 
 // User Profile Functions
@@ -358,4 +282,63 @@ export async function getDashboardStats(userId: string) {
     paidInvoices: invoices.filter(i => i.status === 'paid').length,
     pendingQuotes: quotes.filter(q => q.status === 'sent').length
   }
+}
+// Werkzaamheden Functions
+export async function getUserWerkzaamheden(userId: string): Promise<UserWerkzaamheid[]> {
+  if (!db) return []
+  const q = query(
+    collection(db, "werkzaamheden"),
+    where("userId", "==", userId),
+    orderBy("createdAt", "desc")
+  )
+  const snapshot = await getDocs(q)
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserWerkzaamheid))
+}
+
+export async function addUserWerkzaamheid(data: Omit<UserWerkzaamheid, 'id' | 'createdAt' | 'updatedAt'>) {
+  if (!db) return null
+  const docRef = await addDoc(collection(db, "werkzaamheden"), {
+    ...data,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  })
+  return docRef.id
+}
+
+export async function updateUserWerkzaamheid(id: string, data: Partial<UserWerkzaamheid>) {
+  if (!db) return
+  await updateDoc(doc(db, "werkzaamheden", id), {
+    ...data,
+    updatedAt: serverTimestamp()
+  })
+}
+
+export async function deleteUserWerkzaamheid(id: string) {
+  if (!db) return
+  await deleteDoc(doc(db, "werkzaamheden", id))
+}
+
+export async function customizeWerkzaamheid(
+  userId: string, 
+  originalWerkzaamheid: any, 
+  customizations: Partial<Pick<UserWerkzaamheid, 'standaardPrijs' | 'prijsMin' | 'prijsMax' | 'btwTarief' | 'eenheid'>>
+) {
+  if (!db) return null
+  
+  const customWerkzaamheid: Omit<UserWerkzaamheid, 'id' | 'createdAt' | 'updatedAt'> = {
+    userId,
+    originalId: originalWerkzaamheid.id,
+    categorie: originalWerkzaamheid.categorie,
+    naam: originalWerkzaamheid.naam,
+    omschrijving: originalWerkzaamheid.omschrijving,
+    eenheid: customizations.eenheid || originalWerkzaamheid.eenheid,
+    prijsMin: customizations.prijsMin || originalWerkzaamheid.prijsMin,
+    prijsMax: customizations.prijsMax || originalWerkzaamheid.prijsMax,
+    standaardPrijs: customizations.standaardPrijs || originalWerkzaamheid.standaardPrijs,
+    btwTarief: customizations.btwTarief || originalWerkzaamheid.btwTarief,
+    tags: originalWerkzaamheid.tags,
+    isCustom: true
+  }
+  
+  return await addUserWerkzaamheid(customWerkzaamheid)
 }

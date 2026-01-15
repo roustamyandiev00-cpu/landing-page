@@ -27,10 +27,23 @@ import {
   Trash2,
 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { NewFactuurDialog } from "@/components/dashboard/new-factuur-dialog"
 import { AIGeneratorDialog } from "@/components/dashboard/ai-generator-dialog"
 import { useAuth } from "@/lib/auth-context"
 import { getInvoices, updateInvoice, deleteInvoice, type Invoice } from "@/lib/firestore"
+import { handleFirestoreError } from "@/lib/error-handler"
+import { toast } from "sonner"
 
 interface DisplayInvoice {
   id: string
@@ -56,6 +69,7 @@ export default function FacturenPage() {
   const [aiGeneratorOpen, setAiGeneratorOpen] = useState(false)
   const [invoices, setInvoices] = useState<DisplayInvoice[]>([])
   const [loading, setLoading] = useState(true)
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
 
   // Calculate stats from real data
   const totalRevenue = invoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.amount, 0)
@@ -71,7 +85,8 @@ export default function FacturenPage() {
   ]
 
   const loadInvoices = async () => {
-    if (!user) return
+    if (!user?.uid) return
+    
     setLoading(true)
     try {
       const data = await getInvoices(user.uid)
@@ -86,7 +101,7 @@ export default function FacturenPage() {
       }))
       setInvoices(mapped)
     } catch (error) {
-      console.error('Error loading invoices:', error)
+      handleFirestoreError(error, 'laden van facturen')
     } finally {
       setLoading(false)
     }
@@ -97,21 +112,28 @@ export default function FacturenPage() {
   }, [user])
 
   const handleMarkPaid = async (invoiceId: string) => {
+    setActionLoading(`paid-${invoiceId}`)
     try {
       await updateInvoice(invoiceId, { status: 'paid' })
+      toast.success('Factuur gemarkeerd als betaald')
       loadInvoices()
     } catch (error) {
-      console.error('Error updating invoice:', error)
+      handleFirestoreError(error, 'markeren als betaald')
+    } finally {
+      setActionLoading(null)
     }
   }
 
   const handleDelete = async (invoiceId: string) => {
-    if (!confirm('Weet je zeker dat je deze factuur wilt verwijderen?')) return
+    setActionLoading(`delete-${invoiceId}`)
     try {
       await deleteInvoice(invoiceId)
+      toast.success('Factuur succesvol verwijderd')
       loadInvoices()
     } catch (error) {
-      console.error('Error deleting invoice:', error)
+      handleFirestoreError(error, 'verwijderen van factuur')
+    } finally {
+      setActionLoading(null)
     }
   }
 
@@ -227,14 +249,36 @@ export default function FacturenPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {filteredInvoices.length === 0 ? (
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                <span className="ml-2 text-muted-foreground">Facturen laden...</span>
+              </div>
+            ) : filteredInvoices.length === 0 && activeTab === "all" ? (
               <div className="text-center py-12">
                 <Receipt className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-foreground mb-2">Nog geen facturen</h3>
                 <p className="text-muted-foreground mb-4">Maak je eerste factuur aan om te beginnen</p>
-                <Button onClick={() => setNewFactuurOpen(true)}>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Nieuwe Factuur
+                <div className="flex gap-2 justify-center">
+                  <Button onClick={() => setNewFactuurOpen(true)}>
+                    <Receipt className="w-4 h-4 mr-2" />
+                    Nieuwe Factuur
+                  </Button>
+                  <Button variant="outline" onClick={() => setAiGeneratorOpen(true)}>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    AI Generator
+                  </Button>
+                </div>
+              </div>
+            ) : filteredInvoices.length === 0 ? (
+              <div className="text-center py-12">
+                <Search className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">Geen facturen gevonden</h3>
+                <p className="text-muted-foreground mb-4">
+                  Geen facturen met status "{activeTab}" gevonden
+                </p>
+                <Button variant="outline" onClick={() => setActiveTab("all")}>
+                  Toon alle facturen
                 </Button>
               </div>
             ) : (
@@ -296,9 +340,56 @@ export default function FacturenPage() {
                               <DropdownMenuItem>
                                 <Send className="w-4 h-4 mr-2" /> Versturen
                               </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <CheckCircle className="w-4 h-4 mr-2" /> Markeer Betaald
-                              </DropdownMenuItem>
+                              {invoice.status !== 'paid' && (
+                                <DropdownMenuItem 
+                                  onClick={() => handleMarkPaid(invoice.id)}
+                                  disabled={actionLoading === `paid-${invoice.id}`}
+                                >
+                                  {actionLoading === `paid-${invoice.id}` ? (
+                                    <>
+                                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                      Markeren...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <CheckCircle className="w-4 h-4 mr-2" />
+                                      Markeer Betaald
+                                    </>
+                                  )}
+                                </DropdownMenuItem>
+                              )}
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                    <Trash2 className="w-4 h-4 mr-2" /> Verwijderen
+                                  </DropdownMenuItem>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Factuur verwijderen?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Weet je zeker dat je factuur {invoice.id} wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Annuleren</AlertDialogCancel>
+                                    <AlertDialogAction 
+                                      onClick={() => handleDelete(invoice.id)}
+                                      disabled={actionLoading === `delete-${invoice.id}`}
+                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                      {actionLoading === `delete-${invoice.id}` ? (
+                                        <>
+                                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                          Verwijderen...
+                                        </>
+                                      ) : (
+                                        'Verwijderen'
+                                      )}
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </td>

@@ -23,10 +23,12 @@ import {
   Sparkles,
   Trash2,
   Loader2,
+  ChevronDown,
+  Plus,
 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { NewOfferteDialog } from "@/components/dashboard/new-offerte-dialog"
-import { AIOfferteDialogV2 } from "@/components/dashboard/ai-offerte-dialog-v2"
+import { AIOfferteDialog } from "@/components/dashboard/ai-offerte-dialog"
 import { generateOfferteHTML, openPDFPreview, type OfferteData } from "@/lib/pdf-generator"
 import { useAuth } from "@/lib/auth-context"
 import {
@@ -231,9 +233,27 @@ export default function OffertesPage() {
           title="Offertes"
           description="Maak en beheer je offertes"
           icon={FileText}
-          actionLabel="Nieuwe Offerte"
-          onAction={() => setNewOfferteOpen(true)}
-        />
+        >
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
+                <Plus className="w-4 h-4 mr-2" />
+                Nieuwe Offerte
+                <ChevronDown className="w-4 h-4 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => setNewOfferteOpen(true)}>
+                <FileText className="w-4 h-4 mr-2" />
+                Handmatig maken
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setAiGeneratorOpen(true)}>
+                <Sparkles className="w-4 h-4 mr-2" />
+                Met AI maken
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </PageHeader>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -259,21 +279,21 @@ export default function OffertesPage() {
           ))}
         </div>
 
-        {/* AI Quick Action */}
-        <Card className="glass-card border-primary/20 bg-primary/5">
+        {/* AI Quick Action - Nu minder prominent */}
+        <Card className="glass-card border-muted/40 bg-muted/20">
           <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-primary" />
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h3 className="font-medium text-foreground">AI Offerte Generator</h3>
                 <p className="text-sm text-muted-foreground">Beschrijf je project en laat AI een offerte maken</p>
               </div>
             </div>
-            <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto" onClick={() => setAiGeneratorOpen(true)}>
+            <Button variant="outline" className="w-full sm:w-auto" onClick={() => setAiGeneratorOpen(true)}>
               <Sparkles className="w-4 h-4 mr-2" />
-              Genereer met AI
+              Probeer AI Generator
             </Button>
           </CardContent>
         </Card>
@@ -403,7 +423,7 @@ export default function OffertesPage() {
         onOpenChange={setNewOfferteOpen}
         onSubmit={handleNewOfferte}
       />
-      <AIOfferteDialogV2
+      <AIOfferteDialog
         open={aiGeneratorOpen}
         onOpenChange={setAiGeneratorOpen}
         onSubmit={handleAIOfferte}

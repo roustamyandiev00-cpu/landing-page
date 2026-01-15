@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Sparkles, FileText, Camera, CreditCard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { NewFactuurDialog } from "./new-factuur-dialog"
-import { AIOfferteDialogV2 as NewOfferteDialog } from "./ai-offerte-dialog-v2"
+import { AIOfferteDialog as NewOfferteDialog } from "./ai-offerte-dialog"
 import { BonScannerDialog } from "./bon-scanner-dialog"
 import { NewUitgaveDialog } from "./new-uitgave-dialog"
 

@@ -11,10 +11,18 @@ import "./globals.css"
 const _inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://archonpro.com'),
   title: "ARCHON.AI - Slimme Bouwsoftware",
   description: "AI-aangedreven software voor bouwprofessionals. Maak professionele offertes in 2 minuten met onze slimme AI.",
   generator: 'v0.app',
   manifest: "/manifest.json",
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   verification: {
     google: "zH4_RdoOEc1w3ilvs7OJJWgYq5ZlajSfwKJj1_oGCg8",
   },

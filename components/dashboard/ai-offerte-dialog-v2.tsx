@@ -659,7 +659,244 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
             </div>
           )}
 
-          {/* Step 3: Generating */}
+          {/* Step 3: Afmetingen */}
+          {step === "afmetingen" && (
+            <div className="space-y-4 px-1">
+              <div className="text-center mb-4">
+                <Ruler className="w-12 h-12 text-primary mx-auto mb-2" />
+                <h3 className="text-lg font-medium">Afmetingen invoeren</h3>
+                <p className="text-sm text-muted-foreground">
+                  Voer de afmetingen in voor een nauwkeurigere berekening (optioneel)
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="length">Lengte (m)</Label>
+                  <Input
+                    id="length"
+                    type="number"
+                    placeholder="0.0"
+                    min={0}
+                    step={0.1}
+                    value={dimensions.length || ""}
+                    onChange={(e) => setDimensions(prev => ({ 
+                      ...prev, 
+                      length: parseFloat(e.target.value) || 0 
+                    }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="width">Breedte (m)</Label>
+                  <Input
+                    id="width"
+                    type="number"
+                    placeholder="0.0"
+                    min={0}
+                    step={0.1}
+                    value={dimensions.width || ""}
+                    onChange={(e) => setDimensions(prev => ({ 
+                      ...prev, 
+                      width: parseFloat(e.target.value) || 0 
+                    }))}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="height">Hoogte (m) - optioneel</Label>
+                <Input
+                  id="height"
+                  type="number"
+                  placeholder="0.0"
+                  min={0}
+                  step={0.1}
+                  value={dimensions.height || ""}
+                  onChange={(e) => setDimensions(prev => ({ 
+                    ...prev, 
+                    height: parseFloat(e.target.value) || 0 
+                  }))}
+                />
+              </div>
+
+              {dimensions.area && dimensions.area > 0 && (
+                <Card className="bg-primary/5 border-primary/20">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                        <Ruler className="w-4 h-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Berekende oppervlakte</p>
+                        <p className="text-2xl font-bold text-primary">{dimensions.area.toFixed(1)} m²</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">Veelgebruikte afmetingen</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { label: "Kleine badkamer", length: 2.5, width: 1.8 },
+                    { label: "Standaard badkamer", length: 3.0, width: 2.5 },
+                    { label: "Grote badkamer", length: 4.0, width: 3.0 },
+                    { label: "Toilet", length: 1.5, width: 1.0 },
+                    { label: "Keuken", length: 4.0, width: 2.5 },
+                    { label: "Woonkamer", length: 6.0, width: 4.0 },
+                  ].map((preset) => (
+                    <Button
+                      key={preset.label}
+                      variant="outline"
+                      size="sm"
+                      className="h-auto p-2 text-left"
+                      onClick={() => setDimensions(prev => ({
+                        ...prev,
+                        length: preset.length,
+                        width: preset.width
+                      }))}
+                    >
+                      <div>
+                        <p className="font-medium text-xs">{preset.label}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {preset.length}m × {preset.width}m
+                        </p>
+                      </div>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Foto's */}
+          {step === "fotos" && (
+            <div className="space-y-4 px-1">
+              <div className="text-center mb-4">
+                <Camera className="w-12 h-12 text-primary mx-auto mb-2" />
+                <h3 className="text-lg font-medium">Foto's toevoegen</h3>
+                <p className="text-sm text-muted-foreground">
+                  Upload foto's van het project voor betere AI-analyse (optioneel)
+                </p>
+              </div>
+
+              {/* Upload area */}
+              <div 
+                className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  handleImageUpload(e.dataTransfer.files)
+                }}
+                onDragOver={(e) => e.preventDefault()}
+              >
+                <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-sm font-medium mb-1">Klik om foto's te uploaden</p>
+                <p className="text-xs text-muted-foreground">Of sleep foto's hierheen</p>
+                <p className="text-xs text-muted-foreground mt-2">JPG, PNG tot 10MB per foto</p>
+              </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => handleImageUpload(e.target.files)}
+              />
+
+              {/* Uploaded images */}
+              {uploadedImages.length > 0 && (
+                <div className="space-y-3">
+                  <Label>Geüploade foto's ({uploadedImages.length})</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {uploadedImages.map((image) => (
+                      <div key={image.id} className="relative group">
+                        <div className="aspect-square rounded-lg overflow-hidden bg-muted">
+                          <img
+                            src={image.url}
+                            alt="Project foto"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2 w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => removeImage(image.id)}
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                        {image.analysis && (
+                          <div className="absolute bottom-2 left-2 right-2">
+                            <Badge variant="secondary" className="text-xs">
+                              <ImageIcon className="w-3 h-3 mr-1" />
+                              AI geanalyseerd
+                            </Badge>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* AI Suggestions from images */}
+              {aiSuggestions.length > 0 && (
+                <Card className="bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-800">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-2">
+                      <Lightbulb className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-amber-800 dark:text-amber-200 mb-2">
+                          AI Suggesties op basis van foto's
+                        </p>
+                        <div className="space-y-1">
+                          {aiSuggestions.map((suggestion, index) => (
+                            <p key={index} className="text-sm text-amber-700 dark:text-amber-300">
+                              • {suggestion}
+                            </p>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Image analysis results */}
+              {uploadedImages.some(img => img.analysis) && (
+                <div className="space-y-2">
+                  <Label>AI Analyse resultaten</Label>
+                  {uploadedImages
+                    .filter(img => img.analysis)
+                    .map((image) => (
+                      <Card key={image.id} className="bg-muted/30">
+                        <CardContent className="p-3">
+                          <p className="text-sm text-muted-foreground mb-2">
+                            Foto analyse:
+                          </p>
+                          <p className="text-sm">{image.analysis}</p>
+                          {image.suggestions && image.suggestions.length > 0 && (
+                            <div className="mt-2">
+                              <p className="text-xs text-muted-foreground mb-1">Suggesties:</p>
+                              {image.suggestions.map((suggestion, index) => (
+                                <Badge key={index} variant="outline" className="mr-1 mb-1 text-xs">
+                                  {suggestion}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Step 5: Generating */}
           {step === "genereren" && (
             <div className="py-12 text-center">
               <div className="relative w-20 h-20 mx-auto mb-6">
@@ -680,7 +917,7 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
             </div>
           )}
 
-          {/* Step 4: Items aanpassen */}
+          {/* Step 6: Items aanpassen */}
           {step === "items" && (
             <div className="space-y-4 px-1">
               <div className="flex items-center justify-between">
@@ -848,7 +1085,7 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
             </div>
           )}
 
-          {/* Step 5: Preview */}
+          {/* Step 7: Preview */}
           {step === "preview" && (
             <div className="space-y-4 px-1">
               {/* Summary card */}
@@ -943,7 +1180,7 @@ export function AIOfferteDialogV2({ open, onOpenChange, onSubmit }: AIOfferteDia
               </Button>
             ) : step !== "genereren" && (
               <Button onClick={goNext} disabled={!canGoNext()}>
-                {step === "beschrijving" ? (
+                {step === "fotos" ? (
                   <>
                     <Sparkles className="w-4 h-4 mr-2" />
                     Genereer met AI

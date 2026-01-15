@@ -3,7 +3,14 @@ import { generateOfferteWithAI } from "@/lib/gemini"
 
 export async function POST(request: NextRequest) {
   try {
-    const { projectDescription, clientName } = await request.json()
+    const { 
+      projectDescription, 
+      projectType,
+      clientName, 
+      dimensions,
+      imageAnalyses,
+      existingSuggestions 
+    } = await request.json()
 
     if (!projectDescription) {
       return NextResponse.json(
@@ -12,7 +19,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const offerte = await generateOfferteWithAI(projectDescription, clientName || "Klant")
+    const offerte = await generateOfferteWithAI(
+      projectDescription, 
+      clientName || "Klant",
+      {
+        projectType,
+        dimensions,
+        imageAnalyses,
+        existingSuggestions
+      }
+    )
     
     return NextResponse.json(offerte)
   } catch (error: any) {

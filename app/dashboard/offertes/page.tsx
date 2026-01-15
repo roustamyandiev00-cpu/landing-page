@@ -37,7 +37,6 @@ import {
   generateQuoteNumber,
   type Quote
 } from "@/lib/firestore"
-import { useAuth } from "@/lib/auth-context"
 
 // Maps status from firestore to UI specific status
 const mapStatus = (status: string) => {

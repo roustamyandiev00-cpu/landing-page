@@ -19,31 +19,28 @@ export function QuickActions() {
       <div className="flex flex-wrap gap-3">
         <Button
           onClick={() => setFactuurOpen(true)}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+          className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
         >
           <Sparkles className="w-4 h-4" />
           Nieuwe Factuur (AI)
         </Button>
         <Button
           onClick={() => setOfferteOpen(true)}
-          variant="secondary"
-          className="bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border gap-2"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
         >
           <FileText className="w-4 h-4" />
           Nieuwe Offerte (AI)
         </Button>
         <Button
           onClick={() => setBonScannerOpen(true)}
-          variant="secondary"
-          className="bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border gap-2"
+          className="bg-purple-600 hover:bg-purple-700 text-white gap-2"
         >
           <Camera className="w-4 h-4" />
           Bon Scannen
         </Button>
         <Button
           onClick={() => setUitgaveOpen(true)}
-          variant="secondary"
-          className="bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border gap-2"
+          className="bg-amber-600 hover:bg-amber-700 text-white gap-2"
         >
           <CreditCard className="w-4 h-4" />
           Uitgave

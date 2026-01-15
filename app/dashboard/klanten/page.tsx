@@ -197,9 +197,7 @@ export default function KlantenPage() {
       <NewKlantDialog
         open={newKlantOpen}
         onOpenChange={setNewKlantOpen}
-        onSubmit={(data) => {
-          console.log("Nieuwe klant:", data)
-        }}
+        onSubmit={() => setNewKlantOpen(false)}
       />
     </DashboardLayout>
   )

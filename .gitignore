@@ -18,6 +18,7 @@ yarn-error.log*
 
 # env files
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -32,3 +33,19 @@ next-env.d.ts
 # Firebase
 firebase-debug.log
 .firebaserc
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs
+*.log
+
+# Test coverage
+coverage/

@@ -37,7 +37,7 @@ export function NewAfspraakDialog({ children }: NewAfspraakDialogProps) {
   })
 
   const handleSave = () => {
-    console.log("Saving appointment:", formData)
+    // TODO: Save to Firestore
     setOpen(false)
     setFormData({
       title: "",

@@ -53,30 +53,22 @@ export function QuickActions() {
       <NewFactuurDialog
         open={factuurOpen}
         onOpenChange={setFactuurOpen}
-        onSubmit={(data) => {
-          console.log("Nieuwe factuur:", data)
-        }}
+        onSubmit={() => setFactuurOpen(false)}
       />
       <NewOfferteDialog
         open={offerteOpen}
         onOpenChange={setOfferteOpen}
-        onSubmit={(data) => {
-          console.log("Nieuwe offerte:", data)
-        }}
+        onSubmit={() => setOfferteOpen(false)}
       />
       <BonScannerDialog
         open={bonScannerOpen}
         onOpenChange={setBonScannerOpen}
-        onSubmit={(data) => {
-          console.log("Gescande bon:", data)
-        }}
+        onSubmit={() => setBonScannerOpen(false)}
       />
       <NewUitgaveDialog
         open={uitgaveOpen}
         onOpenChange={setUitgaveOpen}
-        onSubmit={(data) => {
-          console.log("Nieuwe uitgave:", data)
-        }}
+        onSubmit={() => setUitgaveOpen(false)}
       />
     </>
   )

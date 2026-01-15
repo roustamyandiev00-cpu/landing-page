@@ -266,17 +266,13 @@ export default function FacturenPage() {
       <NewFactuurDialog
         open={newFactuurOpen}
         onOpenChange={setNewFactuurOpen}
-        onSubmit={(data) => {
-          console.log("Nieuwe factuur:", data)
-        }}
+        onSubmit={() => setNewFactuurOpen(false)}
       />
       <AIGeneratorDialog
         open={aiGeneratorOpen}
         onOpenChange={setAiGeneratorOpen}
         type="factuur"
-        onGenerate={(data) => {
-          console.log("AI gegenereerde factuur:", data)
-        }}
+        onGenerate={() => setAiGeneratorOpen(false)}
       />
     </DashboardLayout>
   )

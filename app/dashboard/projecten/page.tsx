@@ -214,9 +214,7 @@ export default function ProjectenPage() {
       <NewProjectDialog
         open={newProjectOpen}
         onOpenChange={setNewProjectOpen}
-        onSubmit={(data) => {
-          console.log("Nieuw project:", data)
-        }}
+        onSubmit={() => setNewProjectOpen(false)}
       />
     </DashboardLayout>
   )

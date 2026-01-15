@@ -234,9 +234,7 @@ export default function MaterialenPage() {
       <NewMateriaalDialog
         open={newMateriaalOpen}
         onOpenChange={setNewMateriaalOpen}
-        onSubmit={(data) => {
-          console.log("Nieuw materiaal:", data)
-        }}
+        onSubmit={() => setNewMateriaalOpen(false)}
       />
     </DashboardLayout>
   )

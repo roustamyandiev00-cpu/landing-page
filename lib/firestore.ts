@@ -1,14 +1,14 @@
-import { 
-  getFirestore, 
-  collection, 
-  doc, 
-  setDoc, 
-  getDoc, 
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  getDoc,
   getDocs,
   addDoc,
   updateDoc,
   deleteDoc,
-  query, 
+  query,
   where,
   orderBy,
   Timestamp,
@@ -278,18 +278,18 @@ export async function getDashboardStats(userId: string) {
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000)
-  
+
   const overdueCount = invoices.filter(i => {
     if (i.status !== 'sent' && i.status !== 'overdue') return false
     return i.dueDate.toDate() < today
   }).length
-  
+
   const dueTodayCount = invoices.filter(i => {
     if (i.status !== 'sent' && i.status !== 'overdue') return false
     const dueDate = i.dueDate.toDate()
     return dueDate >= today && dueDate < tomorrow
   }).length
-  
+
   // Calculate BTW due date (quarterly)
   const currentMonth = now.getMonth()
   const quarter = Math.floor(currentMonth / 3)
@@ -346,12 +346,12 @@ export async function deleteUserWerkzaamheid(id: string) {
 }
 
 export async function customizeWerkzaamheid(
-  userId: string, 
-  originalWerkzaamheid: any, 
+  userId: string,
+  originalWerkzaamheid: any,
   customizations: Partial<Pick<UserWerkzaamheid, 'standaardPrijs' | 'prijsMin' | 'prijsMax' | 'btwTarief' | 'eenheid'>>
 ) {
   if (!db) return null
-  
+
   const customWerkzaamheid: Omit<UserWerkzaamheid, 'id' | 'createdAt' | 'updatedAt'> = {
     userId,
     originalId: originalWerkzaamheid.id,
@@ -366,6 +366,66 @@ export async function customizeWerkzaamheid(
     tags: originalWerkzaamheid.tags,
     isCustom: true
   }
-  
+
   return await addUserWerkzaamheid(customWerkzaamheid)
+}
+
+export async function getPerformanceData(userId: string) {
+  const [invoices, transactions] = await Promise.all([
+    getInvoices(userId),
+    getTransactions(userId)
+  ])
+
+  const getLast6Months = () => {
+    const months = []
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date()
+      d.setDate(1) // Avoid end-of-month rollovers
+      d.setMonth(d.getMonth() - i)
+      months.push(d)
+    }
+    return months
+  }
+
+  const months = getLast6Months()
+  const data = months.map(date => {
+    // English 'default' might give 'Jan', 'Feb'. User code used 'Jan', 'Feb'.
+    // If user wants Dutch, we should use 'nl-NL'. The previous static data was 'Jan', 'Feb' etc.
+    // Let's use English short for consistency with existing static data or check what they want.
+    // The previous static data: "Jan", "Feb".
+    // Let's use 'en-US' for keys if that was the convention, or 'nl-NL' if we want Dutch.
+    // The UI labels are "Inkomsten", "Uitgaven" (Dutch). 
+    // The previous keys were English abbreviations. I'll stick to that or English month names.
+    const monthKey = date.toLocaleString('en-US', { month: 'short' })
+    const monthIdx = date.getMonth()
+    const year = date.getFullYear()
+
+    // Income from Paid Invoices
+    const monthlyIncome = invoices.reduce((sum, inv) => {
+      if (inv.status !== 'paid' || !inv.paidDate) return sum
+      const pDate = inv.paidDate.toDate()
+      if (pDate.getMonth() === monthIdx && pDate.getFullYear() === year) {
+        return sum + inv.total
+      }
+      return sum
+    }, 0)
+
+    // Expenses from Transactions
+    const monthlyExpenses = transactions.reduce((sum, tx) => {
+      if (tx.type !== 'expense') return sum
+      const tDate = tx.date.toDate()
+      if (tDate.getMonth() === monthIdx && tDate.getFullYear() === year) {
+        return sum + tx.amount
+      }
+      return sum
+    }, 0)
+
+    return {
+      month: monthKey,
+      inkomsten: monthlyIncome,
+      uitgaven: monthlyExpenses
+    }
+  })
+
+  return data
 }

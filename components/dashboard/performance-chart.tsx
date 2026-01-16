@@ -1,20 +1,50 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Area, AreaChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts"
 import { cn } from "@/lib/utils"
-
-const data = [
-  { month: "Jan", inkomsten: 12500, uitgaven: 8400 },
-  { month: "Feb", inkomsten: 15800, uitgaven: 9200 },
-  { month: "Mar", inkomsten: 14200, uitgaven: 9800 },
-  { month: "Apr", inkomsten: 19500, uitgaven: 11400 },
-  { month: "May", inkomsten: 22400, uitgaven: 12600 },
-  { month: "Jun", inkomsten: 24800, uitgaven: 13200 },
-]
+import { useAuth } from "@/lib/auth-context"
+import { getPerformanceData } from "@/lib/firestore"
 
 export function PerformanceChart() {
+  const { user } = useAuth()
   const [period, setPeriod] = useState<"month" | "year">("month")
+  const [data, setData] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const loadData = async () => {
+      if (!user?.uid) return
+      try {
+        const chartData = await getPerformanceData(user.uid)
+        setData(chartData)
+      } catch (error) {
+        console.error("Error loading performance data:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
+  }, [user?.uid])
+
+  if (loading) {
+    return (
+      <div className="glass-card rounded-2xl p-6 h-[400px] animate-pulse">
+        <div className="flex items-center justify-between mb-6">
+          <div className="space-y-2">
+            <div className="h-6 w-32 bg-muted rounded" />
+            <div className="h-4 w-48 bg-muted rounded" />
+          </div>
+          <div className="flex gap-2">
+            <div className="h-8 w-16 bg-muted rounded" />
+            <div className="h-8 w-16 bg-muted rounded" />
+          </div>
+        </div>
+        <div className="h-[280px] bg-muted/10 rounded-xl" />
+      </div>
+    )
+  }
 
   return (
     <div className="glass-card rounded-2xl p-6">

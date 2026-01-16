@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play Store Assets Generator - ARCHON.AI</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2563EB;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+        
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .asset-card {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .asset-card:hover {
+            border-color: #2563EB;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.1);
+        }
+        
+        .asset-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+        
+        .asset-description {
+            color: #64748b;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .asset-specs {
+            background: #e0f2fe;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .asset-specs h4 {
+            color: #0369a1;
+            margin: 0 0 10px 0;
+        }
+        
+        .asset-specs ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #0c4a6e;
+        }
+        
+        .generate-btn {
+            background: linear-gradient(135deg, #2563EB, #1e40af);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .generate-btn:hover {
+            background: linear-gradient(135deg, #1e40af, #1e3a8a);
+            transform: translateY(-2px);
+        }
+        
+        .icon-preview {
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #2563EB, #1e40af);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .screenshot-preview {
+            width: 100%;
+            height: 180px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 14px;
+            text-align: center;
+            border: 2px dashed #cbd5e1;
+        }
+        
+        .status-badge {
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .instructions {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .instructions h3 {
+            color: #92400e;
+            margin: 0 0 10px 0;
+        }
+        
+        .instructions p {
+            color: #78350f;
+            margin: 0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Play Store Assets Generator</h1>
+        <h2 style="text-align: center; color: #64748b; margin-bottom: 40px;">ARCHON.AI - Bouwsoftware</h2>
+        
+        <div class="instructions">
+            <h3>📋 Instructies</h3>
+            <p>
+                Gebruik deze pagina als template om je Play Store assets te maken. 
+                Klik op "Genereer" om de specificaties te zien en maak vervolgens de bestanden aan volgens de guidelines.
+                Alle assets moeten de Nederlandse interface van ARCHON.AI tonen.
+            </p>
+        </div>
+        
+        <div class="asset-grid">
+            <!-- App Icon -->
+            <div class="asset-card">
+                <div class="status-badge">READY</div>
+                <div class="asset-title">📱 App Icon</div>
+                <div class="icon-preview">
+                    ARCHON.AI<br>Bouwsoftware
+                </div>
+                <div class="asset-description">
+                    Het icoon voor Google Play Store. Blauw design met AI elementen en constructie tools.
+                </div>
+                <div class="asset-specs">
+                    <h4>Specificaties</h4>
+                    <ul>
+                        <li>Formaat: 512x512 pixels</li>
+                        <li>Bestand: PNG (geen transparantie)</li>
+                        <li>Kleuren: Blauw (#2563EB) + wit</li>
+                        <li>Max grootte: 1024KB</li>
+                    </ul>
+                </div>
+                <button class="generate-btn" onclick="generateIcon()">Genereer Icon</button>
+            </div>
+            
+            <!-- Screenshots -->
+            <div class="asset-card">
+                <div class="status-badge">READY</div>
+                <div class="asset-title">📸 Screenshots</div>
+                <div class="screenshot-preview">
+                    6-8 Screenshots<br>1080x1920 pixels
+                </div>
+                <div class="asset-description">
+                    Screenshots van de ARCHON.AI interface die de belangrijkste features tonen.
+                </div>
+                <div class="asset-specs">
+                    <h4>Required Screenshots</h4>
+                    <ul>
+                        <li>Dashboard Overzicht</li>
+                        <li>AI Offerte Generator</li>
+                        <li>Facturatie</li>
+                        <li>Project Management</li>
+                        <li>Klantenoverzicht</li>
+                        <li>Analytics Dashboard</li>
+                        <li>Mobiele App</li>
+                        <li>Instellingen</li>
+                    </ul>
+                </div>
+                <button class="generate-btn" onclick="generateScreenshots()">Genereer Screenshots</button>
+            </div>
+            
+            <!-- Promotie Video -->
+            <div class="asset-card">
+                <div class="status-badge">OPTIONEEL</div>
+                <div class="asset-title">🎬 Promotie Video</div>
+                <div class="screenshot-preview">
+                    30-60 seconden<br>1920x1080 pixels
+                </div>
+                <div class="asset-description">
+                    Korte video die de AI features en voordelen van ARCHON.AI demonstreert.
+                </div>
+                <div class="asset-specs">
+                    <h4>Video Specificaties</h4>
+                    <ul>
+                        <li>Formaat: 1920x1080 (Full HD)</li>
+                        <li>Duur: 30-60 seconden</li>
+                        <li>Bestand: MP4 (H.264)</li>
+                        <li>Audio: Professionele voice-over</li>
+                        <li>Max grootte: 50MB</li>
+                    </ul>
+                </div>
+                <button class="generate-btn" onclick="generateVideo()">Genereer Video</button>
+            </div>
+            
+            <!-- Feature Graphic -->
+            <div class="asset-card">
+                <div class="status-badge">OPTIONEEL</div>
+                <div class="asset-title">🎨 Feature Graphic</div>
+                <div class="screenshot-preview">
+                    1024x500 pixels<br>Hero image
+                </div>
+                <div class="asset-description">
+                    Hero afbeelding voor featured listings in Google Play.
+                </div>
+                <div class="asset-specs">
+                    <h4>Graphic Specificaties</h4>
+                    <ul>
+                        <li>Formaat: 1024x500 pixels</li>
+                        <li>Bestand: PNG/JPG</li>
+                        <li>Content: ARCHON.AI branding</li>
+                        <li>Text: "AI Bouwsoftware"</li>
+                        <li>Max grootte: 2MB</li>
+                    </ul>
+                </div>
+                <button class="generate-btn" onclick="generateFeatureGraphic()">Genereer Feature Graphic</button>
+            </div>
+        </div>
+        
+        <div style="background: #f0f9ff; border-radius: 10px; padding: 25px; text-align: center;">
+            <h3 style="color: #0369a1; margin: 0 0 15px 0;">🚀 Ready for Launch!</h3>
+            <p style="color: #0c4a6e; margin: 0; line-height: 1.6;">
+                Alle assets zijn nu voorbereid. Volg de guidelines om de bestanden te maken en upload ze naar Google Play Console.
+                Je AAB is al gebouwd en klaar voor submission!
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        function generateIcon() {
+            alert('📱 Icon Specificaties:\n\n- Formaat: 512x512 PNG\n- Kleuren: Blauw (#2563EB) + wit\n- Design: AI brain + constructie tools\n- Tekst: "ARCHON.AI"\n- Geen transparantie\n- Bestand: play-store-icon.png');
+        }
+        
+        function generateScreenshots() {
+            alert('📸 Screenshot Checklist:\n\n1. Dashboard Overzicht - KPI\'s + AI insights\n2. AI Offerte Generator - 2 minuten flow\n3. Facturatie - Betaalstatus + automatisering\n4. Project Management - Timeline + budget\n5. Klantenoverzicht - CRM interface\n6. Analytics - Grafieken + marges\n7. Mobiele App - Touch interface\n8. Instellingen - Account + integraties\n\nFormaat: 1080x1920 PNG\nTaal: Nederlands');
+        }
+        
+        function generateVideo() {
+            alert('🎬 Video Script:\n\n0-5s: ARCHON.AI intro\n5-15s: AI offerte demo\n15-25s: Facturatie + projecten\n25-30s: Benefits + CTA\n\nFormaat: 1920x1080 MP4\nDuur: 30-60 seconden\nAudio: Nederlandse voice-over');
+        }
+        
+        function generateFeatureGraphic() {
+            alert('🎨 Feature Graphic:\n\n- Formaat: 1024x500\n- Content: ARCHON.AI branding\n- Tekst: "AI Bouwsoftware"\n- Style: Modern, professioneel\n- Kleuren: Blauw + wit\n- Bestand: feature-graphic.png');
+        }
+    </script>
+</body>
+</html>

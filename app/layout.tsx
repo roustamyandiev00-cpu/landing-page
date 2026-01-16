@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: "zH4_RdoOEc1w3ilvs7OJJWgYq5ZlajSfwKJj1_oGCg8",
+    google: ["zH4_RdoOEc1w3ilvs7OJJWgYq5ZlajSfwKJj1_oGCg8", "RYFHqfbcAwx8p-7zu-EJMYgb-UNai5sf_ynFNoQcbnM"],
   },
   icons: {
     icon: [

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screenshot Templates - ARCHON.AI</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #2563EB;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .screenshot-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 2px solid #e2e8f0;
+        }
+        
+        .screenshot-preview {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #2563EB, #1e40af);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .screenshot-number {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .screenshot-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        
+        .screenshot-description {
+            color: #64748b;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .screenshot-features {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .screenshot-features ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #475569;
+        }
+        
+        .screenshot-features li {
+            margin-bottom: 5px;
+        }
+        
+        .callout {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #92400e;
+            text-align: center;
+        }
+        
+        .instructions {
+            background: #e0f2fe;
+            border: 2px solid #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .instructions h3 {
+            color: #0369a1;
+            margin: 0 0 10px 0;
+        }
+        
+        .instructions p {
+            color: #0c4a6e;
+            margin: 0;
+            line-height: 1.6;
+        }
+        
+        .download-btn {
+            background: #2563EB;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .download-btn:hover {
+            background: #1e40af;
+        }
+        
+        .status {
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📸 Play Store Screenshots - ARCHON.AI</h1>
+        
+        <div class="instructions">
+            <h3>📋 Instructies</h3>
+            <p>
+                Maak screenshots van de ARCHON.AI app volgens deze templates. 
+                Elke screenshot moet 1080x1920 pixels zijn en de Nederlandse interface tonen.
+                Gebruik de "Genereer Screenshot" knop om de template te downloaden als referentie.
+            </p>
+        </div>
+        
+        <div class="screenshots-grid">
+            <!-- Screenshot 1: Dashboard -->
+            <div class="screenshot-card">
+                <div class="status">READY</div>
+                <div class="screenshot-preview">
+                    <div class="screenshot-number">1/8</div>
+                    <div style="font-size: 2em; margin-bottom: 10px;">📊</div>
+                    <div style="font-weight: bold;">Dashboard</div>
+                </div>
+                <div class="screenshot-title">Dashboard Overzicht</div>
+                <div class="callout">"Real-time inzicht in je bedrijf"</div>
+                <div class="screenshot-description">
+                    Hoofdscherm met KPI's, omzet grafiek, openstaande facturen en recente projecten.
+                </div>
+                <div class="screenshot-features">
+                    <ul>
+                        <li>Omzet KPI's (maand/jaar)</li>
+                        <li>Openstaande facturen teller</li>
+                        <li>Recente projecten lijst</li>
+                        <li>"AI Insights" badge</li>
+                        <li>Snelle actie knoppen</li>
+                    </ul>
+                </div>
+                <button class="download-btn" onclick="generateScreenshot(1)">Genereer Screenshot 1</button>
+            </div>
+            
+            <!-- Screenshot 2: AI Offerte Generator -->
+            <div class="screenshot-card">
+                <div class="status">READY</div>
+                <div class="screenshot-preview">
+                    <div class="screenshot-number">2/8</div>
+                    <div style="font-size: 2em; margin-bottom: 10px;">🤖</div>
+                    <div style="font-weight: bold;">AI Generator</div>
+                </div>
+                <div class="screenshot-title">AI Offerte Generator</div>
+                <div class="callout">"Offertes 5x sneller met AI"</div>
+                <div class="screenshot-description">
+                    Interface voor het snel aanmaken van offertes met AI assistentie en optimalisatie.
+                </div>
+                <div class="screenshot-features">
+                    <ul>
+                        <li>Project input velden</li>
+                        <li>AI suggesties box</li>
+                        <li>"2 minuten" timer</li>
+                        <li>Prijsoptimalisatie tips</li>
+                        <li>Professionele output</li>
+                    </ul>
+                </div>
+                <button class="download-btn" onclick="generateScreenshot(2)">Genereer Screenshot 2</button>
+            </div>
+            
+            <!-- Screenshot 3: Facturatie -->
+            <div class="screenshot-card">
+                <div class="status">READY</div>
+                <div class="screenshot-preview">
+                    <div class="screenshot-number">3/8</div>
+                    <div style="font-size: 2em; margin-bottom: 10px;">💰</div>
+                    <div style="font-weight: bold;">Facturatie</div>
+                </div>
+                <div class="screenshot-title">Facturatie Overzicht</div>
+                <div class="callout">"Sneller betaald • Automatisch"</div>
+                <div class="screenshot-description">
+                    Factuur lijst met betaalstatussen, automatische herinneringen en betaling tracking.
+                </div>
+                <div class="screenshot-features">
+                    <ul>
+                        <li>Factuur lijst met status</li>
+                        <li>"Sneller betaald" statistiek</li>
+                        <li>Automatische herinneringen</li>
+                        <li>Betaalstatus indicators</li>
+                        <li>Export functies</li>
+                    </ul>
+                </div>
+                <button class="download-btn" onclick="generateScreenshot(3)">Genereer Screenshot 3</button>
+            </div>
+            
+            <!-- Screenshot 4: Project Management -->
+            <div class="screenshot-card">
+                <div class="status">READY</div>
+                <div class="screenshot-preview">
+                    <div class="screenshot-number">4/8</div>
+                    <div style="font-size: 2em; margin-bottom: 10px;">🔧</div>
+                    <div style="font-weight: bold;">Projecten</div>
+                </div>
+                <div class="screenshot-title">Project Management</div>
+                <div class="callout">"Van offerte tot oplevering"</div>
+                <div class="screenshot-description">
+                    Project timeline, budget tracking en resource planning voor bouwprojecten.
+                </div>
+                <div class="screenshot-features">
+                    <ul>
+                        <li>Project timeline/Gantt</li>
+                        <li>Budget tracking</li>
+                        <li>"Op schema" indicator</li>
+                        <li>Resource planning</li>
+                        <li>Milestone tracking</li>
+                    </ul>
+                </div>
+                <button class="download-btn" onclick="generateScreenshot(4)">Genereer Screenshot 4</button>
+            </div>
+            
+            <!-- Screenshot 5: Klanten -->
+            <div class="screenshot-card">
+                <div class="status">READY</div>
+                <div class="screenshot-preview">
+                    <div class="screenshot-number">5/8</div>
+                    <div style="font-size: 2em; margin-bottom: 10px;">👥</div>
+                    <div style="font-weight: bold;">Klanten</div>
+                </div>
+                <div class="screenshot-title">Klantenoverzicht</div>
+                <div class="callout">"Complete CRM voor bouwers"</div>
+                <div class="screenshot-description">
+                    Klantendatabase met contactgegevens, projecthistorie en conversie statistieken.
+                </div>
+                <div class="screenshot-features">
+                    <ul>
+                        <li>Klant kaarten met info</li>
+                        <li>Projecthistorie per klant</li>
+                        <li>Conversie statistieken</li>
+                        <li>Contact details</li>
+                        <li>Communicatie tracking</li>
+                    </ul>
+                </div>
+                <button class="download-btn" onclick="generateScreenshot(5)">Genereer Screenshot 5</button>
+            </div>
+            
+            <!-- Screenshot 6: Analytics -->
+            <div class="screenshot-card">
+                <div class="status">READY</div>
+                <div class="screenshot-preview">
+                    <div class="screenshot-number">6/8</div>
+                    <div style="font-size: 2em; margin-bottom: 10px;">📈</div>
+                    <div style="font-weight: bold;">Analytics</div>
+                </div>
+                <div class="screenshot-title">Analytics Dashboard</div>
+                <div class="callout">"Data insights • Hogere marges"</div>
+                <div class="screenshot-description">
+                    Financiële dashboards, KPI's en performance data voor datagedreven beslissingen.
+                </div>
+                <div class="screenshot-features">
+                    <ul>
+                        <li>Financiële grafieken</li>
+                        <li>KPI's en marges</li>
+                        <li>"Winst +23%" indicator</li>
+                        <li>Performance data</li>
+                        <li>Trend analyses</li>
+                    </ul>
+                </div>
+                <button class="download-btn" onclick="generateScreenshot(6)">Genereer Screenshot 6</button>
+            </div>
+            
+            <!-- Screenshot 7: Mobiele App -->
+            <div class="screenshot-card">
+                <div class="status">READY</div>
+                <div class="screenshot-preview">
+                    <div class="screenshot-number">7/8</div>
+                    <div style="font-size: 2em; margin-bottom: 10px;">📱</div>
+                    <div style="font-weight: bold;">Mobiel</div>
+                </div>
+                <div class="screenshot-title">Mobiele App Interface</div>
+                <div class="callout">"Werk overal, op elk apparaat"</div>
+                <div class="screenshot-description">
+                    Touch-optimized interface voor iPhone/Android met mobiele features en sync status.
+                </div>
+                <div class="screenshot-features">
+                    <ul>
+                        <li>iPhone/Android view</li>
+                        <li>Touch-optimized interface</li>
+                        <li>Mobiele features</li>
+                        <li>Sync status indicator</li>
+                        <li>Offline modus</li>
+                    </ul>
+                </div>
+                <button class="download-btn" onclick="generateScreenshot(7)">Genereer Screenshot 7</button>
+            </div>
+            
+            <!-- Screenshot 8: Instellingen -->
+            <div class="screenshot-card">
+                <div class="status">READY</div>
+                <div class="screenshot-preview">
+                    <div class="screenshot-number">8/8</div>
+                    <div style="font-size: 2em; margin-bottom: 10px;">⚙️</div>
+                    <div style="font-weight: bold;">Instellingen</div>
+                </div>
+                <div class="screenshot-title">Instellingen & Account</div>
+                <div class="callout">"Volledig configureerbaar"</div>
+                <div class="screenshot-description">
+                    Account instellingen, team management, integraties en support opties.
+                </div>
+                <div class="screenshot-features">
+                    <ul>
+                        <li>Account instellingen</li>
+                        <li>Team management</li>
+                        <li>Integraties</li>
+                        <li>Support opties</li>
+                        <li>Privacy settings</li>
+                    </ul>
+                </div>
+                <button class="download-btn" onclick="generateScreenshot(8)">Genereer Screenshot 8</button>
+            </div>
+        </div>
+        
+        <div style="background: #f0f9ff; border-radius: 10px; padding: 25px; text-align: center;">
+            <h3 style="color: #0369a1; margin: 0 0 15px 0;">📸 Screenshot Maak Instructies</h3>
+            <div style="color: #0c4a6e; line-height: 1.6;">
+                <p><strong>Stap 1:</strong> Open ARCHON.AI in je browser (https://www.archonpro.com)</p>
+                <p><strong>Stap 2:</strong> Navigeer naar de feature die je wilt vastleggen</p>
+                <p><strong>Stap 3:</strong> Maak een screenshot (Cmd+Shift+4 op Mac)</p>
+                <p><strong>Stap 4:</strong> Crop naar 1080x1920 pixels</p>
+                <p><strong>Stap 5:</strong> Sla op met de juiste bestandsnaam</p>
+                <p><strong>Stap 6:</strong> Upload naar Google Play Console</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function generateScreenshot(number) {
+            const screenshots = {
+                1: 'dashboard-overzicht.png',
+                2: 'ai-offerte-generator.png',
+                3: 'facturatie-overzicht.png',
+                4: 'project-management.png',
+                5: 'klanten-overzicht.png',
+                6: 'analytics-dashboard.png',
+                7: 'mobiele-app.png',
+                8: 'instellingen.png'
+            };
+            
+            alert(`📸 Screenshot ${number}: ${screenshots[number]}\n\n` +
+                  `Formaat: 1080x1920 pixels\n` +
+                  `Bestandsnaam: ${screenshots[number]}\n\n` +
+                  `Ga naar ARCHON.AI en maak een screenshot van deze feature.\n` +
+                  `Gebruik de template hierboven als referentie voor de content.`);
+        }
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key >= '1' && e.key <= '8') {
+                generateScreenshot(parseInt(e.key));
+            }
+        });
+    </script>
+</body>
+</html>

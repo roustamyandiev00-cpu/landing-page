@@ -115,7 +115,7 @@ export function StructuredData() {
         "name": "Hoeveel kost ARCHON.AI bouwsoftware?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "ARCHON.AI heeft een gratis proefperiode van 14 dagen. Daarna start het vanaf €49 per maand voor ZZP'ers en kleine aannemers. Er zijn ook Pro (€99/maand) en Enterprise plannen beschikbaar."
+          "text": "ARCHON.AI heeft een gratis proefperiode van 14 dagen. Daarna start het vanaf 49 euro per maand voor ZZP'ers en kleine aannemers. Er zijn ook Pro en Enterprise plannen beschikbaar."
         }
       },
       {
@@ -123,7 +123,7 @@ export function StructuredData() {
         "name": "Hoe snel kan ik een offerte maken met ARCHON.AI?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Met ARCHON.AI maak je een professionele bouwofferte in ongeveer 2 minuten. De AI herkent automatisch risico's en berekent prijzen op basis van marktdata en je historische projecten."
+          "text": "Met ARCHON.AI maak je een professionele bouwofferte in ongeveer 2 minuten. De AI herkent automatisch risicos en berekent prijzen op basis van marktdata en je historische projecten."
         }
       },
       {
@@ -131,7 +131,7 @@ export function StructuredData() {
         "name": "Is ARCHON.AI geschikt voor ZZP'ers in de bouw?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Ja, ARCHON.AI is speciaal ontworpen voor ZZP'ers, kleine aannemers en bouwbedrijven in Nederland en Vlaanderen. Het Starter plan is perfect voor zzp'ers die professionele offertes willen maken."
+          "text": "Ja, ARCHON.AI is speciaal ontworpen voor ZZP'ers, kleine aannemers en bouwbedrijven in Nederland en Vlaanderen. Het Starter plan is perfect voor zzpers die professionele offertes willen maken."
         }
       },
       {
@@ -147,7 +147,7 @@ export function StructuredData() {
         "name": "Hoe werkt de AI in ARCHON.AI?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "De AI van ARCHON.AI analyseert bouwprojecten, herkent automatisch risico's, berekent realistische prijzen op basis van marktdata en je historische projecten, en optimaliseert je offertes voor maximale winstkansen."
+          "text": "De AI van ARCHON.AI analyseert bouwprojecten, herkent automatisch risicos, berekent realistische prijzen op basis van marktdata en je historische projecten, en optimaliseert je offertes voor maximale winstkansen."
         }
       }
     ]

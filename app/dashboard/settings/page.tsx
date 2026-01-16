@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { EmailSettings } from "@/components/dashboard/email-settings"
 import { Mail, Settings, CheckCircle, AlertCircle } from "lucide-react"
 
-export function SettingsPage() {
+export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("email")
 
   return (

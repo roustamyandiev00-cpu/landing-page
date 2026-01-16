@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -84,7 +84,7 @@ export default function FacturenPage() {
     { label: "Achterstallig", value: `€${overdueAmount.toLocaleString('nl-NL')}`, change: "-", trend: "down" as const, icon: AlertTriangle, color: "text-red-500" },
   ]
 
-  const loadInvoices = React.useCallback(async () => {
+  const loadInvoices = useCallback(async () => {
     if (!user?.uid) return
     
     setLoading(true)

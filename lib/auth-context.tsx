@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!auth) {
-      setLoading(false)
+      setTimeout(() => setLoading(false), 0)
       return
     }
     

@@ -14,8 +14,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Receipt, Plus, Trash2, Loader2 } from "lucide-react"
+import { Receipt, Plus, Trash2, Loader2, Sparkles, AlertTriangle } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
+import { useAi } from "@/lib/ai-context"
+import { AiSuggestionCard } from "./ai-suggestion-card"
 import { addInvoice, generateInvoiceNumber, getClients, type Client } from "@/lib/firestore"
 import { Timestamp } from "firebase/firestore"
 
@@ -100,20 +102,20 @@ export function NewFactuurDialog({ open, onOpenChange, onSubmit }: NewFactuurDia
 
   const handleSubmit = async () => {
     if (!user) return
-    
+
     setLoading(true)
     try {
       const invoiceNumber = await generateInvoiceNumber(user.uid)
       const dueDate = new Date()
       dueDate.setDate(dueDate.getDate() + parseInt(formData.paymentDays))
-      
+
       const invoiceItems = formData.items.map(item => ({
         description: item.description,
         quantity: item.quantity,
         unitPrice: item.price,
         total: item.quantity * item.price,
       }))
-      
+
       await addInvoice({
         userId: user.uid,
         invoiceNumber,
@@ -129,7 +131,7 @@ export function NewFactuurDialog({ open, onOpenChange, onSubmit }: NewFactuurDia
         dueDate: Timestamp.fromDate(dueDate),
         notes: formData.notes,
       })
-      
+
       onSubmit?.()
       onOpenChange(false)
       setFormData({
@@ -149,9 +151,23 @@ export function NewFactuurDialog({ open, onOpenChange, onSubmit }: NewFactuurDia
     }
   }
 
+  const { addLog } = useAi()
+  const [showAiSuggestion, setShowAiSuggestion] = useState(true)
+
+  const handleAiAction = () => {
+    // In a real app, this would update the 'vervaldatum' field
+    setFormData((prev) => ({ ...prev, paymentDays: "14" }))
+    addLog({
+      type: "automation",
+      message: "AI betaaltermijn toegepast (14 dagen) voor Klant",
+      context: "invoice"
+    })
+    setShowAiSuggestion(false)
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Receipt className="w-5 h-5 text-primary" />
@@ -160,13 +176,30 @@ export function NewFactuurDialog({ open, onOpenChange, onSubmit }: NewFactuurDia
           <DialogDescription>Maak een nieuwe factuur aan voor je klant</DialogDescription>
         </DialogHeader>
 
+        {showAiSuggestion && (
+          <div className="mt-4">
+            <AiSuggestionCard
+              compact
+              suggestion={{
+                id: "invoice-term",
+                type: "automation",
+                title: "AI Betaaladvies",
+                message: "Deze klant betaalt gemiddeld binnen 12 dagen. Ik stel een termijn van 14 dagen voor.",
+                actionLabel: "Pas termijn toe",
+                context: "invoice",
+                onAction: handleAiAction
+              }}
+            />
+          </div>
+        )}
+
         <div className="space-y-6 py-4">
           {/* Client Details */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="client">Selecteer Klant *</Label>
               <Select onValueChange={handleClientSelect}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-muted/50 border-0 h-12 text-base">
                   <SelectValue placeholder="Kies een klant" />
                 </SelectTrigger>
                 <SelectContent>
@@ -186,6 +219,7 @@ export function NewFactuurDialog({ open, onOpenChange, onSubmit }: NewFactuurDia
                 placeholder="klant@bedrijf.nl"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="bg-muted/50 border-0 h-12 text-base"
               />
             </div>
           </div>
@@ -198,6 +232,7 @@ export function NewFactuurDialog({ open, onOpenChange, onSubmit }: NewFactuurDia
                 placeholder="Korte omschrijving"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="bg-muted/50 border-0 h-12 text-base"
               />
             </div>
             <div className="space-y-2">
@@ -206,7 +241,7 @@ export function NewFactuurDialog({ open, onOpenChange, onSubmit }: NewFactuurDia
                 value={formData.paymentDays}
                 onValueChange={(value) => setFormData({ ...formData, paymentDays: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-muted/50 border-0 h-12 text-base">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -220,21 +255,21 @@ export function NewFactuurDialog({ open, onOpenChange, onSubmit }: NewFactuurDia
           </div>
 
           {/* Line Items */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <Label>Regelitems</Label>
             <div className="space-y-2">
               {formData.items.map((item, index) => (
                 <div key={index} className="flex gap-2 items-start">
                   <Input
                     placeholder="Omschrijving"
-                    className="flex-1"
+                    className="flex-1 bg-muted/50 border-0 h-12 text-base"
                     value={item.description}
                     onChange={(e) => updateItem(index, "description", e.target.value)}
                   />
                   <Input
                     type="number"
                     placeholder="Aantal"
-                    className="w-20"
+                    className="w-24 bg-muted/50 border-0 h-12 text-base"
                     min={1}
                     value={item.quantity}
                     onChange={(e) => updateItem(index, "quantity", Number.parseInt(e.target.value) || 0)}
@@ -244,7 +279,7 @@ export function NewFactuurDialog({ open, onOpenChange, onSubmit }: NewFactuurDia
                     <Input
                       type="number"
                       placeholder="Prijs"
-                      className="pl-7"
+                      className="pl-7 bg-muted/50 border-0 h-12 text-base"
                       min={0}
                       step={0.01}
                       value={item.price}
@@ -255,7 +290,7 @@ export function NewFactuurDialog({ open, onOpenChange, onSubmit }: NewFactuurDia
                     value={item.btw.toString()}
                     onValueChange={(value) => updateItem(index, "btw", Number.parseInt(value))}
                   >
-                    <SelectTrigger className="w-24">
+                    <SelectTrigger className="w-28 bg-muted/50 border-0 h-12 text-base">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -309,7 +344,8 @@ export function NewFactuurDialog({ open, onOpenChange, onSubmit }: NewFactuurDia
               placeholder="Eventuele opmerkingen of betalingsinstructies..."
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              rows={3}
+              className="bg-muted/50 border-0 text-base min-h-[120px]"
+              rows={5}
             />
           </div>
         </div>

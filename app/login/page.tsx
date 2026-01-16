@@ -262,7 +262,7 @@ export default function LoginPage() {
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-16">
           <blockquote className="space-y-6">
             <p className="text-2xl xl:text-3xl font-serif text-primary-foreground leading-relaxed">
-              "Buildr heeft onze offertetijd met 80% verminderd. Wat voorheen uren duurde, is nu in minuten klaar."
+              &quot;Buildr heeft onze offertetijd met 80% verminderd. Wat voorheen uren duurde, is nu in minuten klaar.&quot;
             </p>
             <footer className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-full bg-primary-foreground/20 flex items-center justify-center">

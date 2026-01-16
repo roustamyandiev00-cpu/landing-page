@@ -46,21 +46,50 @@ export function WelcomeBanner() {
       </div>
 
       {/* AI Alert Card */}
-      <div className="glass-card rounded-2xl p-5 flex flex-col">
-        <div className="flex items-start gap-3 mb-3">
-          <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center shrink-0">
-            <Sparkles className="w-5 h-5 text-accent" />
+      {/* AI Action/Insights Card */}
+      <div className="glass-card rounded-2xl p-0 flex flex-col overflow-hidden border-l-4 border-l-primary/50">
+        <div className="bg-primary/5 p-4 border-b border-border/50 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <h3 className="font-semibold text-sm">AI Overzicht Vandaag</h3>
           </div>
-          <div>
-            <p className="text-xs font-medium text-accent uppercase tracking-wider">ARCHON AI Intelligence</p>
-          </div>
+          <span className="text-xs font-mono text-muted-foreground bg-background/50 px-2 py-1 rounded">
+            {new Date().toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric' })}
+          </span>
         </div>
-        <p className="text-sm text-foreground leading-relaxed">
-          {'"Welkom! Begin met het toevoegen van je eerste klant of factuur om je administratie op te starten."'}
-        </p>
-        <div className="mt-4 flex-1 flex items-end">
-          <div className="w-full bg-secondary/50 rounded-full h-1.5 overflow-hidden">
-            <div className="bg-accent h-full w-0 rounded-full transition-all duration-1000" />
+
+        <div className="p-4 space-y-3">
+          {/* Action Item 1 */}
+          <div className="flex gap-3 items-start group cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-colors">
+            <div className="w-2 h-2 mt-2 rounded-full bg-orange-500 shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                2 facturen vervallen bijna
+              </p>
+              <p className="text-xs text-muted-foreground">Totaal: € 1.250, stuur herinnering →</p>
+            </div>
+          </div>
+
+          {/* Action Item 2 */}
+          <div className="flex gap-3 items-start group cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-colors">
+            <div className="w-2 h-2 mt-2 rounded-full bg-blue-500 shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                Nieuwe offerte aanvraag
+              </p>
+              <p className="text-xs text-muted-foreground">Project: &apos;Renovatie Janssens&apos; →</p>
+            </div>
+          </div>
+
+          {/* Action Item 3 */}
+          <div className="flex gap-3 items-start group cursor-pointer hover:bg-muted/50 p-2 rounded-lg transition-colors">
+            <div className="w-2 h-2 mt-2 rounded-full bg-green-500 shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                Cashflow update
+              </p>
+              <p className="text-xs text-muted-foreground">+12% t.o.v. vorige maand 📈</p>
+            </div>
           </div>
         </div>
       </div>

@@ -73,7 +73,8 @@ export function Header() {
   }
 
   useEffect(() => {
-    setMounted(true)
+    const timer = setTimeout(() => setMounted(true), 0)
+    return () => clearTimeout(timer)
   }, [])
 
   const unreadCount = notifications.filter(n => n.unread).length

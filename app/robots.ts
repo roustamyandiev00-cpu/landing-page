@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/dashboard/', '/admin/', '/api/', '/login', '/register'],
+      disallow: ['/dashboard/', '/api/'],
     },
     sitemap: 'https://archonpro.com/sitemap.xml',
   }

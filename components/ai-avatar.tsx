@@ -15,7 +15,8 @@ export function AIAvatar({ isTyping = false, message, size = "md" }: AIAvatarPro
 
   useEffect(() => {
     if (message) {
-      setShowMessage(true)
+      const timer = setTimeout(() => setShowMessage(true), 0)
+      return () => clearTimeout(timer)
     }
   }, [message])
 

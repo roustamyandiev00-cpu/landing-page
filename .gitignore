@@ -20,6 +20,12 @@ yarn-error.log*
 .env*
 !.env.example
 
+# Android signing
+/android/keystore.properties
+/android/keystore.properties.local
+/keystore/
+*.jks
+
 # vercel
 .vercel
 

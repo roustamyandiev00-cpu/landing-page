@@ -16,35 +16,46 @@ export function QuickActions() {
 
   return (
     <>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Primary CTA */}
         <Button
           onClick={() => setFactuurOpen(true)}
-          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white gap-2 shadow-sm hover:shadow-md transition-all"
+          className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground h-11 px-6 shadow-md hover:shadow-lg transition-all"
         >
-          <Sparkles className="w-4 h-4" />
+          <Sparkles className="w-4 h-4 mr-2" />
           Nieuwe Factuur (AI)
         </Button>
+
+        {/* Secondary Actions */}
         <Button
           onClick={() => setOfferteOpen(true)}
-          className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white gap-2 shadow-sm hover:shadow-md transition-all"
+          variant="outline"
+          className="w-full sm:w-auto border-primary/20 hover:border-primary hover:bg-primary/5 h-11"
         >
-          <FileText className="w-4 h-4" />
-          Nieuwe Offerte (AI)
+          <FileText className="w-4 h-4 mr-2" />
+          Nieuwe Offerte
         </Button>
-        <Button
-          onClick={() => setUitgaveOpen(true)}
-          className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white gap-2 shadow-sm hover:shadow-md transition-all"
-        >
-          <CreditCard className="w-4 h-4" />
-          Nieuwe Uitgave
-        </Button>
-        <Button
-          onClick={() => setBonScannerOpen(true)}
-          className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white gap-2 shadow-sm hover:shadow-md transition-all"
-        >
-          <Camera className="w-4 h-4" />
-          Bon Scannen
-        </Button>
+
+        <div className="flex gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+          <Button
+            onClick={() => setUitgaveOpen(true)}
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-foreground hover:bg-muted"
+            title="Nieuwe Uitgave"
+          >
+            <CreditCard className="w-5 h-5" />
+          </Button>
+          <Button
+            onClick={() => setBonScannerOpen(true)}
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-foreground hover:bg-muted"
+            title="Bon Scannen"
+          >
+            <Camera className="w-5 h-5" />
+          </Button>
+        </div>
       </div>
 
       <NewFactuurDialog

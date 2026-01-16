@@ -9,11 +9,11 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2">
-              <Image 
-                src="/logo.png" 
-                alt="Logo" 
-                width={120} 
-                height={35} 
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                width={120}
+                height={35}
                 className="h-8 w-auto"
               />
             </Link>
@@ -69,12 +69,12 @@ export function Footer() {
             <h3 className="font-semibold text-foreground mb-4">Bedrijf</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/#about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Over ons
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Blog
                 </Link>
               </li>
@@ -84,7 +84,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="mailto:info@archonpro.com" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Contact
                 </Link>
               </li>

@@ -87,9 +87,11 @@ export function HowItWorks() {
           transition={{ duration: 0.6 }}
           className="mt-16 text-center"
         >
-          <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground text-base px-8 h-14">
-            Probeer het zelf
-            <ArrowRight className="ml-2 w-5 h-5" />
+          <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground text-base px-8 h-14" asChild>
+            <a href="/register">
+              Probeer het zelf
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </a>
           </Button>
         </motion.div>
       </div>

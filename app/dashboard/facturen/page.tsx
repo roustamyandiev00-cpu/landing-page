@@ -84,7 +84,7 @@ export default function FacturenPage() {
     { label: "Achterstallig", value: `€${overdueAmount.toLocaleString('nl-NL')}`, change: "-", trend: "down" as const, icon: AlertTriangle, color: "text-red-500" },
   ]
 
-  const loadInvoices = async () => {
+  const loadInvoices = React.useCallback(async () => {
     if (!user?.uid) return
     
     setLoading(true)
@@ -105,11 +105,11 @@ export default function FacturenPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
   useEffect(() => {
     loadInvoices()
-  }, [user])
+  }, [loadInvoices])
 
   const handleMarkPaid = async (invoiceId: string) => {
     setActionLoading(`paid-${invoiceId}`)
@@ -275,7 +275,7 @@ export default function FacturenPage() {
                 <Search className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-foreground mb-2">Geen facturen gevonden</h3>
                 <p className="text-muted-foreground mb-4">
-                  Geen facturen met status "{activeTab}" gevonden
+                  Geen facturen met status &quot;{activeTab}&quot; gevonden
                 </p>
                 <Button variant="outline" onClick={() => setActiveTab("all")}>
                   Toon alle facturen

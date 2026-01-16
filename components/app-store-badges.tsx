@@ -1,3 +1,5 @@
+import Image from "next/image"
+
 export function AppStoreBadges() {
   return (
     <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
@@ -8,9 +10,11 @@ export function AppStoreBadges() {
         rel="noopener noreferrer"
         className="inline-block transition-transform hover:scale-105"
       >
-        <img
+        <Image
           src="/badges/app-store-badge-nl.svg"
           alt="Download on the App Store"
+          width={150}
+          height={44}
           className="h-12 w-auto"
         />
       </a>
@@ -22,9 +26,11 @@ export function AppStoreBadges() {
         rel="noopener noreferrer"
         className="inline-block transition-transform hover:scale-105"
       >
-        <img
+        <Image
           src="/badges/google-play-badge-nl.png"
           alt="Ontdek het op Google Play"
+          width={150}
+          height={44}
           className="h-12 w-auto"
         />
       </a>
@@ -40,9 +46,11 @@ export function AppStoreBadge() {
       rel="noopener noreferrer"
       className="inline-block transition-transform hover:scale-105"
     >
-      <img
+      <Image
         src="/badges/app-store-badge-nl.svg"
         alt="Download on the App Store"
+        width={135}
+        height={40}
         className="h-10 w-auto"
       />
     </a>
@@ -57,9 +65,11 @@ export function GooglePlayBadge() {
       rel="noopener noreferrer"
       className="inline-block transition-transform hover:scale-105"
     >
-      <img
+      <Image
         src="/badges/google-play-badge-nl.png"
         alt="Ontdek het op Google Play"
+        width={135}
+        height={40}
         className="h-10 w-auto"
       />
     </a>

@@ -71,7 +71,16 @@ export function RecentTransactions() {
         {transactions.length === 0 ? (
           <div className="text-center py-8">
             <Receipt className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">Nog geen transacties</p>
+            <p className="text-sm text-muted-foreground mb-4">Je administratie is leeg</p>
+            <p className="text-xs text-muted-foreground mb-4">Begin met je eerste factuur — AI helpt je</p>
+            <Button
+              size="sm"
+              className="h-8 text-xs"
+              onClick={() => window.location.href = '/dashboard'}
+            >
+              <Plus className="w-3 h-3 mr-1" />
+              Eerste factuur maken
+            </Button>
           </div>
         ) : (
           transactions.map((transaction) => (
@@ -94,6 +103,12 @@ export function RecentTransactions() {
                   })}
                 </p>
                 <p className="text-xs text-muted-foreground">{transaction.date}</p>
+                {/* Time-sensitive badge for overdue payments */}
+                {transaction.category.includes('Factuur') && transaction.amount > 0 && (
+                  <div className="mt-1">
+                    <span className="text-xs text-emerald-500 font-medium">Betaald</span>
+                  </div>
+                )}
               </div>
             </div>
           ))

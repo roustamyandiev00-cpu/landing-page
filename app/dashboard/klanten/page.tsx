@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -48,7 +48,7 @@ export default function KlantenPage() {
   const [loading, setLoading] = useState(true)
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
 
-  const loadClients = async () => {
+  const loadClients = useCallback(async () => {
     if (!user?.uid) return
     
     setLoading(true)
@@ -60,11 +60,11 @@ export default function KlantenPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
   useEffect(() => {
     loadClients()
-  }, [user])
+  }, [loadClients])
 
   const handleDelete = async (id: string) => {
     setDeleteLoading(id)
@@ -163,7 +163,7 @@ export default function KlantenPage() {
               <div className="text-center py-12">
                 <Search className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-foreground mb-2">Geen resultaten</h3>
-                <p className="text-muted-foreground mb-4">Geen klanten gevonden voor "{searchQuery}"</p>
+                <p className="text-muted-foreground mb-4">Geen klanten gevonden voor &quot;{searchQuery}&quot;</p>
                 <Button variant="outline" onClick={() => setSearchQuery("")}>
                   Wis zoekopdracht
                 </Button>

@@ -108,7 +108,7 @@ export function WerkzaamheidEditDialog({
             Prijzen aanpassen
           </DialogTitle>
           <DialogDescription>
-            Pas de prijzen en instellingen aan voor "{werkzaamheid.naam}"
+            Pas de prijzen en instellingen aan voor &quot;{werkzaamheid.naam}&quot;
           </DialogDescription>
         </DialogHeader>
 

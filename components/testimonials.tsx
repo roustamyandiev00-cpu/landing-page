@@ -66,7 +66,7 @@ export function Testimonials() {
                 ))}
               </div>
 
-              <p className="text-foreground leading-relaxed mb-6">"{testimonial.quote}"</p>
+              <p className="text-foreground leading-relaxed mb-6">&quot;{testimonial.quote}&quot;</p>
 
               <div className="flex items-center gap-4">
                 <Image

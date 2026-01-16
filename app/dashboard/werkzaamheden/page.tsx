@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -42,9 +42,9 @@ export default function WerkzaamhedenPage() {
     if (user) {
       loadUserWerkzaamheden()
     }
-  }, [user])
+  }, [user, loadUserWerkzaamheden])
 
-  const loadUserWerkzaamheden = async () => {
+  const loadUserWerkzaamheden = useCallback(async () => {
     if (!user) return
     try {
       const customWerkzaamheden = await getUserWerkzaamheden(user.uid)
@@ -55,7 +55,7 @@ export default function WerkzaamhedenPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
   // Merge standard and custom werkzaamheden
   const allWerkzaamheden = [
@@ -332,7 +332,7 @@ export default function WerkzaamhedenPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Werkzaamheid verwijderen</AlertDialogTitle>
             <AlertDialogDescription>
-              Weet je zeker dat je "{deletingWerkzaamheid?.naam}" wilt verwijderen? 
+              Weet je zeker dat je &quot;{deletingWerkzaamheid?.naam}&quot; wilt verwijderen? 
               Deze actie kan niet ongedaan worden gemaakt.
             </AlertDialogDescription>
           </AlertDialogHeader>

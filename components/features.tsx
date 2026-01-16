@@ -6,15 +6,15 @@ import { MessageSquare, Zap, FileText, Smartphone, Brain, Shield } from "lucide-
 const features = [
   {
     icon: MessageSquare,
-    title: "WhatsApp Integratie",
+    title: "AI Co-piloot",
     description:
-      "Maak offertes direct via WhatsApp. Stuur een bericht en ontvang een professionele offerte binnen enkele minuten.",
+      "Meer dan alleen software. Archon denkt mee: stelt betaaltermijnen voor, herkent risico's en schrijft je e-mails.",
   },
   {
     icon: Zap,
-    title: "Razendsnelle AI",
+    title: "Slimme Prijsinzichten",
     description:
-      "Onze AI begrijpt bouwterminologie perfect en genereert nauwkeurige prijzen op basis van actuele marktdata.",
+      "Verhoog je winstkansen. Onze AI analyseert je offertes en geeft direct advies over marges en prijzen die scoren.",
   },
   {
     icon: FileText,
@@ -23,18 +23,18 @@ const features = [
   },
   {
     icon: Smartphone,
-    title: "Altijd Beschikbaar",
-    description: "Werk vanaf de bouwplaats, onderweg of thuis. Onze app werkt op alle apparaten, 24/7 beschikbaar.",
+    title: "App & Bonnen Scanner",
+    description: "Maak een foto van je bon en de AI leest het bedrag, de BTW en de categorie automatisch uit.",
   },
   {
     icon: Brain,
-    title: "Leert Jouw Prijzen",
-    description: "De AI past zich aan jouw prijzen en werkwijze aan. Hoe vaker je het gebruikt, hoe beter het wordt.",
+    title: "Automatisch Leren",
+    description: "Jouw assistent wordt slimmer. Hij leert van jouw correcties en past zich aan aan jouw unieke werkwijze.",
   },
   {
     icon: Shield,
-    title: "Veilig & Betrouwbaar",
-    description: "Je data is veilig opgeslagen en wordt nooit gedeeld. GDPR-compliant en volledig beveiligd.",
+    title: "Proactieve Risico-analyse",
+    description: "Archon waarschuwt je voordat het misgaat. Zie direct welke facturen of cashflow-trends aandacht nodig hebben.",
   },
 ]
 

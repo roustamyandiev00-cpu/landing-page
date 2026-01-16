@@ -115,19 +115,6 @@ export interface Transaction {
   updatedAt: Timestamp
 }
 
-// Transaction types
-export interface Transaction {
-  id?: string
-  userId: string
-  bankAccountId: string
-  description: string
-  amount: number
-  type: 'income' | 'expense'
-  category: string
-  date: any
-  createdAt: any
-}
-
 // Dashboard Stats
 export interface DashboardStats {
   totalRevenue: number
@@ -138,6 +125,9 @@ export interface DashboardStats {
   totalQuotes: number
   paidInvoices: number
   pendingQuotes: number
+  overdueCount: number
+  dueTodayCount: number
+  dueInDays: number
 }
 // Werkzaamheden types
 export interface UserWerkzaamheid {

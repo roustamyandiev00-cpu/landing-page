@@ -43,7 +43,7 @@ export default function BlogPost() {
 
           <h2>2. Wees specifiek in je omschrijvingen</h2>
           <p>
-            Vage omschrijvingen zoals "diverse werkzaamheden" leiden tot misverstanden. 
+            Vage omschrijvingen zoals &quot;diverse werkzaamheden&quot; leiden tot misverstanden. 
             Beschrijf precies wat je gaat doen:
           </p>
           <ul>

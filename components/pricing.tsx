@@ -132,8 +132,13 @@ export function Pricing() {
                     ? "bg-primary hover:bg-primary/90 text-primary-foreground"
                     : "bg-secondary hover:bg-secondary/80 text-secondary-foreground",
                 )}
+                asChild
               >
-                {plan.monthlyPrice ? "Start gratis proefperiode" : "Neem contact op"}
+                {plan.monthlyPrice ? (
+                  <a href="/register">Start gratis proefperiode</a>
+                ) : (
+                  <a href="mailto:info@archonpro.com">Neem contact op</a>
+                )}
               </Button>
 
               <ul className="mt-6 space-y-3">

@@ -36,7 +36,7 @@ export default function BlogPost() {
 
           <h2>Fout #1: Vage omschrijvingen gebruiken</h2>
           <p>
-            <strong>De fout:</strong> "Badkamer renovatie - €8.500"
+            <strong>De fout:</strong> &quot;Badkamer renovatie - €8.500&quot;
           </p>
           <p>
             <strong>Waarom dit fout gaat:</strong> Klanten weten niet wat ze krijgen. Ze gaan 
@@ -59,7 +59,7 @@ export default function BlogPost() {
           </p>
           <p>
             <strong>Waarom dit fout gaat:</strong> Lage prijzen maken klanten wantrouwig. Ze denken: 
-            "Wat is er mis? Gebruikt hij goedkope materialen? Heeft hij geen ervaring?"
+            &quot;Wat is er mis? Gebruikt hij goedkope materialen? Heeft hij geen ervaring?&quot;
           </p>
           <p>
             <strong>De oplossing:</strong> Bereken je echte kosten:
@@ -83,9 +83,9 @@ export default function BlogPost() {
             <strong>De oplossing:</strong> Vermeld altijd:
           </p>
           <ul>
-            <li>"Deze offerte is geldig tot [datum + 30 dagen]"</li>
-            <li>"Prijzen zijn gebaseerd op huidige materiaalkosten"</li>
-            <li>"Bij acceptatie na deze datum kunnen prijzen worden aangepast"</li>
+            <li>&quot;Deze offerte is geldig tot [datum + 30 dagen]&quot;</li>
+            <li>&quot;Prijzen zijn gebaseerd op huidige materiaalkosten&quot;</li>
+            <li>&quot;Bij acceptatie na deze datum kunnen prijzen worden aangepast&quot;</li>
           </ul>
 
           <h2>Fout #4: Geen follow-up na verzending</h2>
@@ -100,9 +100,9 @@ export default function BlogPost() {
             <strong>De oplossing:</strong> Plan je follow-up:
           </p>
           <ul>
-            <li>Dag 2: "Heeft u de offerte ontvangen?"</li>
-            <li>Dag 7: "Heeft u nog vragen over de werkzaamheden?"</li>
-            <li>Dag 14: "Kunnen we een afspraak maken om details door te nemen?"</li>
+            <li>Dag 2: &quot;Heeft u de offerte ontvangen?&quot;</li>
+            <li>Dag 7: &quot;Heeft u nog vragen over de werkzaamheden?&quot;</li>
+            <li>Dag 14: &quot;Kunnen we een afspraak maken om details door te nemen?&quot;</li>
           </ul>
 
           <h2>Fout #5: Handmatig offertes maken (tijdverspilling)</h2>

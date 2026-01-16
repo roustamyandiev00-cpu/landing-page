@@ -25,6 +25,8 @@ import type {
   Transaction
 } from "@/types"
 
+export type { Client } from "@/types"
+
 // Initialize Firestore
 const app = getApps()[0]
 if (!app) {
@@ -272,6 +274,28 @@ export async function getDashboardStats(userId: string) {
     .filter(i => i.status === 'overdue')
     .reduce((sum, i) => sum + i.total, 0)
 
+  // Calculate time-sensitive stats
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000)
+  
+  const overdueCount = invoices.filter(i => {
+    if (i.status !== 'sent' && i.status !== 'overdue') return false
+    return i.dueDate.toDate() < today
+  }).length
+  
+  const dueTodayCount = invoices.filter(i => {
+    if (i.status !== 'sent' && i.status !== 'overdue') return false
+    const dueDate = i.dueDate.toDate()
+    return dueDate >= today && dueDate < tomorrow
+  }).length
+  
+  // Calculate BTW due date (quarterly)
+  const currentMonth = now.getMonth()
+  const quarter = Math.floor(currentMonth / 3)
+  const nextQuarterStart = new Date(now.getFullYear(), quarter * 3 + 3, 1)
+  const btwDueDays = Math.ceil((nextQuarterStart.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+
   return {
     totalRevenue,
     openInvoices,
@@ -280,7 +304,10 @@ export async function getDashboardStats(userId: string) {
     totalInvoices: invoices.length,
     totalQuotes: quotes.length,
     paidInvoices: invoices.filter(i => i.status === 'paid').length,
-    pendingQuotes: quotes.filter(q => q.status === 'sent').length
+    pendingQuotes: quotes.filter(q => q.status === 'sent').length,
+    overdueCount,
+    dueTodayCount,
+    dueInDays: btwDueDays
   }
 }
 // Werkzaamheden Functions

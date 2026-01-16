@@ -29,8 +29,8 @@ export default function BlogPost() {
 
         <div className="prose prose-lg max-w-none">
           <p className="lead">
-            "AI gaat de bouwsector revolutioneren!" roepen techbedrijven. "Onzin, gewoon 
-            marketing hype!" zeggen sceptische bouwers. Wie heeft gelijk? Na onderzoek bij 
+            &quot;AI gaat de bouwsector revolutioneren!&quot; roepen techbedrijven. &quot;Onzin, gewoon 
+            marketing hype!&quot; zeggen sceptische bouwers. Wie heeft gelijk? Na onderzoek bij 
             200+ Nederlandse bouwbedrijven, hier de nuchtere waarheid.
           </p>
 
@@ -46,7 +46,7 @@ export default function BlogPost() {
           </p>
           <ul>
             <li>Google Maps gebruikt voor de snelste route naar een klus</li>
-            <li>WhatsApp's automatische vertaling gebruikt voor buitenlandse klanten</li>
+            <li>WhatsApp&apos;s automatische vertaling gebruikt voor buitenlandse klanten</li>
             <li>Online calculators gebruikt voor materiaalberekeningen</li>
           </ul>
 
@@ -132,19 +132,19 @@ export default function BlogPost() {
 
           <h2>Waarom Veel Bouwers Nog Twijfelen</h2>
 
-          <h3>Mythe 1: "Het is te duur"</h3>
+          <h3>Mythe 1: &quot;Het is te duur&quot;</h3>
           <p>
             <strong>Realiteit:</strong> Moderne AI-tools kosten €50-200 per maand. Een gemiddelde 
             bouwer bespaart 10+ uur per week, wat €2000+ per maand waard is.
           </p>
 
-          <h3>Mythe 2: "Het is te ingewikkeld"</h3>
+          <h3>Mythe 2: &quot;Het is te ingewikkeld&quot;</h3>
           <p>
             <strong>Realiteit:</strong> Moderne AI-software is ontworpen voor niet-techneuten. 
             Als je WhatsApp kunt gebruiken, kun je deze tools gebruiken.
           </p>
 
-          <h3>Mythe 3: "AI vervangt bouwers"</h3>
+          <h3>Mythe 3: &quot;AI vervangt bouwers&quot;</h3>
           <p>
             <strong>Realiteit:</strong> AI vervangt administratie, niet vakmanschap. Je blijft 
             bouwen, maar zonder de paperwork.
@@ -183,7 +183,7 @@ export default function BlogPost() {
           </p>
           <ul>
             <li><strong>Slimmere prijsvoorspellingen</strong> - AI die materiaalkosten voorspelt</li>
-            <li><strong>Automatische kwaliteitscontrole</strong> - Camera's die bouwfouten detecteren</li>
+            <li><strong>Automatische kwaliteitscontrole</strong> - Camera&apos;s die bouwfouten detecteren</li>
             <li><strong>Voorspellend onderhoud</strong> - AI die voorspelt wanneer gereedschap kapot gaat</li>
             <li><strong>Slimmere klantcommunicatie</strong> - Chatbots die basale vragen beantwoorden</li>
           </ul>

@@ -67,12 +67,12 @@ export function NewKlantDialog({ open, onOpenChange, onSubmit }: NewKlantDialogP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[720px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Nieuwe Klant</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Naam *</Label>
               <Input
@@ -112,7 +112,7 @@ export function NewKlantDialog({ open, onOpenChange, onSubmit }: NewKlantDialogP
                 className="bg-muted/50 border-0 h-12 text-base"
               />
             </div>
-            <div className="col-span-2 space-y-2">
+            <div className="sm:col-span-2 space-y-2">
               <Label htmlFor="address">Adres</Label>
               <Input
                 id="address"

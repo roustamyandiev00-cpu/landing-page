@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import {
   Dialog,
   DialogContent,
@@ -22,10 +22,13 @@ import {
   Building2, User, Wand2, ListChecks, FileCheck, Mic, MicOff,
   Camera, Upload, X, Ruler, Lightbulb, Image as ImageIcon
 } from "lucide-react"
+import Image from "next/image"
 
 import { categorieën, werkzaamheden, zoekWerkzaamheden, getEenheidLabel, type Werkzaamheid } from "@/lib/werkzaamheden-data"
 import { generateOfferteHTML, openPDFPreview, type OfferteData } from "@/lib/pdf-generator"
 import { useAuth } from "@/lib/auth-context"
+import { useAi } from "@/lib/ai-context"
+import { AiSuggestionCard } from "./ai-suggestion-card"
 import { addQuote, generateQuoteNumber } from "@/lib/firestore"
 import { toast } from "sonner"
 
@@ -74,6 +77,8 @@ const steps: { id: Step; label: string; icon: any }[] = [
 
 export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialogProps) {
   const { user } = useAuth()
+  const { addLog } = useAi()
+  const [showPricingInsight, setShowPricingInsight] = useState(true)
   const [step, setStep] = useState<Step>("klant")
   const [isGenerating, setIsGenerating] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -124,7 +129,7 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
         stopRecording()
       }, 200)
     }
-  }, [open])
+  }, [open, stopRecording])
 
   // Initialize speech recognition
   useEffect(() => {
@@ -136,7 +141,7 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
         recognitionRef.current.continuous = true
         recognitionRef.current.interimResults = true
         recognitionRef.current.lang = 'nl-NL'
-        
+
         recognitionRef.current.onresult = (event: any) => {
           let finalTranscript = ''
           for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -148,11 +153,11 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
             setProjectBeschrijving(prev => prev + ' ' + finalTranscript.trim())
           }
         }
-        
+
         recognitionRef.current.onerror = () => {
           setIsRecording(false)
         }
-        
+
         recognitionRef.current.onend = () => {
           setIsRecording(false)
         }
@@ -168,19 +173,19 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
     }
   }
 
-  const stopRecording = () => {
+  const stopRecording = React.useCallback(() => {
     if (recognitionRef.current && isRecording) {
       setIsRecording(false)
       recognitionRef.current.stop()
     }
-  }
+  }, [isRecording])
 
   // Image upload functions
   const handleImageUpload = async (files: FileList | null) => {
     if (!files) return
-    
+
     const newImages: UploadedImage[] = []
-    
+
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
       if (file.type.startsWith('image/')) {
@@ -193,9 +198,9 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
         newImages.push(newImage)
       }
     }
-    
+
     setUploadedImages(prev => [...prev, ...newImages])
-    
+
     // Analyze images with AI
     for (const image of newImages) {
       analyzeImage(image)
@@ -207,21 +212,21 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
       const formData = new FormData()
       formData.append('image', image.file)
       formData.append('projectType', projectType)
-      
+
       const response = await fetch('/api/ai/analyze-image', {
         method: 'POST',
         body: formData,
       })
-      
+
       const data = await response.json()
-      
+
       if (data.analysis) {
-        setUploadedImages(prev => prev.map(img => 
-          img.id === image.id 
+        setUploadedImages(prev => prev.map(img =>
+          img.id === image.id
             ? { ...img, analysis: data.analysis, suggestions: data.suggestions || [] }
             : img
         ))
-        
+
         // Add suggestions to global suggestions
         if (data.suggestions) {
           setAiSuggestions(prev => [...new Set([...prev, ...data.suggestions])])
@@ -294,7 +299,7 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
         })))
         setOpmerkingen(data.notes || "Offerte gegenereerd met AI. Prijzen zijn indicatief en gebaseerd op marktgemiddelden.")
         setGeldigheid(data.validDays || "30")
-        
+
         // Add any additional AI suggestions
         if (data.additionalSuggestions) {
           setAiSuggestions(prev => [...new Set([...prev, ...data.additionalSuggestions])])
@@ -304,36 +309,36 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
       console.error("Error generating offerte:", error)
       // Fallback: add generic items based on dimensions
       const baseItems = []
-      
+
       if (dimensions.area && dimensions.area > 0) {
         baseItems.push({
-          id: "1", 
-          description: `${projectType || 'Werkzaamheden'} - ${dimensions.area}m²`, 
-          quantity: dimensions.area, 
-          unit: "m2", 
-          unitPrice: 45, 
-          btw: 21 
+          id: "1",
+          description: `${projectType || 'Werkzaamheden'} - ${dimensions.area}m²`,
+          quantity: dimensions.area,
+          unit: "m2",
+          unitPrice: 45,
+          btw: 21
         })
       } else {
         baseItems.push({
-          id: "1", 
-          description: "Werkzaamheden volgens beschrijving", 
-          quantity: 8, 
-          unit: "uur", 
-          unitPrice: 55, 
-          btw: 21 
+          id: "1",
+          description: "Werkzaamheden volgens beschrijving",
+          quantity: 8,
+          unit: "uur",
+          unitPrice: 55,
+          btw: 21
         })
       }
-      
+
       baseItems.push({
-        id: "2", 
-        description: "Materiaalkosten", 
-        quantity: 1, 
-        unit: "forfait", 
-        unitPrice: 250, 
-        btw: 21 
+        id: "2",
+        description: "Materiaalkosten",
+        quantity: 1,
+        unit: "forfait",
+        unitPrice: 250,
+        btw: 21
       })
-      
+
       setItems(baseItems)
       setOpmerkingen("Offerte gegenereerd met standaard template.")
     }
@@ -589,7 +594,7 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
                   <option value="overig">Overig</option>
                 </select>
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="project">Beschrijf het project *</Label>
@@ -681,9 +686,9 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
                     min={0}
                     step={0.1}
                     value={dimensions.length || ""}
-                    onChange={(e) => setDimensions(prev => ({ 
-                      ...prev, 
-                      length: parseFloat(e.target.value) || 0 
+                    onChange={(e) => setDimensions(prev => ({
+                      ...prev,
+                      length: parseFloat(e.target.value) || 0
                     }))}
                   />
                 </div>
@@ -696,9 +701,9 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
                     min={0}
                     step={0.1}
                     value={dimensions.width || ""}
-                    onChange={(e) => setDimensions(prev => ({ 
-                      ...prev, 
-                      width: parseFloat(e.target.value) || 0 
+                    onChange={(e) => setDimensions(prev => ({
+                      ...prev,
+                      width: parseFloat(e.target.value) || 0
                     }))}
                   />
                 </div>
@@ -713,9 +718,9 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
                   min={0}
                   step={0.1}
                   value={dimensions.height || ""}
-                  onChange={(e) => setDimensions(prev => ({ 
-                    ...prev, 
-                    height: parseFloat(e.target.value) || 0 
+                  onChange={(e) => setDimensions(prev => ({
+                    ...prev,
+                    height: parseFloat(e.target.value) || 0
                   }))}
                 />
               </div>
@@ -776,14 +781,14 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
             <div className="space-y-4 px-1">
               <div className="text-center mb-4">
                 <Camera className="w-12 h-12 text-primary mx-auto mb-2" />
-                <h3 className="text-lg font-medium">Foto's toevoegen</h3>
+                <h3 className="text-lg font-medium">Foto&apos;s toevoegen</h3>
                 <p className="text-sm text-muted-foreground">
-                  Upload foto's van het project voor betere AI-analyse (optioneel)
+                  Upload foto&apos;s van het project voor betere AI-analyse (optioneel)
                 </p>
               </div>
 
               {/* Upload area */}
-              <div 
+              <div
                 className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
                 onClick={() => fileInputRef.current?.click()}
                 onDrop={(e) => {
@@ -793,8 +798,8 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
                 onDragOver={(e) => e.preventDefault()}
               >
                 <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm font-medium mb-1">Klik om foto's te uploaden</p>
-                <p className="text-xs text-muted-foreground">Of sleep foto's hierheen</p>
+                <p className="text-sm font-medium mb-1">Klik om foto&apos;s te uploaden</p>
+                <p className="text-xs text-muted-foreground">Of sleep foto&apos;s hierheen</p>
                 <p className="text-xs text-muted-foreground mt-2">JPG, PNG tot 10MB per foto</p>
               </div>
 
@@ -810,15 +815,16 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
               {/* Uploaded images */}
               {uploadedImages.length > 0 && (
                 <div className="space-y-3">
-                  <Label>Geüploade foto's ({uploadedImages.length})</Label>
+                  <Label>Geüploade foto&apos;s ({uploadedImages.length})</Label>
                   <div className="grid grid-cols-2 gap-3">
                     {uploadedImages.map((image) => (
                       <div key={image.id} className="relative group">
-                        <div className="aspect-square rounded-lg overflow-hidden bg-muted">
-                          <img
+                        <div className="aspect-square rounded-lg overflow-hidden bg-muted relative">
+                          <Image
                             src={image.url}
                             alt="Project foto"
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
                           />
                         </div>
                         <Button
@@ -851,7 +857,7 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
                       <Lightbulb className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="font-medium text-amber-800 dark:text-amber-200 mb-2">
-                          AI Suggesties op basis van foto's
+                          AI Suggesties op basis van foto&apos;s
                         </p>
                         <div className="space-y-1">
                           {aiSuggestions.map((suggestion, index) => (
@@ -921,6 +927,31 @@ export function AIOfferteDialog({ open, onOpenChange, onSubmit }: AIOfferteDialo
           {/* Step 6: Items aanpassen */}
           {step === "items" && (
             <div className="space-y-4 px-1">
+              {/* AI Pricing Insight */}
+              {showPricingInsight && (
+                <AiSuggestionCard
+                  compact
+                  suggestion={{
+                    id: "quote-pricing",
+                    type: "info",
+                    title: "AI Prijsinzicht",
+                    message: "Offertes met deze prijsstructuur worden 22% vaker geaccepteerd in jouw regio.",
+                    actionLabel: "Optimaliseer marges",
+                    context: "quote",
+                    onAction: () => {
+                      addLog({
+                        type: "automation",
+                        message: "AI prijsoptimalisatie toegepast op offerte",
+                        context: "quote"
+                      })
+                      setShowPricingInsight(false)
+                      toast.success("Marges geoptimaliseerd voor conversie")
+                    },
+                    onDismiss: () => setShowPricingInsight(false)
+                  }}
+                />
+              )}
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-emerald-500">
                   <CheckCircle className="w-5 h-5" />

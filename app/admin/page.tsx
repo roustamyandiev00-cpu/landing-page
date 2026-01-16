@@ -51,89 +51,89 @@ export default function AdminPage() {
   })
 
   useEffect(() => {
+    const loadAdminData = async () => {
+      if (!db) return
+
+      try {
+        // Get all users
+        const usersSnapshot = await getDocs(collection(db, "users"))
+        const usersData = usersSnapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() }))
+
+        // Get all offertes
+        const offertesSnapshot = await getDocs(collection(db, "offertes"))
+        const offertes = offertesSnapshot.docs.map(doc => doc.data())
+
+        // Get all facturen
+        const facturenSnapshot = await getDocs(collection(db, "facturen"))
+        const facturen = facturenSnapshot.docs.map(doc => doc.data())
+
+        // Get all klanten
+        const klantenSnapshot = await getDocs(collection(db, "klanten"))
+        const klanten = klantenSnapshot.docs.map(doc => doc.data())
+
+        // Calculate stats per user
+        const userStats: UserStats[] = usersData.map((userData: any) => {
+          const userOffertes = offertes.filter((o: any) => o.userId === userData.uid)
+          const userFacturen = facturen.filter((f: any) => f.userId === userData.uid)
+          const userKlanten = klanten.filter((k: any) => k.userId === userData.uid)
+
+          const totalValue = [
+            ...userOffertes.map((o: any) => o.amount || 0),
+            ...userFacturen.map((f: any) => f.amount || 0),
+          ].reduce((sum, val) => sum + val, 0)
+
+          return {
+            uid: userData.uid,
+            email: userData.email || "Geen email",
+            displayName: userData.displayName || userData.name || "Onbekend",
+            createdAt: userData.createdAt,
+            offertes: userOffertes.length,
+            facturen: userFacturen.length,
+            klanten: userKlanten.length,
+            totalValue,
+            lastActive: userData.updatedAt || userData.createdAt,
+          }
+        })
+
+        // Sort by total value
+        userStats.sort((a, b) => b.totalValue - a.totalValue)
+
+        setUsers(userStats)
+
+        // Calculate global stats
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const activeToday = userStats.filter(u => {
+          if (!u.lastActive) return false
+          const lastActive = u.lastActive.toDate ? u.lastActive.toDate() : new Date(u.lastActive)
+          return lastActive >= today
+        }).length
+
+        setStats({
+          totalUsers: userStats.length,
+          totalOffertes: offertes.length,
+          totalFacturen: facturen.length,
+          totalValue: userStats.reduce((sum, u) => sum + u.totalValue, 0),
+          activeToday,
+        })
+
+        setLoadingData(false)
+      } catch (error) {
+        console.error("Error loading admin data:", error)
+        setLoadingData(false)
+      }
+    }
+
     if (!loading) {
       const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL
       if (!user || user.email !== adminEmail) {
         router.push("/dashboard")
       } else {
-        setAuthorized(true)
+        setTimeout(() => setAuthorized(true), 0)
         loadAdminData()
       }
     }
   }, [user, loading, router])
-
-  const loadAdminData = async () => {
-    if (!db) return
-
-    try {
-      // Get all users
-      const usersSnapshot = await getDocs(collection(db, "users"))
-      const usersData = usersSnapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() }))
-
-      // Get all offertes
-      const offertesSnapshot = await getDocs(collection(db, "offertes"))
-      const offertes = offertesSnapshot.docs.map(doc => doc.data())
-
-      // Get all facturen
-      const facturenSnapshot = await getDocs(collection(db, "facturen"))
-      const facturen = facturenSnapshot.docs.map(doc => doc.data())
-
-      // Get all klanten
-      const klantenSnapshot = await getDocs(collection(db, "klanten"))
-      const klanten = klantenSnapshot.docs.map(doc => doc.data())
-
-      // Calculate stats per user
-      const userStats: UserStats[] = usersData.map((userData: any) => {
-        const userOffertes = offertes.filter((o: any) => o.userId === userData.uid)
-        const userFacturen = facturen.filter((f: any) => f.userId === userData.uid)
-        const userKlanten = klanten.filter((k: any) => k.userId === userData.uid)
-
-        const totalValue = [
-          ...userOffertes.map((o: any) => o.amount || 0),
-          ...userFacturen.map((f: any) => f.amount || 0),
-        ].reduce((sum, val) => sum + val, 0)
-
-        return {
-          uid: userData.uid,
-          email: userData.email || "Geen email",
-          displayName: userData.displayName || userData.name || "Onbekend",
-          createdAt: userData.createdAt,
-          offertes: userOffertes.length,
-          facturen: userFacturen.length,
-          klanten: userKlanten.length,
-          totalValue,
-          lastActive: userData.updatedAt || userData.createdAt,
-        }
-      })
-
-      // Sort by total value
-      userStats.sort((a, b) => b.totalValue - a.totalValue)
-
-      setUsers(userStats)
-
-      // Calculate global stats
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      const activeToday = userStats.filter(u => {
-        if (!u.lastActive) return false
-        const lastActive = u.lastActive.toDate ? u.lastActive.toDate() : new Date(u.lastActive)
-        return lastActive >= today
-      }).length
-
-      setStats({
-        totalUsers: userStats.length,
-        totalOffertes: offertes.length,
-        totalFacturen: facturen.length,
-        totalValue: userStats.reduce((sum, u) => sum + u.totalValue, 0),
-        activeToday,
-      })
-
-      setLoadingData(false)
-    } catch (error) {
-      console.error("Error loading admin data:", error)
-      setLoadingData(false)
-    }
-  }
 
   const filteredUsers = users.filter(
     u =>

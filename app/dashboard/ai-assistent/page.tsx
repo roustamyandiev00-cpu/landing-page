@@ -1,203 +1,192 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
-import { PageHeader } from "@/components/dashboard/page-header"
-import { Card, CardContent } from "@/components/ui/card"
+import { useState } from "react"
+import { motion } from "framer-motion"
+import {
+  Sparkles,
+  Shield,
+  Zap,
+  History,
+  Bot,
+  Settings,
+  Check,
+  AlertTriangle
+} from "lucide-react"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Bot, Send, Sparkles, Loader2, User } from "lucide-react"
-import { useAuth } from "@/lib/auth-context"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { useAi } from "@/lib/ai-context"
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
+import { DashboardContent } from "@/components/dashboard/dashboard-content"
 
-interface Message {
-  id: string
-  role: "user" | "assistant"
-  content: string
-  timestamp: Date
-}
-
-const quickPrompts = [
-  "Hoe maak ik een factuur aan?",
-  "Wat is het verschil tussen een offerte en factuur?",
-  "Hoe bereken ik BTW?",
-  "Hoe beheer ik mijn klanten?",
-]
-
-export default function AIAssistentPage() {
-  const { user } = useAuth()
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      content: `Hoi${user?.displayName ? ` ${user.displayName}` : ""}! 👋 Ik ben je AI-assistent voor Archon. Ik kan je helpen met vragen over facturatie, offertes, boekhouding en meer. Waar kan ik je mee helpen?`,
-      timestamp: new Date(),
-    },
-  ])
-  const [input, setInput] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const scrollRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
-
-  const sendMessage = async (content: string) => {
-    if (!content.trim() || isLoading) return
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content,
-      timestamp: new Date(),
-    }
-
-    setMessages((prev) => [...prev, userMessage])
-    setInput("")
-    setIsLoading(true)
-
-    try {
-      const response = await fetch("/api/ai/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: content }),
-      })
-
-      const data = await response.json()
-
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: data.response || "Sorry, ik kon geen antwoord genereren.",
-        timestamp: new Date(),
-      }
-
-      setMessages((prev) => [...prev, assistantMessage])
-    } catch (error) {
-      console.error("Chat error:", error)
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: "Sorry, er ging iets mis. Probeer het opnieuw.",
-        timestamp: new Date(),
-      }
-      setMessages((prev) => [...prev, errorMessage])
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    sendMessage(input)
-  }
+export default function AiSettingsPage() {
+  const { logs, aiLevel, setAiLevel } = useAi()
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 h-[calc(100vh-8rem)]">
-        <PageHeader
-          title="AI Assistent"
-          description="Stel je vragen over facturatie, boekhouding en meer"
-          icon={Bot}
-        />
+      <div className="container mx-auto p-4 md:p-8 space-y-8 max-w-6xl">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-2">
+              <Sparkles className="w-8 h-8 text-primary" />
+              Archon AI Assistant
+            </h1>
+            <p className="text-muted-foreground mt-1">Beheer hoe AI jouw bedrijf ondersteunt en automatiseert.</p>
+          </div>
+          <div className="flex items-center gap-2 bg-secondary/50 p-2 rounded-lg">
+            <span className="text-sm font-medium px-2">Huidig Niveau:</span>
+            <Badge variant="default" className="bg-primary text-primary-foreground">
+              {aiLevel === "suggestion" ? "Adviseur" : aiLevel === "semi-auto" ? "Co-piloot" : "Autopiloot"}
+            </Badge>
+          </div>
+        </div>
 
-        <Card className="glass-card h-[calc(100%-5rem)] flex flex-col">
-          <CardContent className="p-0 flex-1 flex flex-col">
-            {/* Messages */}
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4 max-w-3xl mx-auto">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    {message.role === "assistant" && (
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                        <Bot className="w-5 h-5 text-primary" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Settings Column */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Level Selection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Bot className="w-5 h-5" />
+                  AI Automatiseringsniveau
+                </CardTitle>
+                <CardDescription>
+                  Kies hoeveel controle je wilt behouden over de acties van Archon.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-4">
+                <div
+                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${aiLevel === 'suggestion' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
+                  onClick={() => setAiLevel('suggestion')}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center text-blue-600">
+                        <Shield className="w-5 h-5" />
                       </div>
-                    )}
-                    <div
-                      className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                        message.role === "user"
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted"
-                      }`}
-                    >
-                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                      <p className="text-xs opacity-70 mt-1">
-                        {message.timestamp.toLocaleTimeString("nl-NL", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
+                      <div>
+                        <h3 className="font-bold text-base">Adviseur (Veilig)</h3>
+                        <p className="text-sm text-muted-foreground">AI doet alleen suggesties. Jij beslist alles.</p>
+                      </div>
                     </div>
-                    {message.role === "user" && (
-                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
-                        <User className="w-5 h-5 text-primary-foreground" />
-                      </div>
-                    )}
+                    {aiLevel === 'suggestion' && <Check className="w-6 h-6 text-primary" />}
                   </div>
-                ))}
-                {isLoading && (
-                  <div className="flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <Bot className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="bg-muted rounded-2xl px-4 py-3">
-                      <div className="flex gap-1">
-                        <div className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: "0ms" }} />
-                        <div className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: "150ms" }} />
-                        <div className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: "300ms" }} />
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div ref={scrollRef} />
-              </div>
-            </ScrollArea>
-
-            {/* Quick prompts */}
-            {messages.length === 1 && (
-              <div className="px-4 pb-4">
-                <p className="text-sm text-muted-foreground mb-2">Snelle vragen:</p>
-                <div className="flex flex-wrap gap-2">
-                  {quickPrompts.map((prompt) => (
-                    <Button
-                      key={prompt}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => sendMessage(prompt)}
-                      disabled={isLoading}
-                    >
-                      <Sparkles className="w-3 h-3 mr-2" />
-                      {prompt}
-                    </Button>
-                  ))}
                 </div>
-              </div>
-            )}
 
-            {/* Input */}
-            <div className="border-t p-4">
-              <form onSubmit={handleSubmit} className="flex gap-2 max-w-3xl mx-auto">
-                <Input
-                  placeholder="Stel een vraag..."
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  disabled={isLoading}
-                  className="flex-1"
-                />
-                <Button type="submit" disabled={!input.trim() || isLoading}>
-                  {isLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4" />
-                  )}
-                </Button>
-              </form>
-            </div>
-          </CardContent>
-        </Card>
+                <div
+                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${aiLevel === 'semi-auto' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
+                  onClick={() => setAiLevel('semi-auto')}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center text-purple-600">
+                        <Zap className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-base">Co-piloot (Aanbevolen)</h3>
+                        <p className="text-sm text-muted-foreground">AI stelt acties voor en bereidt ze voor. Jij klikt op &apos;ok&apos;.</p>
+                      </div>
+                    </div>
+                    {aiLevel === 'semi-auto' && <Check className="w-6 h-6 text-primary" />}
+                  </div>
+                </div>
+
+                <div
+                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${aiLevel === 'auto' ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}`}
+                  onClick={() => setAiLevel('auto')}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center text-orange-600">
+                        <Bot className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-base">Autopiloot (Advanced)</h3>
+                        <p className="text-sm text-muted-foreground">AI stuurt herinneringen en plant afspraken zelfstandig.</p>
+                      </div>
+                    </div>
+                    {aiLevel === 'auto' && <Check className="w-6 h-6 text-primary" />}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Feature Toggles */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="w-5 h-5" />
+                  Specifieke Instellingen
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label className="text-base">Betaalherinneringen</Label>
+                    <p className="text-sm text-muted-foreground">Laat AI concepten schrijven voor late betalers</p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label className="text-base">Prijsoptimalisatie</Label>
+                    <p className="text-sm text-muted-foreground">Suggesties voor marges op offertes</p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label className="text-base">BTW Alerts</Label>
+                    <p className="text-sm text-muted-foreground">Waarschuwingen voor deadlines en grote uitgaven</p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Activity Log Sidebar */}
+          <div className="lg:col-span-1">
+            <Card className="h-full max-h-[600px] flex flex-col">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-md">
+                  <History className="w-4 h-4" />
+                  AI Actie Logboek
+                </CardTitle>
+                <CardDescription>
+                  Recente activiteiten van Archon
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 overflow-y-auto pr-2 space-y-4">
+                {logs.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p className="text-sm">Nog geen activiteit.</p>
+                  </div>
+                ) : (
+                  logs.map((log) => (
+                    <div key={log.id} className="relative pl-4 border-l-2 border-border pb-1 last:pb-0">
+                      <div className={`absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full ${log.type === 'warning' ? 'bg-orange-500' :
+                          log.type === 'automation' ? 'bg-purple-500' :
+                            'bg-blue-500'
+                        }`} />
+                      <div className="bg-muted/30 p-3 rounded-lg text-sm">
+                        <p className="font-medium text-foreground">{log.message}</p>
+                        <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
+                          <span className="capitalize bg-background px-1.5 py-0.5 rounded border shadow-sm">{log.context}</span>
+                          <span>{log.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   )

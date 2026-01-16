@@ -27,15 +27,16 @@ export function Hero() {
           >
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
               <Sparkles className="w-4 h-4" />
-              <span>De #1 AI voor bouwprofessionals</span>
+              <span>Nieuw: De eerste AI Co-piloot voor de bouw</span>
             </div>
 
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-foreground leading-tight text-balance">
-              Maak bouwoffertes in <span className="text-primary">2 minuten</span>
+              Je slimste werknemer<br />
+              <span className="text-primary">werkt 24/7</span>
             </h1>
 
             <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Bespaar uren per week met AI-gestuurde offertes. Ideaal voor aannemers en ZZP'ers. Professioneel, nauwkeurig en direct klaar.
+              Archon is meer dan een offertetool. Het is een proactieve co-piloot die risico&apos;s ziet, prijzen optimaliseert en je administratie automatiseert.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
